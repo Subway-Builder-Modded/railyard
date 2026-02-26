@@ -67,13 +67,13 @@ export function ProjectHero({ type, id, gallery }: ProjectHeroProps) {
       </div>
 
       <Dialog open={selectedIndex !== null} onOpenChange={() => setSelectedIndex(null)}>
-        <DialogContent className="max-w-4xl p-2 bg-background/95 backdrop-blur-sm border-border">
+        <DialogContent className="w-[95vw] sm:max-w-none max-h-[95vh] p-2 bg-background/95 backdrop-blur-sm border-border">
           {selectedIndex !== null && validImages[selectedIndex] && (
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
               <img
                 src={validImages[selectedIndex]}
                 alt=""
-                className="w-full rounded-md"
+                className="max-h-[90vh] rounded-md object-contain"
               />
               {validImages.length > 1 && (
                 <>

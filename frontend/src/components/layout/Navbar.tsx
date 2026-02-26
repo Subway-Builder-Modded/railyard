@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { RefreshCw, Train } from "lucide-react";
+import { RefreshCw, TrainTrack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegistryStore } from "@/stores/registry-store";
 import { cn } from "@/lib/utils";
@@ -18,8 +18,8 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <Train className="h-5 w-5" />
-            The Railyard
+            <TrainTrack className="h-5 w-5" />
+            Railyard
           </Link>
           <nav className="flex items-center gap-4">
             {navLinks.map(({ href, label }) => (
