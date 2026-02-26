@@ -6,16 +6,19 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 const registryRepoURL = "https://github.com/Subway-Builder-Modded/The-Railyard"
@@ -65,9 +68,52 @@ type IndexFile struct {
 	Maps          []string `json:"maps,omitempty"`
 }
 
+// VersionInfo represents a single release version for a mod or map.
+type VersionInfo struct {
+	Version     string `json:"version"`
+	Name        string `json:"name"`
+	Changelog   string `json:"changelog"`
+	Date        string `json:"date"`
+	DownloadURL string `json:"download_url"`
+	GameVersion string `json:"game_version"`
+	SHA256      string `json:"sha256"`
+	Downloads   int    `json:"downloads"`
+}
+
+// githubRelease maps fields from the GitHub Releases API response.
+type githubRelease struct {
+	TagName     string        `json:"tag_name"`
+	Name        string        `json:"name"`
+	Body        string        `json:"body"`
+	PublishedAt string        `json:"published_at"`
+	Assets      []githubAsset `json:"assets"`
+}
+
+type githubAsset struct {
+	Name               string `json:"name"`
+	BrowserDownloadURL string `json:"browser_download_url"`
+	DownloadCount      int    `json:"download_count"`
+}
+
+// customUpdateFile maps the custom update.json schema.
+type customUpdateFile struct {
+	SchemaVersion int                   `json:"schema_version"`
+	Versions      []customUpdateVersion `json:"versions"`
+}
+
+type customUpdateVersion struct {
+	Version     string `json:"version"`
+	GameVersion string `json:"game_version"`
+	Date        string `json:"date"`
+	Changelog   string `json:"changelog"`
+	Download    string `json:"download"`
+	SHA256      string `json:"sha256"`
+}
+
 // Registry manages the local clone of The Railyard registry repository.
 type Registry struct {
-	repoPath string
+	repoPath   string
+	httpClient *http.Client
 }
 
 // NewRegistry creates a new Registry instance with the platform-appropriate
@@ -81,6 +127,9 @@ func NewRegistry() *Registry {
 	}
 	return &Registry{
 		repoPath: filepath.Join(configDir, "railyard", "registry"),
+		httpClient: &http.Client{
+			Timeout: 15 * time.Second,
+		},
 	}
 }
 
@@ -117,7 +166,7 @@ func (r *Registry) cloneOrUpdate() error {
 // getCredentials uses the system's git credential helper to resolve
 // credentials for the registry repo URL. Returns nil auth if no
 // credentials are found (for public repos).
-func (r *Registry) getCredentials() *http.BasicAuth {
+func (r *Registry) getCredentials() *githttp.BasicAuth {
 	parsed, err := url.Parse(registryRepoURL)
 	if err != nil {
 		return nil
@@ -148,7 +197,7 @@ func (r *Registry) getCredentials() *http.BasicAuth {
 	}
 
 	if username != "" && password != "" {
-		return &http.BasicAuth{
+		return &githttp.BasicAuth{
 			Username: username,
 			Password: password,
 		}
@@ -337,4 +386,132 @@ func mimeFromExtension(ext string) string {
 	default:
 		return "application/octet-stream"
 	}
+}
+
+// GetVersions fetches available versions for a mod or map.
+// updateType must be "github" or "custom".
+// repoOrURL is "owner/repo" for github, or a URL for custom.
+func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]VersionInfo, error) {
+	switch updateType {
+	case "github":
+		return r.getGitHubVersions(repoOrURL)
+	case "custom":
+		return r.getCustomVersions(repoOrURL)
+	default:
+		return nil, fmt.Errorf("unsupported update type: %q", updateType)
+	}
+}
+
+func (r *Registry) getGitHubVersions(repo string) ([]VersionInfo, error) {
+	parts := strings.SplitN(repo, "/", 2)
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return nil, fmt.Errorf("invalid GitHub repo format %q: expected \"owner/repo\"", repo)
+	}
+
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/releases", repo)
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GitHub API request: %w", err)
+	}
+	req.Header.Set("Accept", "application/vnd.github+json")
+	req.Header.Set("User-Agent", "Railyard-Desktop-App")
+
+	resp, err := r.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch GitHub releases for %q: %w", repo, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GitHub API returned status %d for %q", resp.StatusCode, repo)
+	}
+
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 5*1024*1024))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read GitHub API response: %w", err)
+	}
+
+	var releases []githubRelease
+	if err := json.Unmarshal(body, &releases); err != nil {
+		return nil, fmt.Errorf("failed to parse GitHub releases JSON: %w", err)
+	}
+
+	versions := make([]VersionInfo, 0, len(releases))
+	for _, rel := range releases {
+		v := VersionInfo{
+			Version:   rel.TagName,
+			Name:      rel.Name,
+			Changelog: rel.Body,
+			Date:      rel.PublishedAt,
+		}
+		for _, asset := range rel.Assets {
+			v.Downloads += asset.DownloadCount
+		}
+		if len(rel.Assets) > 0 {
+			v.DownloadURL = rel.Assets[0].BrowserDownloadURL
+		}
+		versions = append(versions, v)
+	}
+
+	return versions, nil
+}
+
+func (r *Registry) getCustomVersions(updateURL string) ([]VersionInfo, error) {
+	parsed, err := url.Parse(updateURL)
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") {
+		return nil, fmt.Errorf("invalid custom update URL %q: must be http or https", updateURL)
+	}
+
+	req, err := http.NewRequest("GET", updateURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for custom update URL: %w", err)
+	}
+	req.Header.Set("User-Agent", "Railyard-Desktop-App")
+
+	resp, err := r.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch custom update from %q: %w", updateURL, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("custom update URL returned status %d for %q", resp.StatusCode, updateURL)
+	}
+
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 2*1024*1024))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read custom update response: %w", err)
+	}
+
+	var updateFile customUpdateFile
+	if err := json.Unmarshal(body, &updateFile); err != nil {
+		return nil, fmt.Errorf("failed to parse custom update JSON: %w", err)
+	}
+
+	versions := make([]VersionInfo, 0, len(updateFile.Versions))
+	for _, v := range updateFile.Versions {
+		versions = append(versions, VersionInfo{
+			Version:     v.Version,
+			Name:        v.Version,
+			Changelog:   v.Changelog,
+			Date:        v.Date,
+			DownloadURL: v.Download,
+			GameVersion: v.GameVersion,
+			SHA256:      v.SHA256,
+		})
+	}
+
+	return versions, nil
+}
+
+// GetInstalledMods returns the IDs of locally installed mods.
+// Currently stubbed to return an empty slice.
+func (r *Registry) GetInstalledMods() []string {
+	return []string{}
+}
+
+// GetInstalledMaps returns the IDs of locally installed maps.
+// Currently stubbed to return an empty slice.
+func (r *Registry) GetInstalledMaps() []string {
+	return []string{}
 }

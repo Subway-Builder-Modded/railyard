@@ -6,12 +6,24 @@ export function GetGalleryImage(arg1, arg2, arg3) {
   return window['go']['main']['Registry']['GetGalleryImage'](arg1, arg2, arg3);
 }
 
+export function GetInstalledMaps() {
+  return window['go']['main']['Registry']['GetInstalledMaps']();
+}
+
+export function GetInstalledMods() {
+  return window['go']['main']['Registry']['GetInstalledMods']();
+}
+
 export function GetMaps() {
   return window['go']['main']['Registry']['GetMaps']();
 }
 
 export function GetMods() {
   return window['go']['main']['Registry']['GetMods']();
+}
+
+export function GetVersions(arg1, arg2) {
+  return window['go']['main']['Registry']['GetVersions'](arg1, arg2);
 }
 
 export function Initialize() {

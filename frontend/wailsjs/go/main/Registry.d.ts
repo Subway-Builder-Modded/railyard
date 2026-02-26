@@ -4,9 +4,15 @@ import {main} from '../models';
 
 export function GetGalleryImage(arg1:string,arg2:string,arg3:string):Promise<string>;
 
+export function GetInstalledMaps():Promise<Array<string>>;
+
+export function GetInstalledMods():Promise<Array<string>>;
+
 export function GetMaps():Promise<Array<main.MapManifest>>;
 
 export function GetMods():Promise<Array<main.ModManifest>>;
+
+export function GetVersions(arg1:string,arg2:string):Promise<Array<main.VersionInfo>>;
 
 export function Initialize():Promise<void>;
 

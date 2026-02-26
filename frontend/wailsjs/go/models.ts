@@ -118,6 +118,33 @@ export namespace main {
 		    return a;
 		}
 	}
+	
+	export class VersionInfo {
+	    version: string;
+	    name: string;
+	    changelog: string;
+	    date: string;
+	    download_url: string;
+	    game_version: string;
+	    sha256: string;
+	    downloads: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new VersionInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.version = source["version"];
+	        this.name = source["name"];
+	        this.changelog = source["changelog"];
+	        this.date = source["date"];
+	        this.download_url = source["download_url"];
+	        this.game_version = source["game_version"];
+	        this.sha256 = source["sha256"];
+	        this.downloads = source["downloads"];
+	    }
+	}
 
 }
 
