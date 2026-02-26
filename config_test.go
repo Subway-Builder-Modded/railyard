@@ -28,7 +28,7 @@ func writeTestConfigFile(t *testing.T, content string) {
 func testConfig() AppConfig {
 	return AppConfig{
 		ExecutablePath:     "dir/executable.exe",
-		MetroMakerDataPath: "dir/mods",
+		MetroMakerDataPath: "dir/",
 	}
 }
 
@@ -51,7 +51,7 @@ func TestValidateConfigPaths(t *testing.T) {
 
 	// Paths are configured but do not exist on disk
 	cfg = AppConfig{
-		MetroMakerDataPath: "blah/blah/mods",
+		MetroMakerDataPath: "blah/blah/",
 		ExecutablePath:     "blah.exe",
 	}
 	valid, result = cfg.ValidateConfigPaths()
@@ -84,7 +84,7 @@ func TestUpdateConfigPersistsMutations(t *testing.T) {
 
 	cfg := NewConfig()
 	updated, err := cfg.updateConfig(func(c *AppConfig) {
-		c.MetroMakerDataPath = "dir/mods"
+		c.MetroMakerDataPath = "dir/"
 	})
 	require.NoError(t, err)
 	require.Equal(t, testConfig(), updated)
@@ -101,7 +101,7 @@ func TestSetConfigOverwritesAllFields(t *testing.T) {
 	cfg := NewConfig()
 	next := AppConfig{
 		ExecutablePath:     "new/executable.exe",
-		MetroMakerDataPath: "new/mods",
+		MetroMakerDataPath: "new/",
 	}
 	updated, err := cfg.SetConfig(next)
 	require.NoError(t, err)

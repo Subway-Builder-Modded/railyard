@@ -329,13 +329,7 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 				// Handle different file types
 				switch entry {
 				case "tiles":
-					userConfigDir, err := os.UserConfigDir()
-					if err != nil {
-						errorChan <- fmt.Errorf("Failed to get user config directory for tiles: %v", err)
-						return
-					}
-
-					tilesDir := path.Join(userConfigDir, "railyard", "tiles")
+					tilesDir := path.Join(AppDataRoot(), "tiles")
 					err = os.MkdirAll(tilesDir, os.ModePerm)
 					if err != nil {
 						errorChan <- fmt.Errorf("Failed to create tiles directory: %v", err)
@@ -614,9 +608,9 @@ func (a *App) getVanillaMapCodes() []string {
 		log.Printf("Warning: failed to parse latest-cities.yml: %v", err)
 		return []string{}
 	}
-	citieCodes := make([]string, 0, len(citiesData.Cities))
+	cityCodes := make([]string, 0, len(citiesData.Cities))
 	for code := range citiesData.Cities {
-		citieCodes = append(citieCodes, code)
+		cityCodes = append(cityCodes, code)
 	}
-	return citieCodes
+	return cityCodes
 }
