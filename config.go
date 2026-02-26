@@ -58,7 +58,7 @@ func (v ConfigPathValidation) IsValid() bool {
 }
 
 type Config struct {
-	// Mutex should be applied to all read-modify-write operations
+	// Mutex should be locked for all read/write operations
 	mu sync.Mutex
 }
 
@@ -137,7 +137,7 @@ func (s *Config) SetConfig(next AppConfig) (AppConfig, error) {
 	})
 }
 
-// ClearConfig clears all config fields.
+// ClearConfig clears all config fields (by replacing them with zero values).
 func (s *Config) ClearConfig() (AppConfig, error) {
 	return s.SetConfig(AppConfig{})
 }
