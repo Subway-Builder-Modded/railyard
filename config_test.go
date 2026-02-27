@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"railyard/internal/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -25,8 +26,8 @@ func writeTestConfigFile(t *testing.T, content string) {
 	require.NoError(t, os.WriteFile(path, []byte(content), 0o644))
 }
 
-func testConfig() AppConfig {
-	return AppConfig{
+func testConfig() types.AppConfig {
+	return types.AppConfig{
 		ExecutablePath:     "dir/executable.exe",
 		MetroMakerDataPath: "dir/",
 	}
@@ -34,23 +35,23 @@ func testConfig() AppConfig {
 
 func TestAreConfigPathsConfigured(t *testing.T) {
 	cfg := testConfig()
-	require.True(t, cfg.areConfigPathsConfigured())
+	require.True(t, cfg.AreConfigPathsConfigured())
 
 	cfg.MetroMakerDataPath = "   "
-	require.False(t, cfg.areConfigPathsConfigured())
+	require.False(t, cfg.AreConfigPathsConfigured())
 }
 
 func TestValidateConfigPaths(t *testing.T) {
 	setEnv(t)
 
 	// Paths not configured
-	cfg := AppConfig{}
+	cfg := types.AppConfig{}
 	valid, result := cfg.ValidateConfigPaths()
 	require.False(t, valid)
 	require.False(t, result.IsConfigured)
 
 	// Paths are configured but do not exist on disk
-	cfg = AppConfig{
+	cfg = types.AppConfig{
 		MetroMakerDataPath: "blah/blah/",
 		ExecutablePath:     "blah.exe",
 	}
@@ -65,7 +66,7 @@ func TestValidateConfigPaths(t *testing.T) {
 	require.NoError(t, os.WriteFile(exeFile, []byte(""), 0o644))
 
 	// Paths are configured and exist on disk
-	cfg = AppConfig{
+	cfg = types.AppConfig{
 		MetroMakerDataPath: modDir,
 		ExecutablePath:     exeFile,
 	}
@@ -78,12 +79,12 @@ func TestValidateConfigPaths(t *testing.T) {
 
 func TestUpdateConfigPersistsMutations(t *testing.T) {
 	setEnv(t)
-	require.NoError(t, writeAppConfig(AppConfig{
+	require.NoError(t, writeAppConfig(types.AppConfig{
 		ExecutablePath: "dir/executable.exe",
 	}))
 
 	cfg := NewConfig()
-	updated, err := cfg.updateConfig(func(c *AppConfig) {
+	updated, err := cfg.updateConfig(func(c *types.AppConfig) {
 		c.MetroMakerDataPath = "dir/"
 	})
 	require.NoError(t, err)
@@ -99,7 +100,7 @@ func TestSetConfigOverwritesAllFields(t *testing.T) {
 	require.NoError(t, writeAppConfig(testConfig()))
 
 	cfg := NewConfig()
-	next := AppConfig{
+	next := types.AppConfig{
 		ExecutablePath:     "new/executable.exe",
 		MetroMakerDataPath: "new/",
 	}
@@ -120,9 +121,9 @@ func TestClearConfigOverwritesWithEmptyConfig(t *testing.T) {
 	cfg := NewConfig()
 	updated, err := cfg.ClearConfig()
 	require.NoError(t, err)
-	require.Equal(t, AppConfig{}, updated)
+	require.Equal(t, types.AppConfig{}, updated)
 
 	persisted, err := readAppConfig()
 	require.NoError(t, err)
-	require.Equal(t, AppConfig{}, persisted)
+	require.Equal(t, types.AppConfig{}, persisted)
 }

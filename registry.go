@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"railyard/internal/files"
+	"railyard/internal/types"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -24,93 +25,6 @@ import (
 )
 
 const registryRepoURL = "https://github.com/Subway-Builder-Modded/The-Railyard"
-
-// UpdateConfig describes how a mod or map receives updates.
-type UpdateConfig struct {
-	Type string `json:"type"`
-	Repo string `json:"repo,omitempty"`
-	URL  string `json:"url,omitempty"`
-}
-
-// ModManifest is the manifest schema for a mod entry in the registry.
-type ModManifest struct {
-	SchemaVersion int          `json:"schema_version"`
-	ID            string       `json:"id"`
-	Name          string       `json:"name"`
-	Author        string       `json:"author"`
-	GithubID      int          `json:"github_id"`
-	Description   string       `json:"description"`
-	Tags          []string     `json:"tags"`
-	Gallery       []string     `json:"gallery"`
-	Source        string       `json:"source"`
-	Update        UpdateConfig `json:"update"`
-}
-
-// MapManifest is the manifest schema for a map entry in the registry.
-type MapManifest struct {
-	SchemaVersion int          `json:"schema_version"`
-	ID            string       `json:"id"`
-	Name          string       `json:"name"`
-	Author        string       `json:"author"`
-	GithubID      int          `json:"github_id"`
-	CityCode      string       `json:"city_code"`
-	Country       string       `json:"country"`
-	Population    int          `json:"population"`
-	Description   string       `json:"description"`
-	Tags          []string     `json:"tags"`
-	Gallery       []string     `json:"gallery"`
-	Source        string       `json:"source"`
-	Update        UpdateConfig `json:"update"`
-}
-
-// IndexFile represents the top-level index.json in the mods/ or maps/ directory.
-type IndexFile struct {
-	SchemaVersion int      `json:"schema_version"`
-	Mods          []string `json:"mods,omitempty"`
-	Maps          []string `json:"maps,omitempty"`
-}
-
-// VersionInfo represents a single release version for a mod or map.
-type VersionInfo struct {
-	Version     string `json:"version"`
-	Name        string `json:"name"`
-	Changelog   string `json:"changelog"`
-	Date        string `json:"date"`
-	DownloadURL string `json:"download_url"`
-	GameVersion string `json:"game_version"`
-	SHA256      string `json:"sha256"`
-	Downloads   int    `json:"downloads"`
-}
-
-// githubRelease maps fields from the GitHub Releases API response.
-type githubRelease struct {
-	TagName     string        `json:"tag_name"`
-	Name        string        `json:"name"`
-	Body        string        `json:"body"`
-	PublishedAt string        `json:"published_at"`
-	Assets      []githubAsset `json:"assets"`
-}
-
-type githubAsset struct {
-	Name               string `json:"name"`
-	BrowserDownloadURL string `json:"browser_download_url"`
-	DownloadCount      int    `json:"download_count"`
-}
-
-// customUpdateFile maps the custom update.json schema.
-type customUpdateFile struct {
-	SchemaVersion int                   `json:"schema_version"`
-	Versions      []customUpdateVersion `json:"versions"`
-}
-
-type customUpdateVersion struct {
-	Version     string `json:"version"`
-	GameVersion string `json:"game_version"`
-	Date        string `json:"date"`
-	Changelog   string `json:"changelog"`
-	Download    string `json:"download"`
-	SHA256      string `json:"sha256"`
-}
 
 // Registry manages the local clone of The Railyard registry repository.
 type Registry struct {
@@ -275,17 +189,17 @@ func (r *Registry) fetchAndReset(repo *git.Repository) error {
 }
 
 // GetMods reads the mods index and returns all mod manifests.
-func (r *Registry) GetMods() ([]ModManifest, error) {
+func (r *Registry) GetMods() ([]types.ModManifest, error) {
 	indexPath := filepath.Join(r.repoPath, "mods", "index.json")
-	index, err := files.ReadJSON[IndexFile](indexPath, "mods index", files.JSONReadOptions{})
+	index, err := files.ReadJSON[types.IndexFile](indexPath, "mods index", files.JSONReadOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	mods := make([]ModManifest, 0, len(index.Mods))
+	mods := make([]types.ModManifest, 0, len(index.Mods))
 	for _, modID := range index.Mods {
 		manifestPath := filepath.Join(r.repoPath, "mods", modID, "manifest.json")
-		manifest, modErr := files.ReadJSON[ModManifest](manifestPath, fmt.Sprintf("manifest for mod %q", modID), files.JSONReadOptions{})
+		manifest, modErr := files.ReadJSON[types.ModManifest](manifestPath, fmt.Sprintf("manifest for mod %q", modID), files.JSONReadOptions{})
 		if modErr != nil {
 			return nil, modErr
 		}
@@ -296,17 +210,17 @@ func (r *Registry) GetMods() ([]ModManifest, error) {
 }
 
 // GetMaps reads the maps index and returns all map manifests.
-func (r *Registry) GetMaps() ([]MapManifest, error) {
+func (r *Registry) GetMaps() ([]types.MapManifest, error) {
 	indexPath := filepath.Join(r.repoPath, "maps", "index.json")
-	index, indexErr := files.ReadJSON[IndexFile](indexPath, "maps index", files.JSONReadOptions{})
+	index, indexErr := files.ReadJSON[types.IndexFile](indexPath, "maps index", files.JSONReadOptions{})
 	if indexErr != nil {
 		return nil, indexErr
 	}
 
-	maps := make([]MapManifest, 0, len(index.Maps))
+	maps := make([]types.MapManifest, 0, len(index.Maps))
 	for _, mapID := range index.Maps {
 		manifestPath := filepath.Join(r.repoPath, "maps", mapID, "manifest.json")
-		manifest, mapErr := files.ReadJSON[MapManifest](manifestPath, fmt.Sprintf("manifest for map %q", mapID), files.JSONReadOptions{})
+		manifest, mapErr := files.ReadJSON[types.MapManifest](manifestPath, fmt.Sprintf("manifest for map %q", mapID), files.JSONReadOptions{})
 		if mapErr != nil {
 			return nil, mapErr
 		}
@@ -367,7 +281,7 @@ func mimeFromExtension(ext string) string {
 // GetVersions fetches available versions for a mod or map.
 // updateType must be "github" or "custom".
 // repoOrURL is "owner/repo" for github, or a URL for custom.
-func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]VersionInfo, error) {
+func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]types.VersionInfo, error) {
 	switch updateType {
 	case "github":
 		return r.getGitHubVersions(repoOrURL)
@@ -378,7 +292,7 @@ func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]VersionIn
 	}
 }
 
-func (r *Registry) getGitHubVersions(repo string) ([]VersionInfo, error) {
+func (r *Registry) getGitHubVersions(repo string) ([]types.VersionInfo, error) {
 	parts := strings.SplitN(repo, "/", 2)
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
 		return nil, fmt.Errorf("invalid GitHub repo format %q: expected \"owner/repo\"", repo)
@@ -407,14 +321,14 @@ func (r *Registry) getGitHubVersions(repo string) ([]VersionInfo, error) {
 		return nil, fmt.Errorf("failed to read GitHub API response: %w", err)
 	}
 
-	var releases []githubRelease
+	var releases []types.GithubRelease
 	if err := json.Unmarshal(body, &releases); err != nil {
 		return nil, fmt.Errorf("failed to parse GitHub releases JSON: %w", err)
 	}
 
-	versions := make([]VersionInfo, 0, len(releases))
+	versions := make([]types.VersionInfo, 0, len(releases))
 	for _, rel := range releases {
-		v := VersionInfo{
+		v := types.VersionInfo{
 			Version:   rel.TagName,
 			Name:      rel.Name,
 			Changelog: rel.Body,
@@ -432,7 +346,7 @@ func (r *Registry) getGitHubVersions(repo string) ([]VersionInfo, error) {
 	return versions, nil
 }
 
-func (r *Registry) getCustomVersions(updateURL string) ([]VersionInfo, error) {
+func (r *Registry) getCustomVersions(updateURL string) ([]types.VersionInfo, error) {
 	parsed, err := url.Parse(updateURL)
 	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") {
 		return nil, fmt.Errorf("invalid custom update URL %q: must be http or https", updateURL)
@@ -459,14 +373,14 @@ func (r *Registry) getCustomVersions(updateURL string) ([]VersionInfo, error) {
 		return nil, fmt.Errorf("failed to read custom update response: %w", err)
 	}
 
-	var updateFile customUpdateFile
+	var updateFile types.CustomUpdateFile
 	if err := json.Unmarshal(body, &updateFile); err != nil {
 		return nil, fmt.Errorf("failed to parse custom update JSON: %w", err)
 	}
 
-	versions := make([]VersionInfo, 0, len(updateFile.Versions))
+	versions := make([]types.VersionInfo, 0, len(updateFile.Versions))
 	for _, v := range updateFile.Versions {
-		versions = append(versions, VersionInfo{
+		versions = append(versions, types.VersionInfo{
 			Version:     v.Version,
 			Name:        v.Version,
 			Changelog:   v.Changelog,

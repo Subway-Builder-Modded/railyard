@@ -11,17 +11,17 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Download, FileText, ArrowDownToLine } from "lucide-react";
 import { GetVersions } from "../../../wailsjs/go/main/Registry";
-import { main } from "../../../wailsjs/go/models";
+import { types } from "../../../wailsjs/go/models";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorBanner } from "@/components/shared/ErrorBanner";
 
 interface VersionsTableProps {
   type: string
-  update: main.UpdateConfig;
+  update: types.UpdateConfig;
 }
 
 export function VersionsTable({ update }: VersionsTableProps) {
-  const [versions, setVersions] = useState<main.VersionInfo[]>([]);
+  const [versions, setVersions] = useState<types.VersionInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

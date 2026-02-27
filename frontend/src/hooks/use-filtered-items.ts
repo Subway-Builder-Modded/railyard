@@ -1,16 +1,16 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { main } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import { type PerPage, type SortOption } from '../lib/constants';
 
 export type TaggedItem =
-  | { type: "mods"; item: main.ModManifest }
-  | { type: "maps"; item: main.MapManifest };
+  | { type: "mods"; item: types.ModManifest }
+  | { type: "maps"; item: types.MapManifest };
 
 type TypeFilter = "all" | "mods" | "maps";
 
 interface UseFilteredItemsParams {
-  mods: main.ModManifest[];
-  maps: main.MapManifest[];
+  mods: types.ModManifest[];
+  maps: types.MapManifest[];
 }
 
 function matchesQuery(item: TaggedItem, query: string): boolean {
@@ -23,7 +23,7 @@ function matchesQuery(item: TaggedItem, query: string): boolean {
   if (base.tags?.some((t) => t.toLowerCase().includes(q))) return true;
 
   if (item.type === "maps") {
-    const map = item.item as main.MapManifest;
+    const map = item.item as types.MapManifest;
     if (map.city_code?.toLowerCase().includes(q)) return true;
     if (map.country?.toLowerCase().includes(q)) return true;
   }
@@ -47,8 +47,8 @@ function compareItems(a: TaggedItem, b: TaggedItem, sort: SortOption): number {
     case "author-asc":
       return (a.item.author ?? "").localeCompare(b.item.author ?? "");
     case "population-desc": {
-      const popA = a.type === "maps" ? (a.item as main.MapManifest).population ?? 0 : -1;
-      const popB = b.type === "maps" ? (b.item as main.MapManifest).population ?? 0 : -1;
+      const popA = a.type === "maps" ? (a.item as types.MapManifest).population ?? 0 : -1;
+      const popB = b.type === "maps" ? (b.item as types.MapManifest).population ?? 0 : -1;
       return popB - popA;
     }
     default:

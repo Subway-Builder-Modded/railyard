@@ -2,16 +2,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ExternalLink, MapPin, Users, Globe } from "lucide-react";
-import { main } from "../../../wailsjs/go/models";
+import { main, types } from "../../../wailsjs/go/models";
+
+main
 
 interface ProjectInfoProps {
   type: "mods" | "maps";
-  item: main.ModManifest | main.MapManifest;
+  item: types.ModManifest | types.MapManifest;
 }
 
 function isMapManifest(
-  item: main.ModManifest | main.MapManifest
-): item is main.MapManifest {
+  item: types.ModManifest | types.MapManifest
+): item is types.MapManifest {
   return "city_code" in item;
 }
 

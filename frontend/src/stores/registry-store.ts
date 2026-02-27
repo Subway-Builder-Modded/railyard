@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { main } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import { GetMods, GetMaps, Refresh } from '../../wailsjs/go/main/Registry';
 
 interface RegistryState {
-  mods: main.ModManifest[];
-  maps: main.MapManifest[];
+  mods: types.ModManifest[];
+  maps: types.MapManifest[];
   loading: boolean;
   refreshing: boolean;
   error: string | null;

@@ -3,14 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { GalleryImage } from "./GalleryImage";
 import { Users } from "lucide-react";
-import { main } from "../../../wailsjs/go/models";
+import { types } from "../../../wailsjs/go/models";
 
 interface ItemCardProps {
   type: "mods" | "maps";
-  item: main.ModManifest | main.MapManifest;
+  item: types.ModManifest | types.MapManifest;
 }
 
-function isMapManifest(item: main.ModManifest | main.MapManifest): item is main.MapManifest {
+function isMapManifest(item: types.ModManifest | types.MapManifest): item is types.MapManifest {
   return 'city_code' in item;
 }
 
