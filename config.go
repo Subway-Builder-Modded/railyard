@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path"
 	"strings"
 	"sync"
 
@@ -31,6 +32,33 @@ type ResolveConfigResult struct {
 // AreConfigPathsConfigured checks if both required paths have been set in AppConfig
 func (c AppConfig) areConfigPathsConfigured() bool {
 	return strings.TrimSpace(c.MetroMakerDataPath) != "" && strings.TrimSpace(c.ExecutablePath) != ""
+}
+
+// GetModFolderPath returns the full path to the mods folder based on the MetroMakerDataPath in AppConfig, or an empty string if paths are not properly configured.
+func (c AppConfig) GetModFolderPath() string {
+	pathsValid, _ := c.ValidateConfigPaths()
+	if pathsValid {
+		return path.Join(c.MetroMakerDataPath, "mods")
+	}
+	return ""
+}
+
+// GetThumbnailFolderPath returns the full path to the thumbnail folder based on the MetroMakerDataPath in AppConfig, or an empty string if paths are not properly configured.
+func (c AppConfig) GetThumbnailFolderPath() string {
+	pathsValid, _ := c.ValidateConfigPaths()
+	if pathsValid {
+		return path.Join(c.MetroMakerDataPath, "public", "data", "city-maps")
+	}
+	return ""
+}
+
+// GetMapsFolderPath returns the full path to the maps folder based on the MetroMakerDataPath in AppConfig, or an empty string if paths are not properly configured.
+func (c AppConfig) GetMapsFolderPath() string {
+	pathsValid, _ := c.ValidateConfigPaths()
+	if pathsValid {
+		return path.Join(c.MetroMakerDataPath, "cities", "data")
+	}
+	return ""
 }
 
 // ValidateConfigPaths checks whether the AppConfig has been configured and whether or not its specified paths exist on disk

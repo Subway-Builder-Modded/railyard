@@ -298,7 +298,7 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 		}
 	}
 
-	os.MkdirAll(path.Join(config.Config.MetroMakerDataPath, "cities", "data", configData.Code), os.ModePerm)
+	os.MkdirAll(path.Join(config.Config.GetMapsFolderPath(), configData.Code), os.ModePerm)
 
 	// Channel to collect errors from all goroutines
 	errorChan := make(chan error, len(filesFound))
@@ -329,14 +329,22 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 				// Handle different file types
 				switch entry {
 				case "tiles":
-					tilesDir := path.Join(AppDataRoot(), "tiles")
-					err = os.MkdirAll(tilesDir, os.ModePerm)
-					if err != nil {
-						errorChan <- fmt.Errorf("Failed to create tiles directory: %v", err)
+					stats, err := os.Stat(TilesPath())
+					if os.IsNotExist(err) {
+						err = os.MkdirAll(TilesPath(), os.ModePerm)
+						if err != nil {
+							errorChan <- fmt.Errorf("Failed to create tiles directory: %v", err)
+							return
+						}
+					} else if err != nil {
+						errorChan <- fmt.Errorf("Failed to access tiles directory: %v", err)
+						return
+					} else if !stats.IsDir() {
+						errorChan <- fmt.Errorf("Tiles path exists but is not a directory")
 						return
 					}
 
-					destFilePath := path.Join(tilesDir, configData.Code+".pmtiles")
+					destFilePath := path.Join(TilesPath(), configData.Code+".pmtiles")
 					log.Printf("Installing %s for map %s at %s", entry, configData.Code, destFilePath)
 					destFile, err := os.Create(destFilePath)
 					if err != nil {
@@ -353,15 +361,15 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 					log.Printf("Successfully installed %s for map %s", entry, configData.Code)
 
 				case "thumbnail":
-					cityMapsExists, err := os.Stat(path.Join(config.Config.MetroMakerDataPath, "public", "data", "city-maps"))
+					cityMapsExists, err := os.Stat(config.Config.GetThumbnailFolderPath())
 					if os.IsNotExist(err) || !cityMapsExists.IsDir() {
-						err = os.MkdirAll(path.Join(config.Config.MetroMakerDataPath, "public", "data", "city-maps"), os.ModePerm)
+						err = os.MkdirAll(config.Config.GetThumbnailFolderPath(), os.ModePerm)
 						if err != nil {
 							errorChan <- fmt.Errorf("Failed to create city-maps directory: %v", err)
 							return
 						}
 					}
-					destFilePath := path.Join(config.Config.MetroMakerDataPath, "public", "data", "city-maps", configData.Code+".svg")
+					destFilePath := path.Join(config.Config.GetThumbnailFolderPath(), configData.Code+".svg")
 					log.Printf("Installing %s for map %s at %s", entry, configData.Code, destFilePath)
 					destFile, err := os.Create(destFilePath)
 					if err != nil {
@@ -379,7 +387,7 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 
 				default:
 					// Handle compressed files (demandData, roads, runways, buildings, oceanDepth)
-					destFilePath := path.Join(config.Config.MetroMakerDataPath, "cities", "data", configData.Code, path.Base(fileInfo.fileObject.Name)+".gz")
+					destFilePath := path.Join(config.Config.GetMapsFolderPath(), configData.Code, path.Base(fileInfo.fileObject.Name)+".gz")
 					fileSize := fileInfo.fileObject.UncompressedSize64
 					log.Printf("Installing %s for map %s at %s (size: %.2f MB)", entry, configData.Code, destFilePath, float64(fileSize)/(1024*1024))
 
@@ -470,7 +478,7 @@ func (a *App) installMod(zipFilePath string, modId string) installModResponse {
 	defer reader.Close()
 
 	// Extract mod bundle to the correct directory
-	modDir := path.Join(config.Config.MetroMakerDataPath, "mods", modId)
+	modDir := path.Join(config.Config.GetModFolderPath(), modId)
 	err = os.MkdirAll(modDir, os.ModePerm)
 	if err != nil {
 		return installModResponse{

@@ -40,3 +40,7 @@ func RegistryRepoPath() string {
 func ConfigPath() string {
 	return filepath.Join(AppDataRoot(), ConfigFileName)
 }
+
+func TilesPath() string {
+	return filepath.Join(AppDataRoot(), "tiles")
+}
