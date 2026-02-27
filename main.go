@@ -30,6 +30,7 @@ func main() {
 			app.Registry,
 			app.Config,
 			app.Downloader,
+			app.Profiles,
 		},
 		OnShutdown: app.shutdown,
 	})

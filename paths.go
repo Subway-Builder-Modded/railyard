@@ -12,10 +12,15 @@ const (
 	RegistryDirName = "registry"
 	// ConfigFileName is the persisted app config file name.
 	ConfigFileName = "config.json"
+<<<<<<< HEAD
 	// InstalledModsFileName is the filename for storing installed mods info.
 	InstalledModsFileName = "installed_mods.json"
 	// InstalledMapsFileName is the filename for storing installed maps info.
 	InstalledMapsFileName = "installed_maps.json"
+=======
+	// UserProfilesFileName is the persisted user profiles file name.
+	UserProfilesFileName = "user_profiles.json"
+>>>>>>> 1fa550c (merge)
 )
 
 // UserConfigRoot resolves the base user config directory with a home-directory fallback.
@@ -45,6 +50,7 @@ func ConfigPath() string {
 	return filepath.Join(AppDataRoot(), ConfigFileName)
 }
 
+// TilesPath returns the default filesystem path for cached map tiles.
 func TilesPath() string {
 	return filepath.Join(AppDataRoot(), "tiles")
 }
@@ -55,4 +61,8 @@ func InstalledModsPath() string {
 
 func InstalledMapsPath() string {
 	return filepath.Join(AppDataRoot(), InstalledMapsFileName)
+	
+// UserProfilesPath returns the default filesystem path for persisted user profiles.
+func UserProfilesPath() string {
+	return filepath.Join(AppDataRoot(), UserProfilesFileName)
 }

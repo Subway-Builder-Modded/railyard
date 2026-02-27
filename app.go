@@ -8,16 +8,17 @@ import (
 	"railyard/internal/types"
 )
 
-type MissingFilesError struct {
-	Files []string
-}
-
 // App struct
 type App struct {
 	Registry   *Registry
 	Config     *Config
 	Downloader *Downloader
 	ctx        context.Context
+	Profiles *UserProfiles
+}
+
+type MissingFilesError struct {
+	Files []string
 }
 
 func (e *MissingFilesError) Error() string {
@@ -59,6 +60,7 @@ func NewApp() *App {
 		Registry:   registry,
 		Config:     config,
 		Downloader: NewDownloader(config, registry),
+		Profiles: NewUserProfiles(),
 	}
 }
 
@@ -69,6 +71,12 @@ func (a *App) startup(ctx context.Context) {
 	a.Config.setContext(ctx)
 	if _, err := a.Config.resolveConfig(); err != nil {
 		log.Printf("Warning: failed to resolve config on startup: %v", err)
+	}
+
+	// Ensure user profiles are initialized on startup.
+	if err := a.Profiles.LoadProfiles(); err != nil {
+		// TODO: Surface this error to the user in the UI and allow them to "reset" their profile state and bootstrap to defaults
+		log.Printf("Warning: failed to resolve user profiles: %v", err)
 	}
 
 	// Initialize the registry (clone or update) on startup
