@@ -81,7 +81,7 @@ func (a *App) startup(ctx context.Context) {
 	if a.Logger == nil {
 		a.Logger = NewAppLogger()
 	}
-	
+
 	if err := moveLogFile(); err != nil {
 		log.Printf("[WARN]: Failed to rotate startup log file: %v", err)
 	}
