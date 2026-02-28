@@ -3,6 +3,8 @@ package types
 import (
 	"os"
 	"path"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -24,6 +26,24 @@ type ConfigPathValidation struct {
 type ResolveConfigResult struct {
 	Config     AppConfig            `json:"config"`
 	Validation ConfigPathValidation `json:"validation"`
+}
+
+type DialogResult string
+
+const (
+	AutoDetected   DialogResult = "auto_detected" // For when a path is automatically detected by the app
+	DialogSelected DialogResult = "dialog_selected" // For when a path is selected by the user through a dialog
+	Cancelled      DialogResult = "cancelled" // For when user cancels the dialog 
+)
+
+type SetConfigPathOptions struct {
+	AllowAutoDetect bool `json:"allowAutoDetect"`
+}
+
+type SetConfigPathResult struct {
+	ResolveConfigResult ResolveConfigResult `json:"resolveConfigResult"`
+	DialogResult              DialogResult `json:"source"`
+	AutoDetectedPath    string              `json:"autoDetectedPath,omitempty"`
 }
 
 // AreConfigPathsConfigured checks if both required paths have been set in AppConfig
@@ -58,6 +78,19 @@ func (c AppConfig) GetMapsFolderPath() string {
 	return ""
 }
 
+// isExecutable is a stricter validation than checking if a particular path is a file
+// It checks if the file is a regular file and has executable permissions (or .exe extension on Windows)
+func isExecutable(path string, info os.FileInfo) bool {
+	if info.IsDir() || !info.Mode().IsRegular() {
+		return false
+	}
+	if runtime.GOOS == "windows" {
+		return strings.EqualFold(filepath.Ext(path), ".exe")
+	}
+	// unix: any execute bit set
+	return info.Mode()&0o111 != 0
+}
+
 // ValidateConfigPaths checks whether the AppConfig has been configured and whether or not its specified paths exist on disk
 func (c AppConfig) ValidateConfigPaths() (bool, ConfigPathValidation) {
 	result := ConfigPathValidation{
@@ -71,7 +104,7 @@ func (c AppConfig) ValidateConfigPaths() (bool, ConfigPathValidation) {
 	modInfo, modErr := os.Stat(c.MetroMakerDataPath)
 	result.MetroMakerDataPathValid = modErr == nil && modInfo.IsDir()
 	exeInfo, exeErr := os.Stat(c.ExecutablePath)
-	result.ExecutablePathValid = exeErr == nil && !exeInfo.IsDir()
+	result.ExecutablePathValid = exeErr == nil && isExecutable(c.ExecutablePath, exeInfo)
 
 	return result.IsValid(), result
 }

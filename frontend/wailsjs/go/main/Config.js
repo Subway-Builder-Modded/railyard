@@ -6,18 +6,22 @@ export function ClearConfig() {
   return window['go']['main']['Config']['ClearConfig']();
 }
 
+export function OpenExecutableDialog(arg1) {
+  return window['go']['main']['Config']['OpenExecutableDialog'](arg1);
+}
+
+export function OpenMetroMakerDataFolderDialog(arg1) {
+  return window['go']['main']['Config']['OpenMetroMakerDataFolderDialog'](arg1);
+}
+
 export function ResolveConfig() {
   return window['go']['main']['Config']['ResolveConfig']();
 }
 
+export function SaveConfig() {
+  return window['go']['main']['Config']['SaveConfig']();
+}
+
 export function SetConfig(arg1) {
   return window['go']['main']['Config']['SetConfig'](arg1);
-}
-
-export function UpdateExecutable(arg1) {
-  return window['go']['main']['Config']['UpdateExecutable'](arg1);
-}
-
-export function UpdateMetroMakerDataFolder(arg1) {
-  return window['go']['main']['Config']['UpdateMetroMakerDataFolder'](arg1);
 }

@@ -75,6 +75,10 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	a.Config.setContext(ctx)
+	if _, err := a.Config.resolveConfig(); err != nil {
+		log.Printf("Warning: failed to resolve config on startup: %v", err)
+	}
 
 	// Initialize the registry (clone or update) on startup
 	if err := a.Registry.Initialize(); err != nil {
@@ -148,13 +152,7 @@ func (a *App) downloadZipFile(downloadURL string) (string, error) {
 }
 
 func (a *App) installMap(zipFilePath string) installMapResponse {
-	config, err := a.Config.ResolveConfig()
-	if err != nil {
-		return installMapResponse{
-			Status:  "error",
-			Message: fmt.Sprintf("Failed to resolve config: %v", err),
-		}
-	}
+	config := a.Config.GetConfig()
 	if !config.Validation.IsValid() {
 		return installMapResponse{
 			Status:  "error",
@@ -417,13 +415,7 @@ func (a *App) installMap(zipFilePath string) installMapResponse {
 }
 
 func (a *App) installMod(zipFilePath string, modId string) installModResponse {
-	config, err := a.Config.ResolveConfig()
-	if err != nil {
-		return installModResponse{
-			Status:  "error",
-			Message: fmt.Sprintf("Failed to resolve config: %v", err),
-		}
-	}
+	config := a.Config.GetConfig()
 	if !config.Validation.IsValid() {
 		return installModResponse{
 			Status:  "error",
@@ -555,11 +547,7 @@ func (a *App) installMod(zipFilePath string, modId string) installModResponse {
 
 // getVanillaMapCodes returns the city codes of maps included with the game.
 func (a *App) getVanillaMapCodes() []string {
-	config, err := a.Config.ResolveConfig()
-	if err != nil {
-		log.Printf("Warning: failed to resolve config for GetVanillaMapCodes: %v", err)
-		return []string{}
-	}
+	config := a.Config.GetConfig()
 	if !config.Validation.IsValid() {
 		log.Printf("Warning: Invalid Config: %v", config.Validation)
 		return []string{}
