@@ -18,6 +18,8 @@ type App struct {
 	ctx        context.Context
 	Profiles *UserProfiles
 	Logger   *AppLogger
+
+	syncSubscriptionsFn func(profileID string, operations []types.SubscriptionOperation) error
 }
 
 type MissingFilesError struct {
@@ -104,10 +106,13 @@ func (a *App) shutdown(ctx context.Context) {
 	if err := a.Logger.Shutdown(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "failed to flush app logs on shutdown: %v\n", err)
 	}
+
+		a.Config.SaveConfig()
+	a.Registry.WriteInstalledToDisk()
 }
 
 func resolveStartupProfile(a *App) types.UserProfile {
-	if p, err := a.Profiles.LoadProfiles(); err == nil {
+	if p, err := a.Profiles.loadProfiles(); err == nil {
 		return p
 	} else {
 		return a.recoverProfiles(err)
@@ -126,7 +131,7 @@ func (a *App) recoverProfiles(cause error) types.UserProfile {
 		return types.DefaultProfile()
 	}
 
-	profile, resolveErr := a.Profiles.ResolveActiveProfile()
+	profile, resolveErr := a.Profiles.GetActiveProfile()
 	if resolveErr != nil {
 		a.Logger.Error("Failed to resolve active profile after reset", resolveErr, "cause", cause)
 		return types.DefaultProfile()
@@ -153,14 +158,18 @@ func runStartupRoutines(a *App) {
 	}
 
 	if activeProfile.SystemPreferences.AutoUpdateSubscriptions {
-		if err := a.syncSubscriptions(activeProfile); err != nil {
+		if err := a.syncSubscriptions(activeProfile.ID, nil); err != nil {
 			a.Logger.Warn("Failed to sync subscriptions on startup", "error", err)
 		}
 	}
 }
 
-func (a *App) syncSubscriptions(profile types.UserProfile) error {
-	a.Logger.Info("TODO: implement startup subscription sync", "profile", profile.ID)
+func (a *App) syncSubscriptions(profileID string, operations []types.SubscriptionOperation) error {
+	if a.syncSubscriptionsFn != nil {
+		return a.syncSubscriptionsFn(profileID, operations)
+	}
+
+	a.Logger.Info("TODO: implement subscription sync", "profile", profileID, "operations", len(operations))
 	// Pseudocode
 	// installedMods, installedMaps := a.Registry.GetInstalledMods(), a.Registry.GetInstalledMaps()
 	// for map in mapsToUpdate => HandleInstall(id, version, "map")
@@ -169,11 +178,4 @@ func (a *App) syncSubscriptions(profile types.UserProfile) error {
 	// for map in modsToDelete => HandleUninstall(id, "mod")
 	// Compile errors from all operations and return a joined error
 	return nil
-}
-
-// shutdown is called when the app is shutting down
-// We use this to save config and registry state to disk
-func (a *App) shutdown(ctx context.Context) {
-	a.Config.SaveConfig()
-	a.Registry.WriteInstalledToDisk()
 }

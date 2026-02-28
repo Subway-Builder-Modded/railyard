@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.10.0
 	github.com/wailsapp/wails/v2 v2.11.0
+	golang.org/x/mod v0.33.0
 )
 
 require (

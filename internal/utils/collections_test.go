@@ -35,3 +35,21 @@ func TestOrEmptySliceReturnsOriginalSliceWhenNonNil(t *testing.T) {
 
 	require.Equal(t, input, output)
 }
+
+func TestCloneMapReturnsEmptyMapForNil(t *testing.T) {
+	var input map[string]int
+	output := CloneMap(input)
+
+	require.NotNil(t, output)
+	require.Empty(t, output)
+}
+
+func TestCloneMapReturnsCopyForNonNil(t *testing.T) {
+	input := map[string]int{"a": 1}
+	output := CloneMap(input)
+
+	require.Equal(t, input, output)
+
+	output["a"] = 2
+	require.Equal(t, 1, input["a"])
+}

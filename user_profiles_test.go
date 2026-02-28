@@ -7,9 +7,28 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
+
+func testUserProfilesLogger(t *testing.T) Logger {
+	t.Helper()
+	return loggerAtPath(filepath.Join(t.TempDir(), "user_profiles_test.log"))
+}
+
+func newUserProfilesService(t *testing.T) *UserProfiles {
+	t.Helper()
+	return NewUserProfiles(testUserProfilesLogger(t))
+}
+
+func newLoadedUserProfilesService(t *testing.T, state types.UserProfilesState) *UserProfiles {
+	t.Helper()
+	require.NoError(t, writeUserProfilesState(state))
+
+	svc := newUserProfilesService(t)
+	_, err := svc.loadProfiles()
+	require.NoError(t, err)
+	return svc
+}
 
 func writeRawUserProfilesFile(t *testing.T, content string) {
 	t.Helper()
@@ -22,8 +41,8 @@ func writeRawUserProfilesFile(t *testing.T, content string) {
 func TestLoadProfilesBootstrapsAndPersistsStateWhenMissing(t *testing.T) {
 	setEnv(t)
 
-	svc := NewUserProfiles(NewMockLogger())
-	active, err := svc.LoadProfiles()
+	svc := newUserProfilesService(t)
+	active, err := svc.loadProfiles()
 	require.NoError(t, err)
 	require.Equal(t, types.DefaultProfileID, active.ID)
 	require.Equal(t, types.DefaultProfileName, active.Name)
@@ -42,8 +61,8 @@ func TestLoadProfilesBootstrapsAndPersistsStateWhenMissing(t *testing.T) {
 func TestResolveActiveProfileFailsWhenNotLoaded(t *testing.T) {
 	setEnv(t)
 
-	svc := NewUserProfiles(NewMockLogger())
-	_, err := svc.ResolveActiveProfile()
+	svc := newUserProfilesService(t)
+	_, err := svc.GetActiveProfile()
 	require.ErrorIs(t, err, ErrProfilesNotLoaded)
 }
 
@@ -58,8 +77,8 @@ func TestLoadProfilesReturnsErrorForInvalidState(t *testing.T) {
 	}
 	require.NoError(t, writeUserProfilesState(invalid))
 
-	svc := NewUserProfiles(NewMockLogger())
-	_, err := svc.LoadProfiles()
+	svc := newUserProfilesService(t)
+	_, err := svc.loadProfiles()
 	require.ErrorIs(t, err, types.ErrInvalidState)
 }
 
@@ -72,13 +91,13 @@ func TestResolveActiveProfileReturnsLoadedActiveProfile(t *testing.T) {
 	state.Profiles[custom.ID] = custom
 	require.NoError(t, writeUserProfilesState(state))
 
-	svc := NewUserProfiles(NewMockLogger())
-	loadedActive, err := svc.LoadProfiles()
+	svc := newUserProfilesService(t)
+	loadedActive, err := svc.loadProfiles()
 	require.NoError(t, err)
 	require.Equal(t, custom.ID, loadedActive.ID)
 	require.Equal(t, custom.Name, loadedActive.Name)
 
-	active, err := svc.ResolveActiveProfile()
+	active, err := svc.GetActiveProfile()
 	require.NoError(t, err)
 	require.Equal(t, custom.ID, active.ID)
 	require.Equal(t, custom.Name, active.Name)
@@ -88,7 +107,7 @@ func TestQuarantineUserProfilesFileMovesSourceToBackup(t *testing.T) {
 	setEnv(t)
 	writeRawUserProfilesFile(t, "{}")
 
-	svc := NewUserProfiles(NewMockLogger())
+	svc := newUserProfilesService(t)
 	success, backupPath := svc.quarantineUserProfiles()
 	require.True(t, success)
 	require.NotEmpty(t, backupPath)
@@ -101,27 +120,146 @@ func TestQuarantineUserProfilesFileMovesSourceToBackup(t *testing.T) {
 	require.True(t, os.IsNotExist(err))
 }
 
-func newTestUserProfile(id string, name string) types.UserProfile {
-	return types.UserProfile{
-		ID:   id,
-		UUID: uuid.NewString(),
-		Name: name,
-		UIPreferences: types.UIPreferences{
-			Theme:          types.ThemeDark,
-			DefaultPerPage: types.PageSize12,
+func TestUpdateSubscriptionsSubscribeMapAddsOperationAndRuntimeOnlyByDefault(t *testing.T) {
+	setEnv(t)
+	svc := newLoadedUserProfilesService(t, types.InitialProfilesState())
+
+	req := types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionSubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"map-a": {Type: types.AssetTypeMap, Version: types.Version("1.2.3")},
 		},
-		SystemPreferences: types.SystemPreferences{
-			RefreshRegistryOnStartup: true,
-			AutoUpdateSubscriptions:  false,
-		},
-		Subscriptions: types.Subscriptions{
-			Maps: map[string]string{},
-			Mods: map[string]string{},
-		},
-		Favorites: types.Favorites{
-			Authors: []string{},
-			Maps:    []string{},
-			Mods:    []string{},
-		},
+		ForceSync: false,
 	}
+
+	result, err := svc.UpdateSubscriptions(req)
+	require.NoError(t, err)
+	require.False(t, result.Persisted)
+	require.Equal(t, "1.2.3", result.Profile.Subscriptions.Maps["map-a"])
+	require.Len(t, result.Operations, 1)
+	require.Equal(t, "map-a", result.Operations[0].AssetID)
+	require.Equal(t, types.AssetTypeMap, result.Operations[0].Type)
+	require.Equal(t, types.SubscriptionActionSubscribe, result.Operations[0].Action)
+	require.Equal(t, types.Version("1.2.3"), result.Operations[0].Version)
+
+	persisted, err := readUserProfilesState()
+	require.NoError(t, err)
+	require.Empty(t, persisted.Profiles[types.DefaultProfileID].Subscriptions.Maps)
+}
+
+func TestUpdateSubscriptionsSubscribeWithForceSyncPersistsState(t *testing.T) {
+	setEnv(t)
+	svc := newLoadedUserProfilesService(t, types.InitialProfilesState())
+
+	req := types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionSubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"mod-a": {Type: types.AssetTypeMod, Version: types.Version("2.0.0")},
+		},
+		ForceSync: true,
+	}
+
+	result, err := svc.UpdateSubscriptions(req)
+	require.NoError(t, err)
+	require.True(t, result.Persisted)
+	require.Equal(t, "2.0.0", result.Profile.Subscriptions.Mods["mod-a"])
+	require.Len(t, result.Operations, 1)
+
+	persisted, err := readUserProfilesState()
+	require.NoError(t, err)
+	require.Equal(t, "2.0.0", persisted.Profiles[types.DefaultProfileID].Subscriptions.Mods["mod-a"])
+}
+
+func TestUpdateSubscriptionsRepeatedSubscribeSameVersionIsNoOp(t *testing.T) {
+	setEnv(t)
+	state := types.InitialProfilesState()
+	profile := state.Profiles[types.DefaultProfileID]
+	profile.Subscriptions.Maps["map-a"] = "1.2.3"
+	state.Profiles[types.DefaultProfileID] = profile
+	svc := newLoadedUserProfilesService(t, state)
+
+	result, err := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionSubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"map-a": {Type: types.AssetTypeMap, Version: types.Version("1.2.3")},
+		},
+	})
+	require.NoError(t, err)
+	require.Empty(t, result.Operations)
+}
+
+func TestUpdateSubscriptionsUnsubscribeRemovesAndEmitsOperation(t *testing.T) {
+	setEnv(t)
+	state := types.InitialProfilesState()
+	profile := state.Profiles[types.DefaultProfileID]
+	profile.Subscriptions.Mods["mod-a"] = "3.1.0"
+	state.Profiles[types.DefaultProfileID] = profile
+	svc := newLoadedUserProfilesService(t, state)
+
+	result, err := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionUnsubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"mod-a": {Type: types.AssetTypeMod},
+		},
+	})
+	require.NoError(t, err)
+	require.Len(t, result.Operations, 1)
+	require.Equal(t, types.Version("3.1.0"), result.Operations[0].Version)
+	_, exists := result.Profile.Subscriptions.Mods["mod-a"]
+	require.False(t, exists)
+}
+
+func TestUpdateSubscriptionsUnsubscribeMissingEntryIsNoOp(t *testing.T) {
+	setEnv(t)
+	svc := newLoadedUserProfilesService(t, types.InitialProfilesState())
+
+	result, err := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionUnsubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"missing": {Type: types.AssetTypeMap},
+		},
+	})
+	require.NoError(t, err)
+	require.Empty(t, result.Operations)
+}
+
+func TestUpdateSubscriptionsRejectsInvalidRequests(t *testing.T) {
+	setEnv(t)
+	svc := newLoadedUserProfilesService(t, types.InitialProfilesState())
+
+	_, err := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: "missing",
+		Action:    types.SubscriptionActionSubscribe,
+	})
+	require.ErrorIs(t, err, ErrProfileNotFound)
+
+	_, err = svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionSubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"asset": {Type: types.AssetType("bad-type"), Version: types.Version("1.0.0")},
+		},
+	})
+	require.ErrorIs(t, err, ErrInvalidAssetType)
+
+	_, err = svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
+		ProfileID: types.DefaultProfileID,
+		Action:    types.SubscriptionActionSubscribe,
+		Assets: map[string]types.SubscriptionUpdateItem{
+			"asset": {Type: types.AssetTypeMap, Version: types.Version("not-semver")},
+		},
+	})
+	require.ErrorIs(t, err, ErrInvalidVersion)
+}
+
+func newTestUserProfile(id string, name string) types.UserProfile {
+	profile := types.DefaultProfile()
+	profile.ID = id
+	profile.Name = name
+	return profile
 }

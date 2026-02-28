@@ -51,6 +51,47 @@ type Subscriptions struct {
 	Mods map[string]string `json:"mods"`
 }
 
+type SubscriptionAction string
+
+const (
+	SubscriptionActionSubscribe   SubscriptionAction = "subscribe"
+	SubscriptionActionUnsubscribe SubscriptionAction = "unsubscribe"
+)
+
+func IsValidSubscriptionAction(action SubscriptionAction) bool {
+	switch action {
+	case SubscriptionActionSubscribe, SubscriptionActionUnsubscribe:
+		return true
+	default:
+		return false
+	}
+}
+
+type SubscriptionUpdateItem struct {
+	Version Version   `json:"version"`
+	Type    AssetType `json:"type"`
+}
+
+type UpdateSubscriptionsRequest struct {
+	ProfileID string                            `json:"profileId"`
+	Assets    map[string]SubscriptionUpdateItem `json:"assets"`
+	Action    SubscriptionAction                `json:"action"`
+	ForceSync bool                              `json:"forceSync"`
+}
+
+type SubscriptionOperation struct {
+	AssetID string             `json:"assetId"`
+	Type    AssetType          `json:"type"`
+	Action  SubscriptionAction `json:"action"`
+	Version Version            `json:"version"`
+}
+
+type UpdateSubscriptionsResult struct {
+	Profile    UserProfile             `json:"profile"`
+	Persisted  bool                    `json:"persisted"`
+	Operations []SubscriptionOperation `json:"operations"`
+}
+
 // UserProfile represents a profile within the application.
 type UserProfile struct {
 	ID                string            `json:"id"`
@@ -72,7 +113,6 @@ type UserProfilesState struct {
 
 const DefaultProfileID = "__default__"
 const DefaultProfileName = "Default"
-
 
 func defaultUIPreferences() UIPreferences {
 	return UIPreferences{
@@ -151,7 +191,7 @@ func areValidSystemPreferences(prefs SystemPreferences) bool {
 	return true
 }
 
-// ValidateState checks that the loaded state from disk is not malformed. 
+// ValidateState checks that the loaded state from disk is not malformed.
 // Railyard should control writes to this file, so any malformed state would be indicative of a bug or manual tampering
 func ValidateState(s UserProfilesState) (UserProfilesState, error) {
 	// Default profile must exist.
@@ -200,5 +240,5 @@ func ValidateState(s UserProfilesState) (UserProfilesState, error) {
 var (
 	ErrInvalidState         = errors.New("invalid profiles state")
 	ErrMismatchedProfileKey = errors.New("mismatched profile key")
-	ErrMalformedProfile				= errors.New("malformed profile")
+	ErrMalformedProfile     = errors.New("malformed profile")
 )

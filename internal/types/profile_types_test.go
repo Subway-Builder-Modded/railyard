@@ -51,7 +51,6 @@ func TestValidateStateAcceptsInitialProfilesState(t *testing.T) {
 	require.Equal(t, state, validated)
 }
 
-
 func assertInvalidState(t *testing.T, mutate func(*UserProfilesState), exErr error) {
 	t.Helper()
 
@@ -67,7 +66,7 @@ func TestValidateStateRejectsInvalidState(t *testing.T) {
 	tests := []struct {
 		name   string
 		mutate func(*UserProfilesState)
-		exErr   error
+		exErr  error
 	}{
 		{
 			name: "missing active profile",
@@ -109,7 +108,7 @@ func TestValidateStateRejectsInvalidProfile(t *testing.T) {
 	tests := []struct {
 		name   string
 		mutate func(*UserProfile)
-		exErr   error
+		exErr  error
 	}{
 		{
 			name: "mismatched profile key and id",

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -17,35 +19,32 @@ type Logger interface {
 
 // Global logger defaults
 const (
-	flushInterval = 5 * time.Second
-	maxBufferSize = 1 << 20 // 1 MiB
+	flushInterval   = 5 * time.Second
+	writeBufferSize = 64 * 1024 // 64 KiB
 )
 
 type AppLogger struct {
 	path string
 
-	mu      sync.Mutex
-	buffer  []byte
-	dropped int
-	started bool
-	stopped bool
+	mu sync.Mutex
 
 	stopCh chan struct{}
 	doneCh chan struct{}
 
+	file   *os.File
+	writer *bufio.Writer
+
 	base *slog.Logger
 }
 
-// NewMockLogger creates a mock logger for testing purposes
-func NewMockLogger() *AppLogger {
-	return NewAppLogger()
-}
-
-// NewAppLogger creates a new application-level logger that writes to the default log file path
-func NewAppLogger() *AppLogger {
-	l := &AppLogger{
-		path: LogFilePath(),
+// loggerAtPath creates a new logger that writes to the provided file path
+// Useful for testing to isolate log output to a known temporary file
+func loggerAtPath(path string) *AppLogger {
+	if path == "" {
+		path = LogFilePath()
 	}
+
+	l := &AppLogger{path: path}
 
 	l.base = slog.New(slog.NewTextHandler(&appLogWriter{owner: l}, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
@@ -54,22 +53,48 @@ func NewAppLogger() *AppLogger {
 	return l
 }
 
+// NewAppLogger creates a new application-level logger that writes to the default log file path.
+func NewAppLogger() *AppLogger {
+	return loggerAtPath(LogFilePath())
+}
+
 // Start initializes the logger's background flush routine. Must be called before any log writes will be persisted to disk.
 func (l *AppLogger) Start() error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	if l.started {
+	if l.stopCh != nil {
 		return nil
 	}
 
-	l.started = true
-	l.stopped = false
-	l.stopCh = make(chan struct{})
-	l.doneCh = make(chan struct{})
-	interval := flushInterval
+	if err := os.MkdirAll(filepath.Dir(l.path), 0o755); err != nil {
+		return fmt.Errorf("Failed to create log directory: %w", err)
+	}
 
-	go l.runFlusher(interval, l.stopCh, l.doneCh)
+	f, err := os.OpenFile(l.path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
+	if err != nil {
+		return fmt.Errorf("Failed to open log file %q: %w", l.path, err)
+	}
+
+	l.file, l.writer = f, bufio.NewWriterSize(f, writeBufferSize)
+	l.stopCh, l.doneCh = make(chan struct{}), make(chan struct{})
+
+	// Goroutine to periodically flush log buffer to disk until logger is shutdown
+	go func(stopCh <-chan struct{}, doneCh chan<- struct{}) {
+		defer close(doneCh)
+		ticker := time.NewTicker(flushInterval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				_ = l.flush()
+			case <-stopCh:
+				return
+			}
+		}
+	}(l.stopCh, l.doneCh)
+
 	return nil
 }
 
@@ -77,27 +102,37 @@ func (l *AppLogger) Start() error {
 // Called on application shutdown to ensure all logs are persisted.
 func (l *AppLogger) Shutdown() error {
 	l.mu.Lock()
-	if l.stopped {
-		l.mu.Unlock()
-		return nil
-	}
-
-	stopCh := l.stopCh
-	doneCh := l.doneCh
-	l.stopCh = nil
-	l.doneCh = nil
-	l.started = false
-	l.stopped = true
+	stopCh, doneCh := l.stopCh, l.doneCh
+	l.stopCh, l.doneCh = nil, nil
 	l.mu.Unlock()
 
 	if stopCh != nil {
 		close(stopCh)
 	}
 	if doneCh != nil {
-		<-doneCh
+		<-doneCh // Wait for flush goroutine to exit before closing file
 	}
 
-	return l.flush()
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	var flushErr error
+	if l.writer != nil {
+		if err := l.writer.Flush(); err != nil {
+			flushErr = fmt.Errorf("Failed to flush log writer: %w", err)
+		}
+		l.writer = nil
+	}
+
+	var closeErr error
+	if l.file != nil {
+		if err := l.file.Close(); err != nil {
+			closeErr = fmt.Errorf("Failed to close log file: %w", err)
+		}
+		l.file = nil
+	}
+
+	return errors.Join(flushErr, closeErr)
 }
 
 func (l *AppLogger) Info(msg string, attrs ...any) {
@@ -115,76 +150,34 @@ func (l *AppLogger) Error(msg string, err error, attrs ...any) {
 	l.base.Error(msg, attrs...)
 }
 
-func (l *AppLogger) runFlusher(interval time.Duration, stopCh <-chan struct{}, doneCh chan<- struct{}) {
-	defer close(doneCh)
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			_ = l.flush()
-		case <-stopCh:
-			return
-		}
-	}
-}
-
 func (l *AppLogger) flush() error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	// If buffer is empty and no drops, skip file I/O
-	if len(l.buffer) == 0 && l.dropped == 0 {
+	if l.writer == nil {
 		return nil
 	}
 
-	if err := os.MkdirAll(filepath.Dir(l.path), 0o755); err != nil {
-		return fmt.Errorf("failed to create log directory: %w", err)
+	if err := l.writer.Flush(); err != nil {
+		return fmt.Errorf("Failed to flush log writer: %w", err)
 	}
 
-	f, err := os.OpenFile(l.path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
-	if err != nil {
-		return fmt.Errorf("failed to open log file %q: %w", l.path, err)
-	}
-	defer f.Close()
-
-	if l.dropped > 0 {
-		if _, err := fmt.Fprintf(f, "time=%q level=WARN msg=%q dropped=%d\n",
-			time.Now().Format(time.RFC3339Nano),
-			"log buffer overflow; dropped oldest bytes",
-			l.dropped,
-		); err != nil {
-			return fmt.Errorf("failed to write log drop notice: %w", err)
-		}
-	}
-
-	if _, err := f.Write(l.buffer); err != nil {
-		return fmt.Errorf("failed to write log buffer: %w", err)
-	}
-
-	l.buffer = l.buffer[:0]
-	l.dropped = 0
 	return nil
 }
 
-func (l *AppLogger) appendRaw(p []byte) (int, error) {
+func (l *AppLogger) writeRaw(p []byte) (int, error) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	// If incoming data exceeds max buffer size, drop buffer and keep tail of incoming data
-	rawOverflow := len(p) - maxBufferSize
-	combinedOverflow := len(l.buffer) + rawOverflow
-	if rawOverflow >= 0 {
-		l.buffer = append(l.buffer[:0], p[rawOverflow:]...)
-		l.dropped++
+	if l.writer == nil { // Drop log if writer is not initialized
 		return len(p), nil
-		// If combined buffer would exceed max size, drop oldest bytes from buffer
-	} else if combinedOverflow > 0 {
-		l.buffer = l.buffer[combinedOverflow:]
-		l.dropped++
 	}
-	l.buffer = append(l.buffer, p...)
+
+	n, err := l.writer.Write(p)
+	if err != nil {
+		return n, fmt.Errorf("Failed to write log buffer: %w", err)
+	}
+
 	return len(p), nil
 }
 
@@ -193,5 +186,5 @@ type appLogWriter struct {
 }
 
 func (w *appLogWriter) Write(p []byte) (int, error) {
-	return w.owner.appendRaw(p)
+	return w.owner.writeRaw(p)
 }
