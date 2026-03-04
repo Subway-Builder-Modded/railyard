@@ -4,10 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
+	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"railyard/internal/types"
+
+	"github.com/protomaps/go-pmtiles/pmtiles"
 )
 
 // App struct
@@ -185,4 +190,48 @@ func (a *App) UpdateSubscriptions(req types.UpdateSubscriptionsRequest) (types.U
 	}
 
 	return result, nil
+}
+
+func (a *App) LaunchGame() error {
+	//TODO: Implement game launch logic, map mod generation
+	var err error
+
+	if err = a.startPMTilesServer(); err != nil {
+		a.Logger.Warn("Failed to start PMTiles server", "error", err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) startPMTilesServer() error {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		a.Logger.Warn("Failed to start PMTiles server listener", "error", err)
+		return err
+	}
+	port := listener.Addr().(*net.TCPAddr).Port // TODO: Pass port to mod generation
+	listener.Close()
+
+	a.Logger.Info(fmt.Sprintf("Starting PMTiles server on port %d", port))
+
+	channel := make(chan error, 1)
+
+	go func(logger *AppLogger, port int, errorChan chan error) {
+		pmtilesServer, err := pmtiles.NewServerWithBucket(pmtiles.NewFileBucket(path.Join(AppDataRoot(), "tiles")), "", log.New(logger.writer, "pmtiles: ", log.Default().Flags()), 128, "")
+		mux := http.NewServeMux()
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			statusCode := pmtilesServer.ServeHTTP(w, r)
+			logger.Info("Handled PMTiles request", "path", r.URL.Path, "status", statusCode)
+		})
+		pmtilesServer.Start()
+		if err != nil {
+			logger.Error("Failed to create PMTiles server", err)
+			errorChan <- err
+			return
+		}
+		errorChan <- nil
+		logger.Error("PMTiles error: ", http.ListenAndServe(fmt.Sprintf(":%d", port), pmtiles.NewCors("*").Handler(mux)))
+	}(a.Logger, port, channel)
+	return <-channel
 }

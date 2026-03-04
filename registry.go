@@ -61,6 +61,10 @@ func (r *Registry) initialize() error {
 		return r.forceClone()
 	}
 
+	if err := r.fetchFromDisk(); err != nil {
+		return fmt.Errorf("failed to load registry data from disk: %w", err)
+	}
+
 	return nil
 }
 
@@ -74,6 +78,10 @@ func (r *Registry) Refresh() error {
 	if err := r.fetchAndReset(repo); err != nil {
 		// If fetch/reset fails the repo may be corrupted -- delete and re-clone.
 		return r.forceClone()
+	}
+
+	if err := r.fetchFromDisk(); err != nil {
+		return fmt.Errorf("failed to load registry data from disk after refresh: %w", err)
 	}
 	return nil
 }
