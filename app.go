@@ -187,7 +187,7 @@ func (a *App) LaunchGame() error {
 		return err
 	}
 
-	if err := a.GenerateMod(port); err != nil {
+	if err := a.generateMod(port); err != nil {
 		a.Logger.Warn("Failed to generate mod", "error", err)
 		return err
 	}
@@ -323,7 +323,7 @@ func (a *App) startPMTilesServer() (int, error) {
 	return port, <-channel
 }
 
-func (a *App) GenerateMod(port int) error {
+func (a *App) generateMod(port int) error {
 	maps := a.Registry.GetInstalledMaps()
 	a.Logger.Info("Generating mod with maps", "count", len(maps))
 	places := make([]types.ConfigData, 0, len(maps))
