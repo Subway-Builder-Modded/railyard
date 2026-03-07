@@ -20,11 +20,12 @@ export namespace types {
 	    description: string;
 	    population: number;
 	    country?: string;
-	    thumbnail_bbox?: number[];
+	    thumbnailBbox?: number[];
+	    bbox?: number[];
 	    creator: string;
 	    version: string;
-	    // Go type: struct { Latitude float64 "json:\"latitude\""; Longitude float64 "json:\"longitude\""; Zoom float64 "json:\"zoom\""; Pitch *float64 "json:\"pitch\""; Bearing float64 "json:\"bearing\"" }
-	    initial_view_state: any;
+	    // Go type: struct { Latitude float64 "json:\"latitude\""; Longitude float64 "json:\"longitude\""; Zoom float64 "json:\"zoom\""; Pitch *float64 "json:\"pitch,omitempty\""; Bearing float64 "json:\"bearing\"" }
+	    initialViewState: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new ConfigData(source);
@@ -37,10 +38,11 @@ export namespace types {
 	        this.description = source["description"];
 	        this.population = source["population"];
 	        this.country = source["country"];
-	        this.thumbnail_bbox = source["thumbnail_bbox"];
+	        this.thumbnailBbox = source["thumbnailBbox"];
+	        this.bbox = source["bbox"];
 	        this.creator = source["creator"];
 	        this.version = source["version"];
-	        this.initial_view_state = this.convertValues(source["initial_view_state"], Object);
+	        this.initialViewState = this.convertValues(source["initialViewState"], Object);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

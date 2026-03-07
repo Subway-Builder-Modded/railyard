@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -16,6 +17,7 @@ import (
 	"sync"
 
 	"railyard/internal/config"
+	"railyard/internal/constants"
 	"railyard/internal/downloader"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
@@ -178,8 +180,14 @@ func (a *App) LaunchGame() error {
 		return fmt.Errorf("game executable path is not configured or invalid")
 	}
 
-	if err := a.startPMTilesServer(); err != nil {
+	port, err := a.startPMTilesServer()
+	if err != nil {
 		a.Logger.Warn("Failed to start PMTiles server", "error", err)
+		return err
+	}
+
+	if err := a.GenerateMod(port); err != nil {
+		a.Logger.Warn("Failed to generate mod", "error", err)
 		return err
 	}
 
@@ -277,11 +285,11 @@ func (a *App) StopGame() error {
 	return cmd.Process.Kill()
 }
 
-func (a *App) startPMTilesServer() error {
+func (a *App) startPMTilesServer() (int, error) {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {
 		a.Logger.Warn("Failed to start PMTiles server listener", "error", err)
-		return err
+		return -1, err
 	}
 	port := listener.Addr().(*net.TCPAddr).Port // TODO: Pass port to mod generation
 	listener.Close()
@@ -306,5 +314,53 @@ func (a *App) startPMTilesServer() error {
 		errorChan <- nil
 		l.Error("PMTiles error: ", http.ListenAndServe(fmt.Sprintf(":%d", port), pmtiles.NewCors("*").Handler(mux)))
 	}(a.Logger, port, channel)
-	return <-channel
+	return port, <-channel
+}
+
+func (a *App) GenerateMod(port int) error {
+	maps := a.Registry.GetInstalledMaps()
+	a.Logger.Info("Generating mod with maps", "count", len(maps))
+	places := make([]types.ConfigData, 0, len(maps))
+	for _, m := range maps {
+		places = append(places, m.MapConfig)
+	}
+	config := types.MetroMakerModConfig{
+		Port:          port,
+		TileZoomLevel: 15,
+		Places:        places,
+	}
+	manifest := types.MetroMakerModManifest{
+		Id:          "com.railyard.maploader",
+		Name:        "Railyard Map Loader",
+		Description: "Loads any custom maps installed by Railyard.",
+		Version:     constants.MOD_VERSION,
+		Author: struct {
+			Name string `json:"name"`
+		}{
+			Name: "Railyard",
+		},
+		Main: "index.js",
+	}
+	stringifiedConfig, err := json.Marshal(config)
+	if err != nil {
+		return fmt.Errorf("failed to marshal mod config: %w", err)
+	}
+	modContent := strings.ReplaceAll(constants.MOD_TEMPLATE, "$REPLACE", string(stringifiedConfig))
+	manifestContent, err := json.Marshal(manifest)
+	if err != nil {
+		return fmt.Errorf("failed to marshal mod manifest: %w", err)
+	}
+	modsFolder := path.Join(a.Config.Cfg.MetroMakerDataPath, "mods", "mapLoader")
+	if err := os.MkdirAll(modsFolder, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create mod directory: %w", err)
+	}
+
+	if err := os.WriteFile(path.Join(modsFolder, "index.js"), []byte(modContent), 0644); err != nil {
+		return fmt.Errorf("failed to write mod index.js: %w", err)
+	}
+
+	if err := os.WriteFile(path.Join(modsFolder, "manifest.json"), manifestContent, 0644); err != nil {
+		return fmt.Errorf("failed to write mod manifest.json: %w", err)
+	}
+	return nil
 }

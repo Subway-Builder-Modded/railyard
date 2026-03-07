@@ -3,8 +3,10 @@ module railyard
 go 1.25.0
 
 require (
+	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b
 	github.com/go-git/go-git/v5 v5.17.0
 	github.com/google/uuid v1.6.0
+	github.com/paulmach/orb v0.12.0
 	github.com/protomaps/go-pmtiles v1.30.1
 	github.com/stretchr/testify v1.11.1
 	github.com/wailsapp/wails/v2 v2.11.0
@@ -48,6 +50,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.11 // indirect
 	github.com/googleapis/gax-go/v2 v2.17.0 // indirect
@@ -56,7 +59,7 @@ require (
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
-	github.com/paulmach/orb v0.10.0 // indirect
+	github.com/paulmach/protoscan v0.2.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect

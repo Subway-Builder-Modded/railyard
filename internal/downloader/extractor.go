@@ -10,6 +10,7 @@ import (
 
 	"railyard/internal/files"
 	"railyard/internal/types"
+	"railyard/internal/utils"
 )
 
 // extractMod processes the downloaded mod zip file, extracts it to the appropriate location.
@@ -208,6 +209,18 @@ func extractMap(d *Downloader, filePath string) types.MapExtractResponse {
 	if len(errChan) > 0 {
 		err := <-errChan
 		return d.throwMapExtractError("Failed to extract file", err, "file_path", filePath)
+	}
+
+	if !filesFound["thumbnail"].Found && configData.ThumbnailBbox != nil {
+		thumbnailData, err := utils.GenerateThumbnail(configData.Code, configData)
+		if err != nil {
+			return d.throwMapExtractError("Failed to generate thumbnail", err, "map_code", configData.Code)
+		}
+
+		thumbnailPath := path.Join(d.getMapThumbnailPath(), configData.Code+".svg")
+		if err := os.WriteFile(thumbnailPath, []byte(thumbnailData), os.ModePerm); err != nil {
+			return d.throwMapExtractError("Failed to save generated thumbnail", err, "map_code", configData.Code, "thumbnail_path", thumbnailPath)
+		}
 	}
 
 	return d.successMapExtractResponse("Map extracted successfully", configData, "file_path", filePath, "map_code", configData.Code)

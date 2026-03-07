@@ -363,4 +363,3 @@ func requiredFilesPresent(filesFound map[string]types.FileFoundStruct) bool {
 	}
 	return true
 }
-

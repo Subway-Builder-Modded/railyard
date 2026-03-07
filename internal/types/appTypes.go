@@ -12,23 +12,41 @@ type FileFoundStruct struct {
 	Required   bool
 }
 
+type MetroMakerModConfig struct {
+	TileZoomLevel int          `json:"tile_zoom_level"`
+	Places        []ConfigData `json:"places"`
+	Port          int          `json:"port"`
+}
+
+type MetroMakerModManifest struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
+	Author      struct {
+		Name string `json:"name"`
+	} `json:"author"`
+	Main string `json:"main"`
+}
+
 // ConfigData represents the structure of the config.json file found within a map zip file, containing metadata about the map and its initial view state.
 type ConfigData struct {
 	Name             string      `json:"name"`
 	Code             string      `json:"code"`
 	Description      string      `json:"description"`
 	Population       int         `json:"population"`
-	Country          *string     `json:"country"`
-	ThumbnailBbox    *[4]float64 `json:"thumbnail_bbox"`
+	Country          *string     `json:"country,omitempty"`
+	ThumbnailBbox    *[4]float64 `json:"thumbnailBbox,omitempty"`
+	Bbox             *[4]float64 `json:"bbox,omitempty"`
 	Creator          string      `json:"creator"`
 	Version          string      `json:"version"`
 	InitialViewState struct {
 		Latitude  float64  `json:"latitude"`
 		Longitude float64  `json:"longitude"`
 		Zoom      float64  `json:"zoom"`
-		Pitch     *float64 `json:"pitch"`
+		Pitch     *float64 `json:"pitch,omitempty"`
 		Bearing   float64  `json:"bearing"`
-	} `json:"initial_view_state"`
+	} `json:"initialViewState"`
 }
 
 // CityInfo represents the metadata information about a city as defined in the cities.yaml file, including its code, name, version, hash, size, last modified time, and the file name of the map zip.
