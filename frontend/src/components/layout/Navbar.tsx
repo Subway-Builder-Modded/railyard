@@ -1,9 +1,19 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Play, Square, RefreshCw, TrainTrack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useRegistryStore } from "@/stores/registry-store";
 import { useConfigStore } from "@/stores/config-store";
+import { useInstalledStore } from "@/stores/installed-store";
 import { useGameStore } from "@/stores/game-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -15,13 +25,35 @@ const navLinks = [
   { href: "/settings", label: "Settings" },
 ] as const;
 
+const MOD_REMINDER_KEY = "railyard:mod-reminder-acknowledged";
+
 export function Navbar() {
   const [location] = useLocation();
   const { refresh, loading, refreshing } = useRegistryStore();
   const canLaunch = useConfigStore((s) => s.validation?.executablePathValid);
   const { running, launch, stop } = useGameStore();
+  const installedMaps = useInstalledStore((s) => s.installedMaps);
+  const [showModReminder, setShowModReminder] = useState(false);
 
   const handleLaunch = async () => {
+    const hasMaps = installedMaps.length > 0;
+    const alreadyAcknowledged = localStorage.getItem(MOD_REMINDER_KEY) === "true";
+
+    if (hasMaps && !alreadyAcknowledged) {
+      setShowModReminder(true);
+      return;
+    }
+
+    try {
+      await launch();
+    } catch (err) {
+      toast.error(String(err) || "Failed to launch game.");
+    }
+  };
+
+  const handleAcknowledgeAndLaunch = async () => {
+    localStorage.setItem(MOD_REMINDER_KEY, "true");
+    setShowModReminder(false);
     try {
       await launch();
     } catch (err) {
@@ -100,6 +132,27 @@ export function Navbar() {
           </Button>
         </div>
       </div>
+
+      <Dialog open={showModReminder} onOpenChange={setShowModReminder}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Enable Railyard Map Loader</DialogTitle>
+            <DialogDescription>
+              You have custom maps installed. To use them in-game, make sure the{" "}
+              <span className="font-semibold text-foreground">Railyard Map Loader</span>{" "}
+              mod is enabled in the game's mod manager.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowModReminder(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAcknowledgeAndLaunch}>
+              Got it, launch game
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }
