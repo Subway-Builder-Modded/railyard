@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  VERSION: ${{ github.ref_name }}
+
 jobs:
   build-macos:
     runs-on: macos-latest
@@ -44,18 +47,18 @@ jobs:
         run: |
           wails build -platform darwin/universal
           cd build/bin
-          ditto -c -k --sequesterRsrc --keepParent railyard.app railyard-macos-universal.zip
+          ditto -c -k --sequesterRsrc --keepParent railyard.app railyard-${VERSION}-macos-universal.zip
 
       - name: Create DMG
         run: |
-          hdiutil create -volname "Railyard" -srcfolder build/bin/railyard.app -ov -format UDZO build/bin/railyard-macos-universal.dmg
+          hdiutil create -volname "Railyard" -srcfolder build/bin/railyard.app -ov -format UDZO build/bin/railyard-${VERSION}-macos-universal.dmg
 
       - uses: actions/upload-artifact@v4
         with:
           name: macos-artifacts
           path: |
-            build/bin/railyard-macos-universal.dmg
-            build/bin/railyard-macos-universal.zip
+            build/bin/railyard-${{ env.VERSION }}-macos-universal.dmg
+            build/bin/railyard-${{ env.VERSION }}-macos-universal.zip
 
   build-linux:
     runs-on: ubuntu-22.04
@@ -115,12 +118,12 @@ jobs:
           EOF
 
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage
-          mv Railyard-*.AppImage build/bin/railyard-linux-amd64.AppImage
+          mv Railyard-*.AppImage build/bin/railyard-${VERSION}-linux-amd64.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
           name: linux-artifacts
-          path: build/bin/railyard-linux-amd64.AppImage
+          path: build/bin/railyard-${{ env.VERSION }}-linux-amd64.AppImage
 
   build-windows:
     runs-on: windows-latest
@@ -161,21 +164,17 @@ jobs:
       - name: Build Windows (amd64) with NSIS installer
         run: wails build -platform windows/amd64 -nsis
 
-      - name: Rename installer
+      - name: Rename artifacts
         run: |
-          Get-ChildItem build\bin\*installer.exe
-          Move-Item build\bin\railyard-amd64-installer.exe build\bin\railyard-windows-amd64-installer.exe
-
-      - name: Create portable zip
-        run: |
-          Compress-Archive -Path build\bin\railyard.exe -DestinationPath build\bin\railyard-windows-amd64-portable.zip
+          Move-Item build\bin\railyard-amd64-installer.exe build\bin\railyard-${{ env.VERSION }}-windows-amd64-installer.exe
+          Compress-Archive -Path build\bin\railyard.exe -DestinationPath build\bin\railyard-${{ env.VERSION }}-windows-amd64-portable.zip
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-artifacts
           path: |
-            build/bin/railyard-windows-amd64-installer.exe
-            build/bin/railyard-windows-amd64-portable.zip
+            build/bin/railyard-${{ env.VERSION }}-windows-amd64-installer.exe
+            build/bin/railyard-${{ env.VERSION }}-windows-amd64-portable.zip
 
   release:
     needs: [build-macos, build-linux, build-windows]
@@ -190,8 +189,8 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            railyard-macos-universal.dmg
-            railyard-macos-universal.zip
-            railyard-linux-amd64.AppImage
-            railyard-windows-amd64-installer.exe
-            railyard-windows-amd64-portable.zip
+            railyard-${{ env.VERSION }}-macos-universal.dmg
+            railyard-${{ env.VERSION }}-macos-universal.zip
+            railyard-${{ env.VERSION }}-linux-amd64.AppImage
+            railyard-${{ env.VERSION }}-windows-amd64-installer.exe
+            railyard-${{ env.VERSION }}-windows-amd64-portable.zip
