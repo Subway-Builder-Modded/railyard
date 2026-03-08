@@ -4,10 +4,8 @@ import (
 	"archive/tar"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 	"sync"
 
@@ -55,181 +53,6 @@ func (s *UserProfiles) setState(state types.UserProfilesState) {
 	s.loaded = true
 }
 
-// errorResponse is a helper to create a consistent error response
-func errorResponse(msg string) types.GenericResponse {
-	return types.GenericResponse{
-		Status:  types.ResponseError,
-		Message: msg,
-	}
-}
-
-// successResponse is a helper to create a consistent success response
-func successResponse(msg string) types.GenericResponse {
-	return types.GenericResponse{
-		Status:  types.ResponseSuccess,
-		Message: msg,
-	}
-}
-
-// warnResponse is a helper to create a consistent warning response
-func warnResponse(msg string) types.GenericResponse {
-	return types.GenericResponse{
-		Status:  types.ResponseWarn,
-		Message: msg,
-	}
-}
-
-// copyFileToArchive adds a file to the tar archive
-func copyFileToArchive(archive *tar.Writer, filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	fileInfo, err := file.Stat()
-	if err != nil {
-		return err
-	}
-
-	header, err := tar.FileInfoHeader(fileInfo, "")
-	if err != nil {
-		return err
-	}
-
-	relPath, err := filepath.Rel(filepath.Dir(filePath), filePath)
-	if err != nil {
-		relPath = filepath.Base(filePath)
-	}
-	header.Name = relPath
-
-	if err := archive.WriteHeader(header); err != nil {
-		return err
-	}
-
-	_, err = io.Copy(archive, file)
-	return err
-}
-
-// addDirToArchive recursively adds a directory to the tar archive
-func addDirToArchive(archive *tar.Writer, dirPath, basePath string) error {
-	return filepath.Walk(dirPath, func(filePath string, fileInfo os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath, err := filepath.Rel(basePath, filePath)
-		if err != nil {
-			return err
-		}
-
-		if fileInfo.IsDir() {
-			return nil
-		}
-
-		header, err := tar.FileInfoHeader(fileInfo, "")
-		if err != nil {
-			return err
-		}
-		header.Name = relPath
-
-		if err := archive.WriteHeader(header); err != nil {
-			return err
-		}
-
-		file, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(archive, file)
-		return err
-	})
-}
-
-// extractArchiveToDir extracts a tar archive to a directory
-func extractArchiveToDir(archivePath, destDir string) error {
-	rawReader, err := os.Open(archivePath)
-	if err != nil {
-		return err
-	}
-	defer rawReader.Close()
-
-	archive := tar.NewReader(rawReader)
-
-	for {
-		header, err := archive.Next()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-
-		targetPath := filepath.Join(destDir, header.Name)
-
-		if header.Typeflag == tar.TypeDir {
-			if err := os.MkdirAll(targetPath, os.ModePerm); err != nil {
-				return err
-			}
-			continue
-		}
-
-		targetDir := filepath.Dir(targetPath)
-		if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
-			return err
-		}
-
-		targetFile, err := os.Create(targetPath)
-		if err != nil {
-			return err
-		}
-		defer targetFile.Close()
-
-		if _, err := io.Copy(targetFile, archive); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// copyDirectory copies all files from src to dst
-func copyDirectory(src, dst string) error {
-	return filepath.Walk(src, func(filePath string, fileInfo os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath, err := filepath.Rel(src, filePath)
-		if err != nil {
-			return err
-		}
-
-		destPath := filepath.Join(dst, relPath)
-
-		if fileInfo.IsDir() {
-			return os.MkdirAll(destPath, os.ModePerm)
-		}
-
-		srcFile, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		defer srcFile.Close()
-
-		destFile, err := os.Create(destPath)
-		if err != nil {
-			return err
-		}
-		defer destFile.Close()
-
-		_, err = io.Copy(destFile, srcFile)
-		return err
-	})
-}
-
 // CreateProfileArchive generates a tar archive of the profile's current state, including installed maps/mods and their data, and saves it to disk. Returns a GenericResponse indicating success or failure with an appropriate message.
 func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericResponse {
 	s.mu.Lock()
@@ -238,12 +61,12 @@ func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericRespo
 	if !ok {
 		profileErr := fmt.Errorf("%w: %q", ErrProfileNotFound, profileID)
 		s.Logger.Error("Profile not found for archive creation", profileErr, "profile_id", profileID)
-		return errorResponse(profileErr.Error())
+		return types.ErrorResponse(profileErr.Error())
 	}
 
 	if err := os.MkdirAll(paths.ProfileArchivesPath(), os.ModePerm); err != nil {
 		s.Logger.Error("Failed to create profile archives directory", err, "path", paths.ProfileArchivesPath())
-		return errorResponse(fmt.Errorf("failed to create profile archives directory: %w", err).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to create profile archives directory: %w", err).Error())
 	}
 
 	archivePath := path.Join(paths.ProfileArchivesPath(), fmt.Sprintf("%s.tar", profile.UUID))
@@ -251,7 +74,7 @@ func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericRespo
 	file, err := os.Create(archivePath)
 	if err != nil {
 		s.Logger.Error("Failed to create profile archive file", err, "profile_id", profileID, "archive_path", archivePath)
-		return errorResponse(fmt.Errorf("failed to create profile archive file: %w", err).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to create profile archive file: %w", err).Error())
 	}
 	defer file.Close()
 
@@ -261,7 +84,7 @@ func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericRespo
 	tempDir, err := os.MkdirTemp(os.TempDir(), "profile-archive-*")
 	if err != nil {
 		s.Logger.Error("Failed to create temporary directory for profile archive", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to create temporary directory for profile archive: %w", err).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to create temporary directory for profile archive: %w", err).Error())
 	}
 	defer os.RemoveAll(tempDir)
 
@@ -281,23 +104,23 @@ func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericRespo
 		return metadataErr
 	}
 
-	if err := addDirToArchive(archive, tempDir, tempDir); err != nil {
+	if err := files.AddDirToArchive(archive, tempDir, tempDir); err != nil {
 		s.Logger.Error("Failed to add temporary profile archive directory to archive", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to add temporary profile archive directory to archive: %w", err).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to add temporary profile archive directory to archive: %w", err).Error())
 	}
 
-	return successResponse(fmt.Sprintf("Profile archive created successfully at %s", archivePath))
+	return types.SuccessResponse(fmt.Sprintf("Profile archive created successfully at %s", archivePath))
 }
 
 // setupArchiveDirectories creates the directory structure in the temporary archive directory
 func (s *UserProfiles) setupArchiveDirectories(tempDir, profileID string) (types.GenericResponse, bool) {
 	if err := os.Mkdir(path.Join(tempDir, "maps"), os.ModePerm); err != nil {
 		s.Logger.Error("Failed to create maps directory", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to create maps directory: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to create maps directory: %w", err).Error()), false
 	}
 	if err := os.Mkdir(path.Join(tempDir, "mods"), os.ModePerm); err != nil {
 		s.Logger.Error("Failed to create mods directory", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to create mods directory: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to create mods directory: %w", err).Error()), false
 	}
 	return types.GenericResponse{}, true
 }
@@ -310,20 +133,20 @@ func (s *UserProfiles) copyMapsToArchive(tempDir, profileID string) (types.Gener
 
 		if err := os.MkdirAll(mapDir, os.ModePerm); err != nil {
 			s.Logger.Error("Failed to create map directory", err, "profile_id", profileID, "map_id", code)
-			return errorResponse(fmt.Errorf("failed to create map directory: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to create map directory: %w", err).Error()), false
 		}
 
 		// Copy map data
 		dataPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "cities", "data", code)
 		if err := os.CopyFS(path.Join(mapDir, "data"), os.DirFS(dataPath)); err != nil {
 			s.Logger.Error("Failed to copy map data", err, "profile_id", profileID, "map_id", code)
-			return errorResponse(fmt.Errorf("failed to copy map data: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to copy map data: %w", err).Error()), false
 		}
 
 		// Copy thumbnail if exists
 		thumbnailPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "public", "data", "city-maps", fmt.Sprintf("%s.svg", code))
 		if _, err := os.Stat(thumbnailPath); !os.IsNotExist(err) {
-			if errResp, ok := s.copyFile(thumbnailPath, path.Join(mapDir, "thumbnail.svg"), profileID, code); !ok {
+			if errResp, ok := files.CopyFile(thumbnailPath, path.Join(mapDir, "thumbnail.svg"), profileID, code, s.Logger); !ok {
 				return errResp, false
 			}
 		}
@@ -331,7 +154,7 @@ func (s *UserProfiles) copyMapsToArchive(tempDir, profileID string) (types.Gener
 		// Copy tiles if exists
 		tilePath := path.Join(paths.TilesPath(), fmt.Sprintf("%s.pmtiles", code))
 		if _, err := os.Stat(tilePath); !os.IsNotExist(err) {
-			if errResp, ok := s.copyFile(tilePath, path.Join(mapDir, "tiles.pmtiles"), profileID, code); !ok {
+			if errResp, ok := files.CopyFile(tilePath, path.Join(mapDir, "tiles.pmtiles"), profileID, code, s.Logger); !ok {
 				return errResp, false
 			}
 		}
@@ -346,13 +169,13 @@ func (s *UserProfiles) copyModsToArchive(tempDir, profileID string) (types.Gener
 
 		if err := os.MkdirAll(modDest, os.ModePerm); err != nil {
 			s.Logger.Error("Failed to create mod directory", err, "profile_id", profileID, "mod_id", modInfo.ID)
-			return errorResponse(fmt.Errorf("failed to create mod directory: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to create mod directory: %w", err).Error()), false
 		}
 
 		modSrc := path.Join(s.Config.Cfg.GetModFolderPath(), modInfo.ID)
 		if err := os.CopyFS(path.Join(modDest, "data"), os.DirFS(modSrc)); err != nil {
 			s.Logger.Error("Failed to copy mod data", err, "profile_id", profileID, "mod_id", modInfo.ID)
-			return errorResponse(fmt.Errorf("failed to copy mod data: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to copy mod data: %w", err).Error()), false
 		}
 	}
 	return types.GenericResponse{}, true
@@ -363,36 +186,13 @@ func (s *UserProfiles) writeInstalledMetadata(tempDir, profileID string) (types.
 	installedMapsPath := path.Join(tempDir, "installed_maps.json")
 	if err := files.WriteJSON(installedMapsPath, "installed maps", s.Registry.GetInstalledMaps()); err != nil {
 		s.Logger.Error("Failed to write installed maps file", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to write installed maps file: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to write installed maps file: %w", err).Error()), false
 	}
 
 	installedModsPath := path.Join(tempDir, "installed_mods.json")
 	if err := files.WriteJSON(installedModsPath, "installed mods", s.Registry.GetInstalledMods()); err != nil {
 		s.Logger.Error("Failed to write installed mods file", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to write installed mods file: %w", err).Error()), false
-	}
-	return types.GenericResponse{}, true
-}
-
-// copyFile is a helper to copy a file from src to dst with error handling
-func (s *UserProfiles) copyFile(src, dst, profileID, mapID string) (types.GenericResponse, bool) {
-	srcFile, err := os.Open(src)
-	if err != nil {
-		s.Logger.Error("Failed to open source file", err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to open source file: %w", err).Error()), false
-	}
-	defer srcFile.Close()
-
-	dstFile, err := os.Create(dst)
-	if err != nil {
-		s.Logger.Error("Failed to create destination file", err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to create destination file: %w", err).Error()), false
-	}
-	defer dstFile.Close()
-
-	if _, err := io.Copy(dstFile, srcFile); err != nil {
-		s.Logger.Error("Failed to copy file", err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to copy file: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to write installed mods file: %w", err).Error()), false
 	}
 	return types.GenericResponse{}, true
 }
@@ -404,27 +204,27 @@ func (s *UserProfiles) RestoreProfileArchive(profileID string) types.GenericResp
 	if !ok {
 		profileErr := fmt.Errorf("%w: %q", ErrProfileNotFound, profileID)
 		s.Logger.Error("Profile not found for archive restoration", profileErr, "profile_id", profileID)
-		return errorResponse(profileErr.Error())
+		return types.ErrorResponse(profileErr.Error())
 	}
 
 	archivePath := path.Join(paths.ProfileArchivesPath(), fmt.Sprintf("%s.tar", profile.UUID))
 	if _, err := os.Stat(archivePath); os.IsNotExist(err) {
 		profileErr := fmt.Errorf("archive file not found for profile restoration: %w: %q", ErrProfileNotFound, profileID)
 		s.Logger.Warn("Profile archive not found for restoration", profileErr, "profile_id", profileID)
-		return warnResponse(profileErr.Error())
+		return types.WarnResponse(profileErr.Error())
 	}
 
 	tempDir, err := os.MkdirTemp(os.TempDir(), "profile-restore-*")
 	if err != nil {
 		s.Logger.Error("Failed to create temporary directory for restoration", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to create temporary directory for restoration: %w", err).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to create temporary directory for restoration: %w", err).Error())
 	}
 	defer os.RemoveAll(tempDir)
 
 	// Extract archive
-	if extractErr := extractArchiveToDir(archivePath, tempDir); extractErr != nil {
+	if extractErr := files.ExtractArchiveToDir(archivePath, tempDir); extractErr != nil {
 		s.Logger.Error("Failed to extract profile archive", extractErr, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to extract profile archive: %w", extractErr).Error())
+		return types.ErrorResponse(fmt.Errorf("failed to extract profile archive: %w", extractErr).Error())
 	}
 
 	// Load installed maps and mods from archive
@@ -445,7 +245,7 @@ func (s *UserProfiles) RestoreProfileArchive(profileID string) types.GenericResp
 	// Clean up archive after successful restoration
 	os.Remove(archivePath)
 
-	return successResponse("Profile archive restoration completed successfully")
+	return types.SuccessResponse("Profile archive restoration completed successfully")
 }
 
 // loadInstalledFromArchive loads and sets installed maps/mods from the archive metadata
@@ -453,18 +253,18 @@ func (s *UserProfiles) loadInstalledFromArchive(tempDir, profileID string) (type
 	profileInstalledMapsPath := path.Join(tempDir, "installed_maps.json")
 	if err := s.Registry.SetInstalledMapsFromPath(profileInstalledMapsPath); err != nil {
 		s.Logger.Error("Failed to set installed maps from archive", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to set installed maps from archive: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to set installed maps from archive: %w", err).Error()), false
 	}
 
 	profileInstalledModsPath := path.Join(tempDir, "installed_mods.json")
 	if err := s.Registry.SetInstalledModsFromPath(profileInstalledModsPath); err != nil {
 		s.Logger.Error("Failed to set installed mods from archive", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to set installed mods from archive: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to set installed mods from archive: %w", err).Error()), false
 	}
 
 	if err := s.Registry.WriteInstalledToDisk(); err != nil {
 		s.Logger.Error("Failed to write installed to disk", err, "profile_id", profileID)
-		return errorResponse(fmt.Errorf("failed to write installed to disk: %w", err).Error()), false
+		return types.ErrorResponse(fmt.Errorf("failed to write installed to disk: %w", err).Error()), false
 	}
 
 	return types.GenericResponse{}, true
@@ -479,21 +279,21 @@ func (s *UserProfiles) restoreMapsFromArchive(tempDir, profileID string) (types.
 		cityDataPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "cities", "data", code)
 		if err := os.MkdirAll(cityDataPath, os.ModePerm); err != nil {
 			s.Logger.Error("Failed to create city data directory", err, "profile_id", profileID, "map_id", code)
-			return errorResponse(fmt.Errorf("failed to create city data directory: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to create city data directory: %w", err).Error()), false
 		}
 
 		// Copy city data
 		archiveMapDataPath := path.Join(tempDir, "maps", code, "data")
 		if err := os.CopyFS(cityDataPath, os.DirFS(archiveMapDataPath)); err != nil {
 			s.Logger.Error("Failed to copy city data from archive", err, "profile_id", profileID, "map_id", code)
-			return errorResponse(fmt.Errorf("failed to copy city data from archive: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to copy city data from archive: %w", err).Error()), false
 		}
 
 		// Restore thumbnail if exists
 		archiveThumbnailPath := path.Join(tempDir, "maps", code, "thumbnail.svg")
 		if _, err := os.Stat(archiveThumbnailPath); !os.IsNotExist(err) {
 			destThumbnailPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "public", "data", "city-maps", fmt.Sprintf("%s.svg", code))
-			if errResp, ok := s.copyFileWithDest(archiveThumbnailPath, destThumbnailPath, profileID, code, "thumbnail"); !ok {
+			if errResp, ok := files.CopyFileWithDest(archiveThumbnailPath, destThumbnailPath, profileID, code, "thumbnail", s.Logger); !ok {
 				return errResp, false
 			}
 		}
@@ -502,7 +302,7 @@ func (s *UserProfiles) restoreMapsFromArchive(tempDir, profileID string) (types.
 		archiveTilePath := path.Join(tempDir, "maps", code, "tiles.pmtiles")
 		if _, err := os.Stat(archiveTilePath); !os.IsNotExist(err) {
 			destTilePath := path.Join(paths.TilesPath(), fmt.Sprintf("%s.pmtiles", code))
-			if errResp, ok := s.copyFileWithDest(archiveTilePath, destTilePath, profileID, code, "tiles"); !ok {
+			if errResp, ok := files.CopyFileWithDest(archiveTilePath, destTilePath, profileID, code, "tiles", s.Logger); !ok {
 				return errResp, false
 			}
 		}
@@ -517,44 +317,15 @@ func (s *UserProfiles) restoreModsFromArchive(tempDir, profileID string) (types.
 
 		if err := os.MkdirAll(modDest, os.ModePerm); err != nil {
 			s.Logger.Error("Failed to create mod directory", err, "profile_id", profileID, "mod_id", modInfo.ID)
-			return errorResponse(fmt.Errorf("failed to create mod directory: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to create mod directory: %w", err).Error()), false
 		}
 
 		archiveModDataPath := path.Join(tempDir, "mods", modInfo.ID, "data")
 		if err := os.CopyFS(modDest, os.DirFS(archiveModDataPath)); err != nil {
 			s.Logger.Error("Failed to copy mod data from archive", err, "profile_id", profileID, "mod_id", modInfo.ID)
-			return errorResponse(fmt.Errorf("failed to copy mod data from archive: %w", err).Error()), false
+			return types.ErrorResponse(fmt.Errorf("failed to copy mod data from archive: %w", err).Error()), false
 		}
 	}
-	return types.GenericResponse{}, true
-}
-
-// copyFileWithDest is a helper that copies a file with specific source and destination paths
-func (s *UserProfiles) copyFileWithDest(src, dst, profileID, mapID, fileType string) (types.GenericResponse, bool) {
-	srcFile, err := os.Open(src)
-	if err != nil {
-		s.Logger.Error(fmt.Sprintf("Failed to open %s from archive", fileType), err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to open %s from archive: %w", fileType, err).Error()), false
-	}
-	defer srcFile.Close()
-
-	if err := os.MkdirAll(filepath.Dir(dst), os.ModePerm); err != nil {
-		s.Logger.Error(fmt.Sprintf("Failed to create directory for %s", fileType), err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to create directory for %s: %w", fileType, err).Error()), false
-	}
-
-	dstFile, err := os.Create(dst)
-	if err != nil {
-		s.Logger.Error(fmt.Sprintf("Failed to create %s file", fileType), err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to create %s file: %w", fileType, err).Error()), false
-	}
-	defer dstFile.Close()
-
-	if _, err := io.Copy(dstFile, srcFile); err != nil {
-		s.Logger.Error(fmt.Sprintf("Failed to copy %s", fileType), err, "profile_id", profileID, "map_id", mapID)
-		return errorResponse(fmt.Errorf("failed to copy %s: %w", fileType, err).Error()), false
-	}
-
 	return types.GenericResponse{}, true
 }
 
