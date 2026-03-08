@@ -127,6 +127,9 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - uses: actions/checkout@v4
 
@@ -161,20 +164,20 @@ jobs:
       - name: Install frontend dependencies
         run: cd frontend && pnpm install
 
-      - name: Build Windows (amd64) with NSIS installer
-        run: wails build -platform windows/amd64 -nsis
+      - name: Build Windows (${{ matrix.arch }}) with NSIS installer
+        run: wails build -platform windows/${{ matrix.arch }} -nsis
 
       - name: Rename artifacts
         run: |
-          Move-Item build\bin\railyard-amd64-installer.exe build\bin\railyard-${{ env.VERSION }}-windows-amd64-installer.exe
-          Compress-Archive -Path build\bin\railyard.exe -DestinationPath build\bin\railyard-${{ env.VERSION }}-windows-amd64-portable.zip
+          Move-Item build\bin\railyard-${{ matrix.arch }}-installer.exe build\bin\railyard-${{ env.VERSION }}-windows-${{ matrix.arch }}-installer.exe
+          Compress-Archive -Path build\bin\railyard.exe -DestinationPath build\bin\railyard-${{ env.VERSION }}-windows-${{ matrix.arch }}-portable.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-artifacts
+          name: windows-${{ matrix.arch }}-artifacts
           path: |
-            build/bin/railyard-${{ env.VERSION }}-windows-amd64-installer.exe
-            build/bin/railyard-${{ env.VERSION }}-windows-amd64-portable.zip
+            build/bin/railyard-${{ env.VERSION }}-windows-${{ matrix.arch }}-installer.exe
+            build/bin/railyard-${{ env.VERSION }}-windows-${{ matrix.arch }}-portable.zip
 
   release:
     needs: [build-macos, build-linux, build-windows]
@@ -194,3 +197,5 @@ jobs:
             railyard-${{ env.VERSION }}-linux-amd64.AppImage
             railyard-${{ env.VERSION }}-windows-amd64-installer.exe
             railyard-${{ env.VERSION }}-windows-amd64-portable.zip
+            railyard-${{ env.VERSION }}-windows-arm64-installer.exe
+            railyard-${{ env.VERSION }}-windows-arm64-portable.zip
