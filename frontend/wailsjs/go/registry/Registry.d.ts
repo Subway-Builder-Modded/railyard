@@ -32,4 +32,8 @@ export function RemoveInstalledMap(arg1:string):Promise<void>;
 
 export function RemoveInstalledMod(arg1:string):Promise<void>;
 
+export function SetInstalledMapsFromPath(arg1:string):Promise<void>;
+
+export function SetInstalledModsFromPath(arg1:string):Promise<void>;
+
 export function WriteInstalledToDisk():Promise<void>;

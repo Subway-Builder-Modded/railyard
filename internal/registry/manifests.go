@@ -51,6 +51,24 @@ func (r *Registry) getModsFromDisk() ([]types.ModManifest, error) {
 	return mods, nil
 }
 
+func (r *Registry) SetInstalledMapsFromPath(path string) error {
+	installedMaps, err := files.ReadJSON[[]types.InstalledMapInfo](path, "installed maps file", files.JSONReadOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to read installed maps from path %q: %w", path, err)
+	}
+	r.installedMaps = installedMaps
+	return nil
+}
+
+func (r *Registry) SetInstalledModsFromPath(path string) error {
+	installedMods, err := files.ReadJSON[[]types.InstalledModInfo](path, "installed mods file", files.JSONReadOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to read installed mods from path %q: %w", path, err)
+	}
+	r.installedMods = installedMods
+	return nil
+}
+
 // getMapsFromDisk reads the maps index and returns all map manifests.
 func (r *Registry) getMapsFromDisk() ([]types.MapManifest, error) {
 	indexPath := filepath.Join(r.repoPath, "maps", "index.json")

@@ -54,7 +54,7 @@ func NewApp() *App {
 		Registry:   reg,
 		Config:     cfg,
 		Downloader: dl,
-		Profiles:   profiles.NewUserProfiles(reg, dl, l),
+		Profiles:   profiles.NewUserProfiles(reg, dl, l, cfg),
 		Logger:     l,
 	}
 }

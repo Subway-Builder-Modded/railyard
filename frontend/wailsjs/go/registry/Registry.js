@@ -62,6 +62,14 @@ export function RemoveInstalledMod(arg1) {
   return window['go']['registry']['Registry']['RemoveInstalledMod'](arg1);
 }
 
+export function SetInstalledMapsFromPath(arg1) {
+  return window['go']['registry']['Registry']['SetInstalledMapsFromPath'](arg1);
+}
+
+export function SetInstalledModsFromPath(arg1) {
+  return window['go']['registry']['Registry']['SetInstalledModsFromPath'](arg1);
+}
+
 export function WriteInstalledToDisk() {
   return window['go']['registry']['Registry']['WriteInstalledToDisk']();
 }

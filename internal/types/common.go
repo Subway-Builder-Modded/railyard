@@ -29,6 +29,30 @@ type MapExtractResponse struct {
 	Config ConfigData `json:"config,omitempty"`
 }
 
+// errorResponse is a helper to create a consistent error response
+func ErrorResponse(msg string) GenericResponse {
+	return GenericResponse{
+		Status:  ResponseError,
+		Message: msg,
+	}
+}
+
+// successResponse is a helper to create a consistent success response
+func SuccessResponse(msg string) GenericResponse {
+	return GenericResponse{
+		Status:  ResponseSuccess,
+		Message: msg,
+	}
+}
+
+// warnResponse is a helper to create a consistent warning response
+func WarnResponse(msg string) GenericResponse {
+	return GenericResponse{
+		Status:  ResponseWarn,
+		Message: msg,
+	}
+}
+
 type AssetType string
 
 const (
