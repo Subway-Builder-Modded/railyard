@@ -22,6 +22,10 @@ export function ResetUserProfiles() {
   return window['go']['profiles']['UserProfiles']['ResetUserProfiles']();
 }
 
+export function RestoreProfileArchive(arg1) {
+  return window['go']['profiles']['UserProfiles']['RestoreProfileArchive'](arg1);
+}
+
 export function SyncSubscriptions(arg1) {
   return window['go']['profiles']['UserProfiles']['SyncSubscriptions'](arg1);
 }
