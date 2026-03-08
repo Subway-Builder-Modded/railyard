@@ -1,6 +1,10 @@
 package types
 
-import "regexp"
+import (
+	"strings"
+
+	"golang.org/x/mod/semver"
+)
 
 type Status string
 
@@ -43,10 +47,26 @@ func IsValidAssetType(assetType AssetType) bool {
 
 type Version string
 
-var semverVersionPattern = regexp.MustCompile(`^(?:v)?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$`)
-
 func IsValidSemverVersion(version Version) bool {
-	return semverVersionPattern.MatchString(string(version))
+	value := strings.TrimSpace(string(version))
+	if value == "" {
+		return false
+	}
+	if strings.ContainsAny(value, "-+") {
+		return false
+	}
+	if !strings.HasPrefix(value, "v") {
+		value = "v" + value
+	}
+	if !semver.IsValid(value) {
+		return false
+	}
+
+	core := value[1:]
+	if idx := strings.IndexAny(core, "-+"); idx >= 0 {
+		core = core[:idx]
+	}
+	return strings.Count(core, ".") == 2
 }
 
 // MissingFilesError is returned when required files are missing from an archive.
