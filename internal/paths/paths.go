@@ -46,6 +46,10 @@ func AppDataRoot() string {
 	return filepath.Join(UserConfigRoot(), AppDirName)
 }
 
+func ProfileArchivesPath() string {
+	return filepath.Join(AppDataRoot(), "profile_archives")
+}
+
 // RegistryRepoPath returns the local filesystem path for the cloned registry.
 func RegistryRepoPath() string {
 	return filepath.Join(AppDataRoot(), RegistryDirName)

@@ -1,11 +1,17 @@
 package profiles
 
 import (
+	"archive/tar"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 
+	"railyard/internal/config"
 	"railyard/internal/downloader"
 	"railyard/internal/files"
 	"railyard/internal/logger"
@@ -19,6 +25,7 @@ type UserProfiles struct {
 	state      types.UserProfilesState
 	Logger     logger.Logger
 	Registry   *registry.Registry
+	Config     *config.Config
 	Downloader *downloader.Downloader
 	mu         sync.Mutex
 	loaded     bool
@@ -34,17 +41,250 @@ var (
 	ErrActiveProfileMissing      = errors.New("active profile missing from loaded state")
 )
 
-func NewUserProfiles(r *registry.Registry, d *downloader.Downloader, l logger.Logger) *UserProfiles {
+func NewUserProfiles(r *registry.Registry, d *downloader.Downloader, l logger.Logger, c *config.Config) *UserProfiles {
 	return &UserProfiles{
 		Logger:     l,
 		Registry:   r,
 		Downloader: d,
+		Config:     c,
 	}
 }
 
 func (s *UserProfiles) setState(state types.UserProfilesState) {
 	s.state = state
 	s.loaded = true
+}
+
+func (s *UserProfiles) CreateProfileArchive(profileID string) types.GenericResponse {
+	s.mu.Lock()
+	profile, ok := s.state.Profiles[profileID]
+	s.mu.Unlock()
+	if !ok {
+		profileErr := fmt.Errorf("%w: %q", ErrProfileNotFound, profileID)
+		s.Logger.Error("Profile not found for archive creation", profileErr, "profile_id", profileID)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: profileErr.Error(),
+		}
+	}
+
+	if err := os.MkdirAll(paths.ProfileArchivesPath(), os.ModePerm); err != nil {
+		s.Logger.Error("Failed to create profile archives directory", err, "path", paths.ProfileArchivesPath())
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to create profile archives directory: %w", err).Error(),
+		}
+	}
+
+	archivePath := path.Join(paths.ProfileArchivesPath(), fmt.Sprintf("%s.tar", profile.UUID))
+
+	file, err := os.Create(archivePath)
+	if err != nil {
+		s.Logger.Error("Failed to create profile archive file", err, "profile_id", profileID, "archive_path", archivePath)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to create profile archive file: %w", err).Error(),
+		}
+	}
+	defer file.Close()
+
+	archive := tar.NewWriter(file)
+	defer archive.Close()
+
+	tempDir, err := os.MkdirTemp(os.TempDir(), "profile-archive-*")
+	if err != nil {
+		s.Logger.Error("Failed to create temporary directory for profile archive", err, "profile_id", profileID)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to create temporary directory for profile archive: %w", err).Error(),
+		}
+	}
+	//defer os.RemoveAll(tempDir)
+
+	if err := os.Mkdir(path.Join(tempDir, "maps"), os.ModePerm); err != nil {
+		s.Logger.Error("Failed to create maps directory in temporary profile archive directory", err, "profile_id", profileID)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to create maps directory in temporary profile archive directory: %w", err).Error(),
+		}
+	}
+
+	if err := os.Mkdir(path.Join(tempDir, "mods"), os.ModePerm); err != nil {
+		s.Logger.Error("Failed to create mods directory in temporary profile archive directory", err, "profile_id", profileID)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to create mods directory in temporary profile archive directory: %w", err).Error(),
+		}
+	}
+
+	for _, mapInfo := range s.Registry.GetInstalledMaps() {
+		if err := os.MkdirAll(path.Join(tempDir, "maps", mapInfo.MapConfig.Code), os.ModePerm); err != nil {
+			s.Logger.Error("Failed to create map directory in temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+			return types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: fmt.Errorf("failed to create map directory in temporary profile archive directory: %w", err).Error(),
+			}
+		}
+		dataPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "cities", "data", mapInfo.MapConfig.Code)
+		thumbnailPath := path.Join(s.Config.Cfg.MetroMakerDataPath, "public", "data", "city-maps", fmt.Sprintf("%s.svg", mapInfo.MapConfig.Code))
+		tilePath := path.Join(paths.TilesPath(), fmt.Sprintf("%s.pmtiles", mapInfo.MapConfig.Code))
+		if err := os.CopyFS(path.Join(tempDir, "maps", mapInfo.MapConfig.Code, "data"), os.DirFS(dataPath)); err != nil {
+			s.Logger.Error("Failed to copy map data to temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+			return types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: fmt.Errorf("failed to copy map data to temporary profile archive directory: %w", err).Error(),
+			}
+		}
+		if _, err := os.Stat(thumbnailPath); !os.IsNotExist(err) {
+			thumbnailFile, err := os.Open(thumbnailPath)
+			if err != nil {
+				s.Logger.Error("Failed to open map thumbnail for copying to temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to open map thumbnail for copying to temporary profile archive directory: %w", err).Error(),
+				}
+			}
+			defer thumbnailFile.Close()
+			thumbnailDest := path.Join(tempDir, "maps", mapInfo.MapConfig.Code, "thumbnail.svg")
+			destFile, err := os.Create(thumbnailDest)
+			if err != nil {
+				s.Logger.Error("Failed to create thumbnail file in temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to create thumbnail file in temporary profile archive directory: %w", err).Error(),
+				}
+			}
+			defer destFile.Close()
+			if _, err := io.Copy(destFile, thumbnailFile); err != nil {
+				s.Logger.Error("Failed to copy map thumbnail to temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to copy map thumbnail to temporary profile archive directory: %w", err).Error(),
+				}
+			}
+		}
+		if _, err := os.Stat(tilePath); !os.IsNotExist(err) {
+			tileFile, err := os.Open(tilePath)
+			if err != nil {
+				s.Logger.Error("Failed to open map tile file for copying to temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to open map tile file for copying to temporary profile archive directory: %w", err).Error(),
+				}
+			}
+			defer tileFile.Close()
+			tileDest := path.Join(tempDir, "maps", mapInfo.MapConfig.Code, "tiles.pmtiles")
+			destFile, err := os.Create(tileDest)
+			if err != nil {
+				s.Logger.Error("Failed to create tile file in temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to create tile file in temporary profile archive directory: %w", err).Error(),
+				}
+			}
+			defer destFile.Close()
+			if _, err := io.Copy(destFile, tileFile); err != nil {
+				s.Logger.Error("Failed to copy map tile to temporary profile archive directory", err, "profile_id", profileID, "map_id", mapInfo.MapConfig.Code)
+				return types.GenericResponse{
+					Status:  types.ResponseError,
+					Message: fmt.Errorf("failed to copy map tile to temporary profile archive directory: %w", err).Error(),
+				}
+			}
+		}
+	}
+
+	for _, modInfo := range s.Registry.GetInstalledMods() {
+		modDest := path.Join(tempDir, "mods", modInfo.ID)
+		if err := os.MkdirAll(modDest, os.ModePerm); err != nil {
+			s.Logger.Error("Failed to create mod directory in temporary profile archive directory", err, "profile_id", profileID, "mod_id", modInfo.ID)
+			return types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: fmt.Errorf("failed to create mod directory in temporary profile archive directory: %w", err).Error(),
+			}
+		}
+		if err := os.CopyFS(path.Join(tempDir, "mods", modInfo.ID, "data"), os.DirFS(path.Join(s.Config.Cfg.GetModFolderPath(), modInfo.ID))); err != nil {
+			s.Logger.Error("Failed to copy mod data to temporary profile archive directory", err, "profile_id", profileID, "mod_id", modInfo.ID)
+			return types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: fmt.Errorf("failed to copy mod data to temporary profile archive directory: %w", err).Error(),
+			}
+		}
+	}
+
+	installedMaps := s.Registry.GetInstalledMaps()
+	installedMods := s.Registry.GetInstalledMods()
+	installedMapsPath := path.Join(tempDir, "installed_maps.json")
+	installedModsPath := path.Join(tempDir, "installed_mods.json")
+	if err := files.WriteJSON(installedMapsPath, "installed maps for profile archive", installedMaps); err != nil {
+		s.Logger.Error("Failed to write installed maps file for profile archive", err, "profile_id", profileID, "path", installedMapsPath)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to write installed maps file for profile archive: %w", err).Error(),
+		}
+	}
+
+	if err := files.WriteJSON(installedModsPath, "installed mods for profile archive", installedMods); err != nil {
+		s.Logger.Error("Failed to write installed mods file for profile archive", err, "profile_id", profileID, "path", installedModsPath)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to write installed mods file for profile archive: %w", err).Error(),
+		}
+	}
+
+	// Walk the temporary directory and add each file to the tar archive
+	if err := filepath.Walk(tempDir, func(filePath string, fileInfo os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Get the relative path for the tar header
+		relPath, err := filepath.Rel(tempDir, filePath)
+		if err != nil {
+			return err
+		}
+
+		if fileInfo.IsDir() {
+			return nil // tar will handle directory entries implicitly
+		}
+
+		// Create tar header
+		header, err := tar.FileInfoHeader(fileInfo, "")
+		if err != nil {
+			return err
+		}
+		header.Name = relPath
+
+		// Write header
+		if err := archive.WriteHeader(header); err != nil {
+			return err
+		}
+
+		// Write file contents
+		file, err := os.Open(filePath)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		_, err = io.Copy(archive, file)
+		return err
+	}); err != nil {
+		s.Logger.Error("Failed to add temporary profile archive directory to archive", err, "profile_id", profileID)
+		return types.GenericResponse{
+			Status:  types.ResponseError,
+			Message: fmt.Errorf("failed to add temporary profile archive directory to archive: %w", err).Error(),
+		}
+	}
+
+	// Clean up temporary directory
+	if err := os.RemoveAll(tempDir); err != nil {
+		s.Logger.Warn("Failed to remove temporary profile archive directory", err, "path", tempDir)
+	}
+
+	return types.GenericResponse{
+		Status:  types.ResponseSuccess,
+		Message: fmt.Sprintf("Profile archive created successfully at %s", archivePath),
+	}
 }
 
 func WriteUserProfilesState(state types.UserProfilesState) error {

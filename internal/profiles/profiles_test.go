@@ -62,7 +62,7 @@ func userProfilesServiceWithDependencies(t *testing.T) (*UserProfiles, *config.C
 	reg := registry.NewRegistry()
 	l := testUserProfilesLogger(t)
 	dl := downloader.NewDownloader(cfg, reg, l)
-	return NewUserProfiles(reg, dl, l), cfg, reg
+	return NewUserProfiles(reg, dl, l, cfg), cfg, reg
 }
 
 func loadedUserProfilesServiceWithDependencies(t *testing.T, state types.UserProfilesState) (*UserProfiles, *config.Config, *registry.Registry) {
