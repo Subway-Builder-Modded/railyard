@@ -1,5 +1,7 @@
 package types
 
+import "regexp"
+
 type Status string
 
 const (
@@ -40,6 +42,12 @@ func IsValidAssetType(assetType AssetType) bool {
 }
 
 type Version string
+
+var semverVersionPattern = regexp.MustCompile(`^(?:v)?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$`)
+
+func IsValidSemverVersion(version Version) bool {
+	return semverVersionPattern.MatchString(string(version))
+}
 
 // MissingFilesError is returned when required files are missing from an archive.
 type MissingFilesError struct {
