@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"railyard/internal/constants"
 	"railyard/internal/types"
 )
 
@@ -94,7 +95,7 @@ func (r *Registry) getGitHubVersions(repo string) ([]types.VersionInfo, error) {
 }
 
 // enrichGameVersions fetches manifest.json URLs in parallel and populates GameVersion
-// from dependencies["subway-builder"]. Errors are silently ignored per-version.
+// from the game dependency key in the manifest. Errors are silently ignored per-version.
 func (r *Registry) enrichGameVersions(versions []types.VersionInfo) {
 	var wg sync.WaitGroup
 	for i := range versions {
@@ -126,7 +127,7 @@ func (r *Registry) enrichGameVersions(versions []types.VersionInfo) {
 			if err := json.Unmarshal(body, &manifest); err != nil {
 				return
 			}
-			if sbRange, ok := manifest.Dependencies["subway-builder"]; ok {
+			if sbRange, ok := manifest.Dependencies[constants.GameDependencyKey]; ok {
 				v.GameVersion = sbRange
 			}
 		}(&versions[i])

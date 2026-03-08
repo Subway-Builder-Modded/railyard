@@ -461,7 +461,7 @@ func (a *App) generateMod(port int) error {
 		},
 		Main: "index.js",
 		Dependencies: map[string]string{
-			"subway-builder": ">=1.0.0",
+			constants.GameDependencyKey: ">=1.0.0",
 		},
 	}
 	stringifiedConfig, err := json.Marshal(config)

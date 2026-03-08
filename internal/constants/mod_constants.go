@@ -7,6 +7,9 @@ import (
 
 const MOD_VERSION = "1.0.0"
 
+// GameDependencyKey is the manifest dependency key used to declare the required Subway Builder version.
+const GameDependencyKey = "subway-builder"
+
 //go:embed mod_template.js
 var modTemplate string
 

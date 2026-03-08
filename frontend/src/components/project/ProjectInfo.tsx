@@ -12,7 +12,6 @@ import { useInstalledStore } from "@/stores/installed-store";
 import { UninstallDialog } from "@/components/dialogs/UninstallDialog";
 import { InstallErrorDialog } from "@/components/dialogs/InstallErrorDialog";
 import { PrereleaseConfirmDialog } from "@/components/dialogs/PrereleaseConfirmDialog";
-import { isCompatible } from "@/lib/semver";
 import { toast } from "sonner";
 import { ExternalLink, MapPin, Users, Globe, Loader2, Trash2, CheckCircle, Download } from "lucide-react";
 import Markdown from "react-markdown";
@@ -24,6 +23,7 @@ interface ProjectInfoProps {
   type: "mods" | "maps";
   item: types.ModManifest | types.MapManifest;
   latestVersion?: types.VersionInfo;
+  latestCompatibleVersion?: types.VersionInfo;
   versionsLoading: boolean;
   gameVersion: string;
 }
@@ -34,7 +34,7 @@ function isMapManifest(
   return "city_code" in item;
 }
 
-export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVersion }: ProjectInfoProps) {
+export function ProjectInfo({ type, item, latestVersion, latestCompatibleVersion, versionsLoading, gameVersion }: ProjectInfoProps) {
   const [uninstallOpen, setUninstallOpen] = useState(false);
   const [installError, setInstallError] = useState<{ version: string; message: string } | null>(null);
   const [prereleasePrompt, setPrereleasePrompt] = useState(false);
@@ -42,12 +42,11 @@ export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVe
 
   const installedVersion = getInstalledVersion(item.id);
   const installing = isOperating(item.id);
-  const hasUpdate = installedVersion && latestVersion && installedVersion !== latestVersion.version;
-
-  const latestCompat = latestVersion
-    ? isCompatible(gameVersion, latestVersion.game_version)
-    : null;
-  const latestIncompatible = latestCompat === false;
+  // Use the latest compatible version for install/update buttons
+  const effectiveVersion = latestCompatibleVersion ?? latestVersion;
+  const hasUpdate = installedVersion && effectiveVersion && installedVersion !== effectiveVersion.version;
+  // No compatible version exists at all
+  const noCompatibleVersion = gameVersion && latestVersion && !latestCompatibleVersion;
 
   const handleInstall = async (version: string) => {
     try {
@@ -62,16 +61,16 @@ export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVe
     }
   };
 
-  const handleInstallClick = (version: string) => {
-    if (latestVersion?.prerelease) {
+  const handleInstallClick = (version: string, prerelease?: boolean) => {
+    if (prerelease) {
       setPrereleasePrompt(true);
     } else {
       handleInstall(version);
     }
   };
 
-  const renderInstallButton = (version: string, label: string) => {
-    if (latestIncompatible) {
+  const renderInstallButton = (v: types.VersionInfo, label: string) => {
+    if (noCompatibleVersion) {
       return (
         <TooltipProvider>
           <Tooltip>
@@ -84,15 +83,14 @@ export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVe
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              Not compatible with your installed game version
-              (you have {gameVersion}, need {latestVersion?.game_version})
+              No version compatible with your installed game version ({gameVersion})
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
     }
     return (
-      <Button size="sm" onClick={() => handleInstallClick(version)}>
+      <Button size="sm" onClick={() => handleInstallClick(v.version, v.prerelease)}>
         <Download className="h-4 w-4 mr-1.5" />
         {label}
       </Button>
@@ -118,10 +116,10 @@ export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVe
               <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
               Installing...
             </Button>
-          ) : !installedVersion && latestVersion ? (
-            renderInstallButton(latestVersion.version, `Install ${latestVersion.version}`)
-          ) : hasUpdate && latestVersion ? (
-            renderInstallButton(latestVersion.version, `Update to ${latestVersion.version}`)
+          ) : !installedVersion && effectiveVersion ? (
+            renderInstallButton(effectiveVersion, `Install ${effectiveVersion.version}`)
+          ) : hasUpdate && effectiveVersion ? (
+            renderInstallButton(effectiveVersion, `Update to ${effectiveVersion.version}`)
           ) : installedVersion ? (
             <>
               <Badge variant="secondary" className="gap-1">
@@ -208,13 +206,13 @@ export function ProjectInfo({ type, item, latestVersion, versionsLoading, gameVe
         name={item.name}
       />
 
-      {prereleasePrompt && latestVersion && (
+      {prereleasePrompt && effectiveVersion && (
         <PrereleaseConfirmDialog
           open={prereleasePrompt}
           onOpenChange={(open) => { if (!open) setPrereleasePrompt(false); }}
           itemName={item.name}
-          version={latestVersion.version}
-          onConfirm={() => handleInstall(latestVersion.version)}
+          version={effectiveVersion.version}
+          onConfirm={() => handleInstall(effectiveVersion.version)}
         />
       )}
 
