@@ -36,21 +36,38 @@ type Downloader struct {
 	OnProgress        ProgressFunc
 	OnExtractProgress ExtractProgressFunc
 
-	queueMu     sync.Mutex
-	queueCond   *sync.Cond
-	queue       []*downloadOperation
-	queuedByKey map[string]*downloadOperation
+	downloadMu       sync.Mutex
+	downloadCond     *sync.Cond
+	queue            []*downloadOperation
+	queuedOperations map[string]*downloadOperation
 }
 
 type downloadOperation struct {
-	key     string
-	run     func() operationResult
-	waiters []chan operationResult
+	key  string
+	run  func() operationResult
+	done chan operationResult
 }
 
 type operationResult struct {
 	genericResponse    types.GenericResponse
 	mapExtractResponse types.MapExtractResponse
+}
+
+// operationAction is an internal type to categorize all possible download actions within the queue
+type operationAction string
+
+const (
+	operationActionInstall   operationAction = "install"
+	operationActionUninstall operationAction = "uninstall"
+)
+
+func isValidOperationAction(action operationAction) bool {
+	switch action {
+	case operationActionInstall, operationActionUninstall:
+		return true
+	default:
+		return false
+	}
 }
 
 // NewDownloader creates a new Downloader instance with necessary paths and references.
@@ -62,72 +79,77 @@ func NewDownloader(cfg *config.Config, reg *registry.Registry, l logger.Logger) 
 		Config:      cfg,
 		Logger:      l,
 	}
-	d.ensureQueue()
+	d.startQueue()
 	return d
 }
 
-func (d *Downloader) ensureQueue() {
-	d.queueMu.Lock()
-	defer d.queueMu.Unlock()
-	if d.queueCond != nil {
+// startQueue initializes the download queue and starts the worker goroutine if it hasn't been started yet.
+func (d *Downloader) startQueue() {
+	d.downloadMu.Lock()
+	defer d.downloadMu.Unlock()
+	// Ensure the queue is started only once
+	if d.downloadCond != nil {
 		return
 	}
-	d.queueCond = sync.NewCond(&d.queueMu)
-	d.queuedByKey = make(map[string]*downloadOperation)
-	go d.runQueueWorker()
+	d.downloadCond = sync.NewCond(&d.downloadMu)
+	d.queuedOperations = make(map[string]*downloadOperation)
+	go d.runQueue()
 }
 
-func (d *Downloader) runQueueWorker() {
+// runQueue processes download operations sequentially, ensuring that only one operation is present in the queue at a time.
+func (d *Downloader) runQueue() {
 	for {
-		d.queueMu.Lock()
+		d.downloadMu.Lock()
 		for len(d.queue) == 0 {
-			d.queueCond.Wait()
+			d.downloadCond.Wait()
 		}
 		op := d.queue[0]
 		d.queue = d.queue[1:]
-		d.queueMu.Unlock()
+		d.downloadMu.Unlock()
 
 		result := op.run()
 
-		d.queueMu.Lock()
-		delete(d.queuedByKey, op.key)
-		waiters := op.waiters
-		d.queueMu.Unlock()
+		d.downloadMu.Lock()
+		delete(d.queuedOperations, op.key)
+		d.downloadMu.Unlock()
 
-		for _, waiter := range waiters {
-			waiter <- result
-			close(waiter)
-		}
+		op.done <- result
+		close(op.done)
 	}
 }
 
-func (d *Downloader) enqueueOperation(key string, run func() operationResult) operationResult {
-	d.ensureQueue()
-	resultCh := make(chan operationResult, 1)
+// enqueueOperation adds a new operation to the queue.
+// If another operation with the same key is already queued or running, the duplicate is dropped.
+func (d *Downloader) enqueueOperation(key string, run func() operationResult) (operationResult, bool) {
+	d.startQueue()
 
-	d.queueMu.Lock()
-	if existing, ok := d.queuedByKey[key]; ok {
-		existing.waiters = append(existing.waiters, resultCh)
-		d.queueMu.Unlock()
-		return <-resultCh
+	d.downloadMu.Lock()
+	if _, ok := d.queuedOperations[key]; ok {
+		d.downloadMu.Unlock()
+		return operationResult{}, true
 	}
 
 	op := &downloadOperation{
-		key:     key,
-		run:     run,
-		waiters: []chan operationResult{resultCh},
+		key:  key,
+		run:  run,
+		done: make(chan operationResult, 1),
 	}
 	d.queue = append(d.queue, op)
-	d.queuedByKey[key] = op
-	d.queueCond.Signal()
-	d.queueMu.Unlock()
+	d.queuedOperations[key] = op
+	d.downloadCond.Signal()
+	d.downloadMu.Unlock()
 
-	return <-resultCh
+	return <-op.done, false
 }
 
-func (d *Downloader) operationKey(action string, assetType types.AssetType, assetID string, version string) string {
+// operationKey generates a unique key for a given operation based on its action, asset type, asset ID, and version.
+func (d *Downloader) operationKey(action operationAction, assetType types.AssetType, assetID string, version string) string {
+	if !isValidOperationAction(action) {
+		panic(fmt.Sprintf("invalid downloader operation action: %q", action))
+	}
+
 	return strings.Join([]string{
-		strings.TrimSpace(action),
+		strings.TrimSpace(string(action)),
 		string(assetType),
 		strings.TrimSpace(assetID),
 		strings.TrimSpace(version),
@@ -230,10 +252,13 @@ func (d *Downloader) getMapThumbnailPath() string {
 }
 
 func (d *Downloader) UninstallMod(modId string) types.GenericResponse {
-	key := d.operationKey("uninstall", types.AssetTypeMod, modId, "")
-	result := d.enqueueOperation(key, func() operationResult {
+	key := d.operationKey(operationActionUninstall, types.AssetTypeMod, modId, "")
+	result, deduped := d.enqueueOperation(key, func() operationResult {
 		return operationResult{genericResponse: d.uninstallModNow(modId)}
 	})
+	if deduped {
+		return d.warnResponse("Duplicate request skipped: uninstall already queued", "asset_type", types.AssetTypeMod, "asset_id", modId)
+	}
 	return result.genericResponse
 }
 
@@ -261,10 +286,13 @@ func (d *Downloader) uninstallModNow(modId string) types.GenericResponse {
 }
 
 func (d *Downloader) UninstallMap(mapId string) types.GenericResponse {
-	key := d.operationKey("uninstall", types.AssetTypeMap, mapId, "")
-	result := d.enqueueOperation(key, func() operationResult {
+	key := d.operationKey(operationActionUninstall, types.AssetTypeMap, mapId, "")
+	result, deduped := d.enqueueOperation(key, func() operationResult {
 		return operationResult{genericResponse: d.uninstallMapNow(mapId)}
 	})
+	if deduped {
+		return d.warnResponse("Duplicate request skipped: uninstall already queued", "asset_type", types.AssetTypeMap, "asset_id", mapId)
+	}
 	return result.genericResponse
 }
 
@@ -299,10 +327,13 @@ func (d *Downloader) uninstallMapNow(mapId string) types.GenericResponse {
 
 // InstallMod handles the installation of a mod given its ID and version, including downloading, extracting, and updating the registry.
 func (d *Downloader) InstallMod(modId string, version string) types.GenericResponse {
-	key := d.operationKey("install", types.AssetTypeMod, modId, version)
-	result := d.enqueueOperation(key, func() operationResult {
+	key := d.operationKey(operationActionInstall, types.AssetTypeMod, modId, version)
+	result, deduped := d.enqueueOperation(key, func() operationResult {
 		return operationResult{genericResponse: d.installModNow(modId, version)}
 	})
+	if deduped {
+		return d.warnResponse("Duplicate request skipped: install already queued", "asset_type", types.AssetTypeMod, "asset_id", modId, "version", version)
+	}
 	return result.genericResponse
 }
 
@@ -374,10 +405,13 @@ func (d *Downloader) installModNow(modId string, version string) types.GenericRe
 
 // InstallMap handles the installation of a map given its ID and version, including downloading, extracting, validating files, and updating the registry.
 func (d *Downloader) InstallMap(mapId string, version string) types.MapExtractResponse {
-	key := d.operationKey("install", types.AssetTypeMap, mapId, version)
-	result := d.enqueueOperation(key, func() operationResult {
+	key := d.operationKey(operationActionInstall, types.AssetTypeMap, mapId, version)
+	result, deduped := d.enqueueOperation(key, func() operationResult {
 		return operationResult{mapExtractResponse: d.installMapNow(mapId, version)}
 	})
+	if deduped {
+		return d.warnMapExtractResponse("Duplicate request skipped: install already queued", types.ConfigData{}, "asset_type", types.AssetTypeMap, "asset_id", mapId, "version", version)
+	}
 	return result.mapExtractResponse
 }
 
