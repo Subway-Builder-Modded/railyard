@@ -297,7 +297,7 @@ func DefaultExecutableCandidates() []string {
 		programFilesX86 := strings.TrimSpace(os.Getenv("ProgramFiles(x86)"))
 
 		return []string{
-			filepath.Join(localAppData, "Programs", "subway-builder", "Subway Builder.exe"),
+			filepath.Join(localAppData, "Programs", "Subway Builder", "Subway Builder.exe"),
 			filepath.Join(programFiles, "Subway Builder", "Subway Builder.exe"),
 			filepath.Join(programFilesX86, "Subway Builder", "Subway Builder.exe"),
 		}
