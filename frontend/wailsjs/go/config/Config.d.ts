@@ -5,6 +5,8 @@ import {context} from '../models';
 
 export function ClearConfig():Promise<types.AppConfig>;
 
+export function CompleteSetup():Promise<types.ResolveConfigResult>;
+
 export function GetConfig():Promise<types.ResolveConfigResult>;
 
 export function OpenExecutableDialog(arg1:types.SetConfigPathOptions):Promise<types.SetConfigPathResult>;
@@ -20,6 +22,8 @@ export function SetConfig(arg1:types.AppConfig):Promise<types.AppConfig>;
 export function SetContext(arg1:context.Context):Promise<void>;
 
 export function TryAutoDetectPath(arg1:Array<string>,arg2:boolean,arg3:any,arg4:any):Promise<types.SetConfigPathResult|boolean>;
+
+export function UpdateCheckForUpdatesOnLaunch(arg1:boolean):Promise<types.ResolveConfigResult>;
 
 export function UpdateConfig(arg1:any,arg2:boolean):Promise<types.ResolveConfigResult>;
 

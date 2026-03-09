@@ -10,8 +10,10 @@ import (
 
 // AppConfig is persisted at ConfigPath() and is used for global configuration
 type AppConfig struct {
-	MetroMakerDataPath string `json:"metroMakerDataPath,omitempty"`
-	ExecutablePath     string `json:"executablePath,omitempty"`
+	MetroMakerDataPath      string `json:"metroMakerDataPath,omitempty"`
+	ExecutablePath          string `json:"executablePath,omitempty"`
+	CheckForUpdatesOnLaunch bool   `json:"checkForUpdatesOnLaunch"`
+	SetupCompleted          bool   `json:"setupCompleted"`
 	// Other fields to be appended here
 }
 

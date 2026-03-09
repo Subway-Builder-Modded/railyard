@@ -22,7 +22,8 @@ import {
 export function SetupScreen() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
-  const { config, validation, openDataFolderDialog, openExecutableDialog, saveConfig } =
+  const [checkForUpdates, setCheckForUpdates] = useState<boolean | null>(null);
+  const { config, validation, openDataFolderDialog, openExecutableDialog, updateCheckForUpdatesOnLaunch, completeSetup } =
     useConfigStore();
 
   const handleDataFolder = async (autoDetect: boolean) => {
@@ -46,7 +47,10 @@ export function SetupScreen() {
   const handleFinish = async () => {
     setSaving(true);
     try {
-      await saveConfig();
+      if (checkForUpdates !== null) {
+        await updateCheckForUpdatesOnLaunch(checkForUpdates);
+      }
+      await completeSetup();
     } finally {
       setSaving(false);
     }
@@ -66,7 +70,7 @@ export function SetupScreen() {
                 Set the path to your MetroMaker data folder.
               </CardDescription>
             </>
-          ) : (
+          ) : step === 2 ? (
             <>
               <div className="mx-auto mb-2">
                 <Gamepad2 className="h-10 w-10 text-primary" />
@@ -76,6 +80,17 @@ export function SetupScreen() {
                 Set the path to your game executable.
               </CardDescription>
             </>
+          ) : (
+            <>
+            <div className="mx-auto mb-2">
+              <CheckCircle className="h-10 w-10 text-green-600" />
+            </div>
+            <CardTitle className="text-2xl">Automatically Check for Updates</CardTitle>
+            <CardDescription>
+              Would you like Railyard to automatically check for updates when it launches? You can change this later in settings.
+            </CardDescription>            
+            </>
+
           )}
 
           {/* Step indicators */}
@@ -88,6 +103,11 @@ export function SetupScreen() {
             <span
               className={`h-2 w-6 rounded-full ${
                 step === 2 ? "bg-primary" : "bg-muted"
+              }`}
+            />
+            <span
+              className={`h-2 w-6 rounded-full ${
+                step === 3 ? "bg-primary" : "bg-muted"
               }`}
             />
           </div>
@@ -142,7 +162,7 @@ export function SetupScreen() {
                 </Button>
               </div>
             </>
-          ) : (
+          ) : step === 2 ? (
             <>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button
@@ -185,10 +205,37 @@ export function SetupScreen() {
                   Back
                 </Button>
                 <Button
-                  onClick={handleFinish}
-                  disabled={!validation?.executablePathValid || saving}
+                  onClick={() => setStep(3)}
+                  disabled={!validation?.executablePathValid}
                 >
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Next
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-4 w-full justify-center">
+                <Button 
+                  variant={checkForUpdates === true ? "default" : "outline"}
+                  onClick={() => setCheckForUpdates(true)}
+                >
+                  Yes
+                </Button>
+                <Button 
+                  variant={checkForUpdates === false ? "default" : "outline"}
+                  onClick={() => setCheckForUpdates(false)}
+                >
+                  No
+                </Button>
+              </div>
+
+              <div className="flex justify-between">
+                <Button variant="outline" onClick={() => setStep(2)}>
+                  Back
+                </Button>
+                <Button onClick={handleFinish} disabled={checkForUpdates === null || saving}>
+                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Finish Setup
                 </Button>
               </div>

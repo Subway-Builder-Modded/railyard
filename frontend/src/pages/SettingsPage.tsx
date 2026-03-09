@@ -23,11 +23,21 @@ import { toast } from "sonner";
 import { FolderOpen, Gamepad2, AlertTriangle } from "lucide-react";
 
 export function SettingsPage() {
-  const { config, validation, openDataFolderDialog, openExecutableDialog, saveConfig, clearConfig } = useConfigStore();
+  const { config, validation, openDataFolderDialog, openExecutableDialog, saveConfig, clearConfig, updateCheckForUpdatesOnLaunch } = useConfigStore();
   const profile = useProfileStore((s) => s.profile);
   const resetProfile = useProfileStore((s) => s.resetProfile);
 
   const [confirmAction, setConfirmAction] = useState<"config" | "profile" | null>(null);
+
+  const handleChangeUpdatesOnLaunch = async () => {
+    try {
+      const newValue = !config?.checkForUpdatesOnLaunch;
+      await updateCheckForUpdatesOnLaunch(newValue);
+      toast.success(`Check for updates on launch ${newValue ? "enabled" : "disabled"}.`);
+    } catch {
+      toast.error("Failed to update check for updates on launch setting.");
+    }
+  };
 
   const handleChangeDataFolder = async () => {
     try {
@@ -153,6 +163,11 @@ export function SettingsPage() {
                 <SelectItem value="48">48</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium">Check For Updates On Launch</label>
+            <Button variant="outline" size="sm" onClick={handleChangeUpdatesOnLaunch}>{config?.checkForUpdatesOnLaunch ? "Disable" : "Enable"}</Button>
           </div>
         </CardContent>
       </Card>

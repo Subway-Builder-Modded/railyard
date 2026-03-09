@@ -6,6 +6,10 @@ export function ClearConfig() {
   return window['go']['config']['Config']['ClearConfig']();
 }
 
+export function CompleteSetup() {
+  return window['go']['config']['Config']['CompleteSetup']();
+}
+
 export function GetConfig() {
   return window['go']['config']['Config']['GetConfig']();
 }
@@ -36,6 +40,10 @@ export function SetContext(arg1) {
 
 export function TryAutoDetectPath(arg1, arg2, arg3, arg4) {
   return window['go']['config']['Config']['TryAutoDetectPath'](arg1, arg2, arg3, arg4);
+}
+
+export function UpdateCheckForUpdatesOnLaunch(arg1) {
+  return window['go']['config']['Config']['UpdateCheckForUpdatesOnLaunch'](arg1);
 }
 
 export function UpdateConfig(arg1, arg2) {

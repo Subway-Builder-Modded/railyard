@@ -24,6 +24,7 @@ function App() {
   const initConfig = useConfigStore((s) => s.initialize);
   const configInitialized = useConfigStore((s) => s.initialized);
   const isConfigured = useConfigStore((s) => s.validation?.isConfigured ?? false);
+  const setupCompleted = useConfigStore((s) => s.config?.setupCompleted ?? false);
 
   const initProfile = useProfileStore((s) => s.initialize);
 
@@ -51,8 +52,8 @@ function App() {
     return null;
   }
 
-  // Gate: show setup if not configured
-  if (!isConfigured) {
+  // Gate: show setup if not configured OR setup not completed
+  if (!isConfigured || !setupCompleted) {
     return (
       <>
         <SetupScreen />

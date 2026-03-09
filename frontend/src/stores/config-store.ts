@@ -6,6 +6,8 @@ import {
   ClearConfig,
   OpenMetroMakerDataFolderDialog,
   OpenExecutableDialog,
+  UpdateCheckForUpdatesOnLaunch,
+  CompleteSetup,
 } from '../../wailsjs/go/config/Config';
 
 interface ConfigState {
@@ -21,6 +23,8 @@ interface ConfigState {
   openExecutableDialog: (allowAutoDetect: boolean) => Promise<types.SetConfigPathResult>;
   saveConfig: () => Promise<void>;
   clearConfig: () => Promise<void>;
+  updateCheckForUpdatesOnLaunch: (checkForUpdates: boolean) => Promise<types.ResolveConfigResult>;
+  completeSetup: () => Promise<void>;
 }
 
 export const useConfigStore = create<ConfigState>((set, get) => ({
@@ -93,6 +97,28 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
     try {
       await ClearConfig();
       const result = await GetConfig();
+      set({ config: result.config, validation: result.validation, loading: false });
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err), loading: false });
+    }
+  },
+
+  updateCheckForUpdatesOnLaunch: async (checkForUpdates: boolean) => {
+    set({ error: null });
+    try {
+      const result = await UpdateCheckForUpdatesOnLaunch(checkForUpdates);
+      set({ config: result.config, validation: result.validation });
+      return result;
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err) });
+      throw err;
+    }
+  },
+
+  completeSetup: async () => {
+    set({ loading: true, error: null });
+    try {
+      const result = await CompleteSetup();
       set({ config: result.config, validation: result.validation, loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });

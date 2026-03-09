@@ -96,6 +96,18 @@ func (s *Config) UpdateConfig(mutator func(*types.AppConfig), persist bool) (typ
 	return resolveConfigResultFromAppConfig(s.Cfg), nil
 }
 
+func (s *Config) UpdateCheckForUpdatesOnLaunch(checkForUpdates bool) (types.ResolveConfigResult, error) {
+	return s.UpdateConfig(func(cfg *types.AppConfig) {
+		cfg.CheckForUpdatesOnLaunch = checkForUpdates
+	}, false)
+}
+
+func (s *Config) CompleteSetup() (types.ResolveConfigResult, error) {
+	return s.UpdateConfig(func(cfg *types.AppConfig) {
+		cfg.SetupCompleted = true
+	}, true) // Persist to disk immediately
+}
+
 // UpdateExecutable updates and persists ExecutablePath to the runtime app config.
 func (s *Config) UpdateExecutable(executablePath string) (types.ResolveConfigResult, error) {
 	return s.UpdateConfig(func(cfg *types.AppConfig) {

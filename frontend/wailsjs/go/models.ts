@@ -3,6 +3,8 @@ export namespace types {
 	export class AppConfig {
 	    metroMakerDataPath?: string;
 	    executablePath?: string;
+	    checkForUpdatesOnLaunch: boolean;
+	    setupCompleted: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new AppConfig(source);
@@ -12,6 +14,8 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.metroMakerDataPath = source["metroMakerDataPath"];
 	        this.executablePath = source["executablePath"];
+	        this.checkForUpdatesOnLaunch = source["checkForUpdatesOnLaunch"];
+	        this.setupCompleted = source["setupCompleted"];
 	    }
 	}
 	export class ConfigData {
