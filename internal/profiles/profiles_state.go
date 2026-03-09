@@ -152,4 +152,54 @@ func (s *UserProfiles) ResetUserProfiles() types.UserProfileResult {
 	}
 }
 
+// UpdateUIPreferences updates the active profile UI preferences and persists the profile state.
+func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.UserProfileResult {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logRequest("UpdateUIPreferences", "theme", uiPrefs.Theme, "default_per_page", uiPrefs.DefaultPerPage)
+
+	// Create a deep copy of the current state
+	nextState := types.UserProfilesState{
+		ActiveProfileID: s.state.ActiveProfileID,
+		Profiles:        make(map[string]types.UserProfile, len(s.state.Profiles)),
+	}
+	for id, p := range s.state.Profiles {
+		nextState.Profiles[id] = p
+	}
+
+	// Update the profile with new preferences
+	profile := nextState.Profiles[s.state.ActiveProfileID]
+	profile.UIPreferences = uiPrefs
+	nextState.Profiles[s.state.ActiveProfileID] = profile
+
+	validatedState, err := types.ValidateState(nextState)
+	if err != nil {
+		return types.UserProfileResult{
+			GenericResponse: types.ErrorResponse("Invalid UI preferences"),
+			Profile:         s.state.Profiles[s.state.ActiveProfileID],
+			Errors: []types.UserProfilesError{
+				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "Invalid UI preferences: "+err.Error()),
+			},
+		}
+	}
+
+	s.setState(validatedState)
+
+	if err := WriteUserProfilesState(validatedState); err != nil {
+		return types.UserProfileResult{
+			GenericResponse: types.ErrorResponse("Failed to persist UI preferences"),
+			Profile:         validatedState.Profiles[s.state.ActiveProfileID],
+			Errors: []types.UserProfilesError{
+				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "Failed to persist UI preferences: "+err.Error()),
+			},
+		}
+	}
+
+	return types.UserProfileResult{
+		GenericResponse: types.SuccessResponse("UI preferences updated"),
+		Profile:         validatedState.Profiles[s.state.ActiveProfileID],
+		Errors:          []types.UserProfilesError{},
+	}
+}
+
 // TODO: Add functions to Create/Delete/Swap profiles

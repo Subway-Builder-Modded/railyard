@@ -128,3 +128,24 @@
     @apply bg-background text-foreground;
     }
 }
+
+
+@layer base {
+  .theme-ready,
+  .theme-ready body,
+  .theme-ready [class*="bg-"],
+  .theme-ready [class*="text-"],
+  .theme-ready [class*="border-"] {
+    transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, fill 220ms ease, stroke 220ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-ready,
+    .theme-ready body,
+    .theme-ready [class*="bg-"],
+    .theme-ready [class*="text-"],
+    .theme-ready [class*="border-"] {
+      transition: none;
+    }
+  }
+}

@@ -1362,3 +1362,33 @@ func TestSyncAssetSubscriptionsInstallDecisionsMods(t *testing.T) {
 	require.Equal(t, 1, installCalls)
 	require.Equal(t, 1, uninstallCalls)
 }
+
+func TestUpdateUIPreferences(t *testing.T) {
+	setEnv(t)
+
+	svc := loadedUserProfilesService(t, types.InitialProfilesState())
+	result := svc.UpdateUIPreferences(types.ThemeLight, types.PageSize24)
+
+	require.Equal(t, types.ResponseSuccess, result.Status)
+	require.Equal(t, types.ThemeLight, result.Profile.UIPreferences.Theme)
+	require.Equal(t, types.PageSize24, result.Profile.UIPreferences.DefaultPerPage)
+
+	persisted, err := ReadUserProfilesState()
+	require.NoError(t, err)
+	require.Equal(t, types.ThemeLight, persisted.Profiles[persisted.ActiveProfileID].UIPreferences.Theme)
+	require.Equal(t, types.PageSize24, persisted.Profiles[persisted.ActiveProfileID].UIPreferences.DefaultPerPage)
+}
+
+func TestUpdateUIPreferencesRejectsInvalid(t *testing.T) {
+	setEnv(t)
+
+	svc := loadedUserProfilesService(t, types.InitialProfilesState())
+	result := svc.UpdateUIPreferences(types.ThemeMode("retro"), types.PageSize(30))
+
+	require.Equal(t, types.ResponseError, result.Status)
+	requireProfileErrorType(t, result.Errors, types.ErrorUnknown)
+
+	active := svc.GetActiveProfile()
+	require.Equal(t, types.ThemeDark, active.Profile.UIPreferences.Theme)
+	require.Equal(t, types.PageSize12, active.Profile.UIPreferences.DefaultPerPage)
+}

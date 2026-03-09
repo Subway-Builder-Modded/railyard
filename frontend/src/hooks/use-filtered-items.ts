@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { types } from '../../wailsjs/go/models';
 import { type PerPage, type SortOption } from '../lib/constants';
+import { useProfileStore } from '@/stores/profile-store';
 
 export type TaggedItem =
   | { type: "mods"; item: types.ModManifest }
@@ -57,14 +58,18 @@ function compareItems(a: TaggedItem, b: TaggedItem, sort: SortOption): number {
 }
 
 export function useFilteredItems({ mods, maps }: UseFilteredItemsParams) {
+  const defaultPerPage = useProfileStore((s) => s.defaultPerPage)() as PerPage;
   const [query, setQuery] = useState("");
   const [type, setType] = useState<TypeFilter>("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>("name-asc");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState<PerPage>(12);
+  const [perPage, setPerPage] = useState<PerPage>(defaultPerPage);
 
-  // Track previous filter values to reset page when they change
+  useEffect(() => {
+    setPerPage(defaultPerPage);
+  }, [defaultPerPage]);
+
   const prevFiltersRef = useRef({ query, type, selectedTags, sort, perPage });
   useEffect(() => {
     const prev = prevFiltersRef.current;
@@ -89,25 +94,19 @@ export function useFilteredItems({ mods, maps }: UseFilteredItemsParams) {
   const filtered = useMemo(() => {
     let result = allItems;
 
-    // Type filter
     if (type !== "all") {
       result = result.filter((i) => i.type === type);
     }
 
-    // Text search
     if (query.trim()) {
       result = result.filter((i) => matchesQuery(i, query.trim()));
     }
 
-    // Tags filter
     if (selectedTags.length > 0) {
       result = result.filter((i) => matchesTags(i, selectedTags));
     }
 
-    // Sort
-    result = [...result].sort((a, b) => compareItems(a, b, sort));
-
-    return result;
+    return [...result].sort((a, b) => compareItems(a, b, sort));
   }, [allItems, query, type, selectedTags, sort]);
 
   const totalResults = filtered.length;
@@ -117,13 +116,6 @@ export function useFilteredItems({ mods, maps }: UseFilteredItemsParams) {
     const start = (page - 1) * perPage;
     return filtered.slice(start, start + perPage);
   }, [filtered, page, perPage]);
-
-  const stableSetQuery = useCallback((v: string) => setQuery(v), []);
-  const stableSetType = useCallback((v: TypeFilter) => setType(v), []);
-  const stableSetSelectedTags = useCallback((v: string[]) => setSelectedTags(v), []);
-  const stableSetSort = useCallback((v: SortOption) => setSort(v), []);
-  const stableSetPage = useCallback((v: number) => setPage(v), []);
-  const stableSetPerPage = useCallback((v: PerPage) => setPerPage(v), []);
 
   return {
     items,
@@ -135,11 +127,11 @@ export function useFilteredItems({ mods, maps }: UseFilteredItemsParams) {
     selectedTags,
     sort,
     perPage,
-    setQuery: stableSetQuery,
-    setType: stableSetType,
-    setSelectedTags: stableSetSelectedTags,
-    setSort: stableSetSort,
-    setPage: stableSetPage,
-    setPerPage: stableSetPerPage,
+    setQuery: useCallback((v: string) => setQuery(v), []),
+    setType: useCallback((v: TypeFilter) => setType(v), []),
+    setSelectedTags: useCallback((v: string[]) => setSelectedTags(v), []),
+    setSort: useCallback((v: SortOption) => setSort(v), []),
+    setPage: useCallback((v: number) => setPage(v), []),
+    setPerPage: useCallback((v: PerPage) => setPerPage(v), []),
   };
 }

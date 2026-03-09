@@ -37,3 +37,7 @@ export function UpdateAllSubscriptionsToLatest(arg1) {
 export function UpdateSubscriptions(arg1) {
   return window['go']['profiles']['UserProfiles']['UpdateSubscriptions'](arg1);
 }
+
+export function UpdateUIPreferences(arg1, arg2) {
+  return window['go']['profiles']['UserProfiles']['UpdateUIPreferences'](arg1, arg2);
+}

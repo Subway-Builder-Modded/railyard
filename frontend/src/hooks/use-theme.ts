@@ -7,6 +7,10 @@ export function useTheme() {
   useEffect(() => {
     const root = document.documentElement;
 
+    if (!root.classList.contains("theme-ready")) {
+      requestAnimationFrame(() => root.classList.add("theme-ready"));
+    }
+
     if (theme === "system") {
       const mql = window.matchMedia("(prefers-color-scheme: dark)");
       root.classList.toggle("dark", mql.matches);

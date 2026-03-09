@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { types } from '../../wailsjs/go/models';
-import { GetActiveProfile, UpdateSubscriptions, ResetUserProfiles } from '../../wailsjs/go/profiles/UserProfiles';
+import { GetActiveProfile, UpdateSubscriptions, ResetUserProfiles, UpdateUIPreferences } from '../../wailsjs/go/profiles/UserProfiles';
 
 interface ProfileState {
   profile: types.UserProfile | null;
@@ -12,6 +12,7 @@ interface ProfileState {
   isSubscribed: (type: "mods" | "maps", id: string) => boolean;
   theme: () => string;
   defaultPerPage: () => number;
+  updateUIPreferences: (theme: string, defaultPerPage: number) => Promise<void>;
   updateSubscription: (
     type: "mods" | "maps",
     id: string,
@@ -47,6 +48,14 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   theme: () => get().profile?.uiPreferences?.theme ?? "dark",
   defaultPerPage: () => get().profile?.uiPreferences?.defaultPerPage ?? 12,
+
+  updateUIPreferences: async (theme, defaultPerPage) => {
+    const result = await UpdateUIPreferences(theme, defaultPerPage);
+    if (result.status !== "success") {
+      throw new Error(result.message || "Failed to update UI preferences");
+    }
+    set({ profile: result.profile });
+  },
 
   updateSubscription: async (type, id, action, version) => {
     const profile = get().profile;

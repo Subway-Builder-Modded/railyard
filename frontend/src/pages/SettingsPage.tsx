@@ -22,10 +22,22 @@ import {
 import { toast } from "sonner";
 import { FolderOpen, Gamepad2, AlertTriangle } from "lucide-react";
 
+const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
+const THEME_OPTIONS = ["dark", "light", "system"] as const;
+
 export function SettingsPage() {
-  const { config, validation, openDataFolderDialog, openExecutableDialog, saveConfig, clearConfig, updateCheckForUpdatesOnLaunch } = useConfigStore();
+  const {
+    config,
+    validation,
+    openDataFolderDialog,
+    openExecutableDialog,
+    saveConfig,
+    clearConfig,
+    updateCheckForUpdatesOnLaunch,
+  } = useConfigStore();
   const profile = useProfileStore((s) => s.profile);
   const resetProfile = useProfileStore((s) => s.resetProfile);
+  const updateUIPreferences = useProfileStore((s) => s.updateUIPreferences);
 
   const [confirmAction, setConfirmAction] = useState<"config" | "profile" | null>(null);
 
@@ -36,6 +48,31 @@ export function SettingsPage() {
       toast.success(`Check for updates on launch ${newValue ? "enabled" : "disabled"}.`);
     } catch {
       toast.error("Failed to update check for updates on launch setting.");
+    }
+  };
+
+  const handleThemeChange = async (theme: string) => {
+    if (!profile || !THEME_OPTIONS.includes(theme as (typeof THEME_OPTIONS)[number])) return;
+
+    try {
+      await updateUIPreferences(theme, profile.uiPreferences?.defaultPerPage ?? 12);
+      toast.success("Theme updated.");
+    } catch {
+      toast.error("Failed to update theme.");
+    }
+  };
+
+  const handleDefaultPerPageChange = async (value: string) => {
+    if (!profile) return;
+    const parsed = Number.parseInt(value, 10);
+
+    if (!PAGE_SIZE_OPTIONS.includes(parsed as (typeof PAGE_SIZE_OPTIONS)[number])) return;
+
+    try {
+      await updateUIPreferences(profile.uiPreferences?.theme ?? "dark", parsed);
+      toast.success("Default cards per page updated.");
+    } catch {
+      toast.error("Failed to update default cards per page.");
     }
   };
 
@@ -81,7 +118,6 @@ export function SettingsPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
 
-      {/* Game Paths */}
       <Card>
         <CardHeader>
           <CardTitle>Game Paths</CardTitle>
@@ -130,7 +166,6 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Preferences */}
       <Card>
         <CardHeader>
           <CardTitle>Preferences</CardTitle>
@@ -139,7 +174,7 @@ export function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Theme</label>
-            <Select value={profile?.uiPreferences?.theme ?? "system"} disabled>
+            <Select value={profile?.uiPreferences?.theme ?? "system"} onValueChange={handleThemeChange}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
@@ -153,7 +188,7 @@ export function SettingsPage() {
 
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Default Per Page</label>
-            <Select value={String(profile?.uiPreferences?.defaultPerPage ?? 12)} disabled>
+            <Select value={String(profile?.uiPreferences?.defaultPerPage ?? 12)} onValueChange={handleDefaultPerPageChange}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
@@ -172,7 +207,6 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Danger Zone */}
       <Card className="border-destructive/50">
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
@@ -200,7 +234,6 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Confirmation Dialog */}
       <Dialog open={confirmAction !== null} onOpenChange={(open) => !open && setConfirmAction(null)}>
         <DialogContent>
           <DialogHeader>

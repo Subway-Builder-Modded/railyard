@@ -19,3 +19,5 @@ export function SyncSubscriptions(arg1:string):Promise<types.SyncSubscriptionsRe
 export function UpdateAllSubscriptionsToLatest(arg1:string):Promise<types.UpdateSubscriptionsResult>;
 
 export function UpdateSubscriptions(arg1:types.UpdateSubscriptionsRequest):Promise<types.UpdateSubscriptionsResult>;
+
+export function UpdateUIPreferences(arg1:types.ThemeMode,arg2:types.PageSize):Promise<types.UserProfileResult>;
