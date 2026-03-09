@@ -433,6 +433,64 @@ export namespace types {
 	        this.mods = source["mods"];
 	    }
 	}
+	export class UserProfilesError {
+	    profileId: string;
+	    assetId: string;
+	    assetType: string;
+	    errorType: string;
+	    message: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UserProfilesError(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.profileId = source["profileId"];
+	        this.assetId = source["assetId"];
+	        this.assetType = source["assetType"];
+	        this.errorType = source["errorType"];
+	        this.message = source["message"];
+	    }
+	}
+	export class SyncSubscriptionsResult {
+	    status: string;
+	    message: string;
+	    profileId: string;
+	    operations: SubscriptionOperation[];
+	    errors: UserProfilesError[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SyncSubscriptionsResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.profileId = source["profileId"];
+	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class SystemPreferences {
 	    refreshRegistryOnStartup: boolean;
 	
@@ -544,6 +602,7 @@ export namespace types {
 	    profile: UserProfile;
 	    persisted: boolean;
 	    operations: SubscriptionOperation[];
+	    errors: UserProfilesError[];
 	
 	    static createFrom(source: any = {}) {
 	        return new UpdateSubscriptionsResult(source);
@@ -556,6 +615,44 @@ export namespace types {
 	        this.profile = this.convertValues(source["profile"], UserProfile);
 	        this.persisted = source["persisted"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class UserProfileResult {
+	    status: string;
+	    message: string;
+	    profile: UserProfile;
+	    errors: UserProfilesError[];
+	
+	    static createFrom(source: any = {}) {
+	        return new UserProfileResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.profile = this.convertValues(source["profile"], UserProfile);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

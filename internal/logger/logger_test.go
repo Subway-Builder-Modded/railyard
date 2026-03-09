@@ -97,6 +97,29 @@ func TestAppLoggerErrorIncludesErrorField(t *testing.T) {
 	require.Contains(t, content, "kitty=bad")
 }
 
+func TestAppLoggerMultipleErrorIncludesErrorCountAndList(t *testing.T) {
+	setEnv(t)
+
+	l := NewAppLogger()
+	require.NoError(t, l.Start())
+
+	l.MultipleError("no barking allowed", []error{
+		errors.New("meow supremacy"),
+		nil,
+		errors.New("pspspsps"),
+	}, "kitty", "good")
+	require.NoError(t, l.Shutdown())
+
+	content := readLogContent(t)
+	require.Contains(t, content, "level=ERROR")
+	require.Contains(t, content, "no barking allowed")
+	require.Contains(t, content, "error_count=3")
+	require.Contains(t, content, "meow supremacy")
+	require.Contains(t, content, "pspspsps")
+	require.Contains(t, content, "<nil>")
+	require.Contains(t, content, "kitty=good")
+}
+
 func TestAppLoggerCanRestartAfterShutdown(t *testing.T) {
 	setEnv(t)
 

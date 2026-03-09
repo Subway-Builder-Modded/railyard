@@ -31,8 +31,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     if (get().initialized) return;
     set({ loading: true, error: null });
     try {
-      const profile = await GetActiveProfile();
-      set({ profile, initialized: true, loading: false });
+      const result = await GetActiveProfile();
+      set({ profile: result.profile, initialized: true, loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });
     }
@@ -68,9 +68,8 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   resetProfile: async () => {
     set({ loading: true, error: null });
     try {
-      await ResetUserProfiles();
-      const profile = await GetActiveProfile();
-      set({ profile, loading: false });
+      const resetResult = await ResetUserProfiles();
+      set({ profile: resetResult.profile, loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });
     }

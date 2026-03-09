@@ -118,33 +118,31 @@ func (a *App) shutdown(ctx context.Context) {
 }
 
 func resolveStartupProfile(a *App) types.UserProfile {
-	if p, err := a.Profiles.LoadProfiles(); err == nil {
-		return p
-	} else {
-		return a.recoverProfiles(err)
+	loadResult := a.Profiles.LoadProfiles()
+	if loadResult.Status == types.ResponseSuccess {
+		return loadResult.Profile
 	}
+	return a.recoverProfiles(loadResult)
 }
 
-func (a *App) recoverProfiles(cause error) types.UserProfile {
+func (a *App) recoverProfiles(cause types.UserProfileResult) types.UserProfile {
 	success, quarantinedPath := a.Profiles.QuarantineUserProfiles()
 	if !success {
-		a.Logger.Error("Failed to quarantine user profiles", cause)
+		a.Logger.MultipleError("Failed to quarantine user profiles", logger.AsErrors(cause.Errors), "cause", cause.Message, "quarantinedPath", quarantinedPath)
 		return types.DefaultProfile()
 	}
 
-	if resetErr := a.Profiles.ResetUserProfiles(); resetErr != nil {
-		a.Logger.Error("Failed to reset user profiles", resetErr, "cause", cause, "quarantinedPath", quarantinedPath)
-		return types.DefaultProfile()
-	}
-
-	profile, resolveErr := a.Profiles.GetActiveProfile()
-	if resolveErr != nil {
-		a.Logger.Error("Failed to resolve active profile after reset", resolveErr, "cause", cause)
+	resetResult := a.Profiles.ResetUserProfiles()
+	if resetResult.Status == types.ResponseError {
+		a.Logger.MultipleError("Failed to reset user profiles", logger.AsErrors(resetResult.Errors), "cause", cause.Message, "quarantinedPath", quarantinedPath)
 		return types.DefaultProfile()
 	}
 
 	a.Logger.Warn("Recovered user profiles using defaults after load failure", "quarantinedPath", quarantinedPath)
-	return profile
+	if resetResult.Profile.ID == "" {
+		return types.DefaultProfile()
+	}
+	return resetResult.Profile
 }
 
 func runStartupRoutines(a *App) {
@@ -165,8 +163,12 @@ func runStartupRoutines(a *App) {
 
 	// Sync subscriptions for active profile on startup
 	// TODO: Make this configurable within the profile itself
-	if err := a.Profiles.SyncSubscriptions(activeProfile.ID); err != nil {
-		a.Logger.Warn("Failed to sync profile subscriptions on startup", "error", err, "profile_id", activeProfile.ID)
+	syncResult := a.Profiles.SyncSubscriptions(activeProfile.ID)
+	switch syncResult.Status {
+	case types.ResponseError:
+		a.Logger.MultipleError("Failed to sync profile subscriptions on startup", logger.AsErrors(syncResult.Errors), "profile_id", activeProfile.ID)
+	case types.ResponseWarn:
+		a.Logger.Warn("Profile subscriptions synced with warnings on startup", "message", syncResult.Message, "profile_id", activeProfile.ID, "error_count", len(syncResult.Errors))
 	}
 }
 

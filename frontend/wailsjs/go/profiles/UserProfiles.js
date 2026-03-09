@@ -30,6 +30,10 @@ export function SyncSubscriptions(arg1) {
   return window['go']['profiles']['UserProfiles']['SyncSubscriptions'](arg1);
 }
 
+export function UpdateAllSubscriptionsToLatest(arg1) {
+  return window['go']['profiles']['UserProfiles']['UpdateAllSubscriptionsToLatest'](arg1);
+}
+
 export function UpdateSubscriptions(arg1) {
   return window['go']['profiles']['UserProfiles']['UpdateSubscriptions'](arg1);
 }

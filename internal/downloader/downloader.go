@@ -43,8 +43,8 @@ type Downloader struct {
 }
 
 type downloadOperation struct {
-	key  string
-	run  func() operationResult
+	key       string
+	run       func() operationResult
 	completed chan operationResult
 }
 
@@ -134,8 +134,8 @@ func (d *Downloader) enqueueOperation(key string, run func() operationResult) (o
 	}
 
 	op := &downloadOperation{
-		key:  key,
-		run:  run,
+		key:       key,
+		run:       run,
 		completed: make(chan operationResult, 1),
 	}
 	d.queue = append(d.queue, op)

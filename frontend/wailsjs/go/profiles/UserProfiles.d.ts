@@ -4,16 +4,18 @@ import {types} from '../models';
 
 export function CreateProfileArchive(arg1:string):Promise<types.GenericResponse>;
 
-export function GetActiveProfile():Promise<types.UserProfile>;
+export function GetActiveProfile():Promise<types.UserProfileResult>;
 
-export function LoadProfiles():Promise<types.UserProfile>;
+export function LoadProfiles():Promise<types.UserProfileResult>;
 
 export function QuarantineUserProfiles():Promise<boolean|string>;
 
-export function ResetUserProfiles():Promise<void>;
+export function ResetUserProfiles():Promise<types.UserProfileResult>;
 
 export function RestoreProfileArchive(arg1:string):Promise<types.GenericResponse>;
 
-export function SyncSubscriptions(arg1:string):Promise<void>;
+export function SyncSubscriptions(arg1:string):Promise<types.SyncSubscriptionsResult>;
+
+export function UpdateAllSubscriptionsToLatest(arg1:string):Promise<types.UpdateSubscriptionsResult>;
 
 export function UpdateSubscriptions(arg1:types.UpdateSubscriptionsRequest):Promise<types.UpdateSubscriptionsResult>;

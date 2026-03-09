@@ -86,11 +86,55 @@ type SubscriptionOperation struct {
 	Version Version            `json:"version"`
 }
 
+type UserProfilesErrorType string
+
+const (
+	ErrorProfileNotFound   UserProfilesErrorType = "profile_not_found"
+	ErrorProfilesNotLoaded UserProfilesErrorType = "profiles_not_loaded"
+	ErrorInvalidAssetID    UserProfilesErrorType = "invalid_asset_id"
+	ErrorInvalidAssetType  UserProfilesErrorType = "invalid_asset_type"
+	ErrorInvalidVersion    UserProfilesErrorType = "invalid_version"
+	ErrorInvalidAction     UserProfilesErrorType = "invalid_action"
+	ErrorPersistFailed     UserProfilesErrorType = "persist_failed"
+	ErrorSyncFailed        UserProfilesErrorType = "sync_failed"
+	ErrorLookupFailed      UserProfilesErrorType = "lookup_failed"
+	ErrorUnknown           UserProfilesErrorType = "unknown"
+)
+
+type UserProfilesError struct {
+	ProfileID string                `json:"profileId"`
+	AssetID   string                `json:"assetId"`
+	AssetType AssetType             `json:"assetType"`
+	ErrorType UserProfilesErrorType `json:"errorType"`
+	Message   string                `json:"message"`
+}
+
+func (e UserProfilesError) Error() string {
+	if strings.TrimSpace(e.Message) != "" {
+		return e.Message
+	}
+	return string(e.ErrorType)
+}
+
+type UserProfileResult struct {
+	GenericResponse
+	Profile UserProfile         `json:"profile"`
+	Errors  []UserProfilesError `json:"errors"`
+}
+
 type UpdateSubscriptionsResult struct {
 	GenericResponse
 	Profile    UserProfile             `json:"profile"`
 	Persisted  bool                    `json:"persisted"`
 	Operations []SubscriptionOperation `json:"operations"`
+	Errors     []UserProfilesError     `json:"errors"`
+}
+
+type SyncSubscriptionsResult struct {
+	GenericResponse
+	ProfileID  string                  `json:"profileId"`
+	Operations []SubscriptionOperation `json:"operations"`
+	Errors     []UserProfilesError     `json:"errors"`
 }
 
 // UserProfile represents a profile within the application.

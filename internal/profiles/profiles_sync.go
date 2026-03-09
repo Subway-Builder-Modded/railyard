@@ -1,0 +1,298 @@
+package profiles
+
+import (
+	"fmt"
+	"strings"
+
+	"railyard/internal/logger"
+	"railyard/internal/types"
+	"railyard/internal/utils"
+)
+
+// SyncSubscriptions iterates through a profile's subscriptions and attempts to reconcile the state of asset installation on disk to the desired state in the profile by installing/uninstalling maps and mods as needed.
+func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptionsResult {
+	s.logRequest("SyncSubscriptions", "profile_id", profileID)
+
+	s.mu.Lock()
+	profile, ok := s.state.Profiles[profileID]
+	// Read a snapshot of current subscriptions at invocation time.
+	profile.Subscriptions.Maps = utils.CloneMap(profile.Subscriptions.Maps)
+	profile.Subscriptions.Mods = utils.CloneMap(profile.Subscriptions.Mods)
+	s.mu.Unlock()
+
+	// This should not occur under calls from UpdateSubscriptions (or the startup call).
+	if !ok {
+		profileErr := userProfilesError(profileID, "", "", types.ErrorProfileNotFound, fmt.Sprintf("Profile %q not found", profileID))
+		s.Logger.Error("Profile not found for sync", profileErr, "profile_id", profileID)
+		return newSyncSubscriptionsResult(
+			types.ResponseError,
+			"Profile not found for sync",
+			profileID,
+			[]types.SubscriptionOperation{},
+			[]types.UserProfilesError{profileErr},
+		)
+	}
+
+	mapArgs := s.buildMapSyncArgs(profile)
+	modArgs := s.buildModSyncArgs(profile)
+
+	syncErrors := make([]types.UserProfilesError, 0)
+	operations := make([]types.SubscriptionOperation, 0)
+
+	// Run sync for each asset type in sequence.
+	s.Logger.Info("Syncing map subscriptions", "profile_id", profileID, "subscription_count", len(profile.Subscriptions.Maps))
+	mapOperations, mapErrors := syncAssetSubscriptions(s.Logger, profileID, mapArgs)
+	operations = append(operations, mapOperations...)
+	syncErrors = append(syncErrors, mapErrors...)
+
+	s.Logger.Info("Syncing mod subscriptions", "profile_id", profileID, "subscription_count", len(profile.Subscriptions.Mods))
+	modOperations, modErrors := syncAssetSubscriptions(s.Logger, profileID, modArgs)
+	operations = append(operations, modOperations...)
+	syncErrors = append(syncErrors, modErrors...)
+
+	if len(syncErrors) > 0 {
+		s.Logger.Warn("Subscription sync completed with errors", "error_count", len(syncErrors))
+		return newSyncSubscriptionsResult(
+			types.ResponseError,
+			fmt.Sprintf("subscription sync completed with %d error(s)", len(syncErrors)),
+			profileID,
+			operations,
+			syncErrors,
+		)
+	}
+
+	return newSyncSubscriptionsResult(
+		types.ResponseSuccess,
+		"subscriptions synced",
+		profileID,
+		operations,
+		[]types.UserProfilesError{},
+	)
+}
+
+// Helper struct to capture which functions are required to update subscriptions for a specific asset type, generic on the installed asset info type (T) and the manifest type (U).
+type assetSyncArgs[T any, U any] struct {
+	assetType     types.AssetType                                            // The type of asset being synced: map or mod (or others in the future).
+	subscriptions map[string]string                                          // The desired subscription state for the profile, keyed by asset ID and valued by version.
+	installedArgs installedVersionArgs[T]                                    // Non-shared installed-version resolver args.
+	availableArgs availableVersionArgs[U]                                    // Non-shared available-version resolver args.
+	install       func(assetID string, version string) types.GenericResponse // The function to call to install the asset (using the downloader).
+	uninstall     func(assetID string) types.GenericResponse                 // The function to call to uninstall the asset (using the downloader).
+}
+
+// Helper struct to capture what is needed to resolve installed versions for a specific asset type via the registry.
+type installedVersionArgs[T any] struct {
+	getInstalledAssetsFn func() []T
+	idFn                 func(T) string
+	versionFn            func(T) string
+}
+
+// Helper struct to capture what is needed to resolve available versions for a specific asset type via the registry.
+type availableVersionArgs[U any] struct {
+	getManifestsFn func() []U
+	idFn           func(U) string
+	updateTypeFn   func(U) string
+	updateSourceFn func(U) string
+	getVersionsFn  func(string, string) ([]types.VersionInfo, error)
+}
+
+func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile) assetSyncArgs[types.InstalledMapInfo, types.MapManifest] {
+	return assetSyncArgs[types.InstalledMapInfo, types.MapManifest]{
+		assetType:     types.AssetTypeMap,
+		subscriptions: profile.Subscriptions.Maps,
+		installedArgs: installedVersionArgs[types.InstalledMapInfo]{
+			getInstalledAssetsFn: s.Registry.GetInstalledMaps,
+			idFn:                 func(item types.InstalledMapInfo) string { return item.ID },
+			versionFn:            func(item types.InstalledMapInfo) string { return item.Version },
+		},
+		availableArgs: availableVersionArgs[types.MapManifest]{
+			getManifestsFn: s.Registry.GetMaps,
+			idFn:           func(item types.MapManifest) string { return item.ID },
+			updateTypeFn:   func(item types.MapManifest) string { return item.Update.Type },
+			updateSourceFn: func(item types.MapManifest) string { return item.Update.Source() },
+			getVersionsFn:  s.Registry.GetVersions,
+		},
+		install: func(assetID string, version string) types.GenericResponse {
+			return s.Downloader.InstallMap(assetID, version).GenericResponse
+		},
+		uninstall: s.Downloader.UninstallMap,
+	}
+}
+
+func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile) assetSyncArgs[types.InstalledModInfo, types.ModManifest] {
+	return assetSyncArgs[types.InstalledModInfo, types.ModManifest]{
+		assetType:     types.AssetTypeMod,
+		subscriptions: profile.Subscriptions.Mods,
+		installedArgs: installedVersionArgs[types.InstalledModInfo]{
+			getInstalledAssetsFn: s.Registry.GetInstalledMods,
+			idFn:                 func(item types.InstalledModInfo) string { return item.ID },
+			versionFn:            func(item types.InstalledModInfo) string { return item.Version },
+		},
+		availableArgs: availableVersionArgs[types.ModManifest]{
+			getManifestsFn: s.Registry.GetMods,
+			idFn:           func(item types.ModManifest) string { return item.ID },
+			updateTypeFn:   func(item types.ModManifest) string { return item.Update.Type },
+			updateSourceFn: func(item types.ModManifest) string { return item.Update.Source() },
+			getVersionsFn:  s.Registry.GetVersions,
+		},
+		install:   s.Downloader.InstallMod,
+		uninstall: s.Downloader.UninstallMod,
+	}
+}
+
+// syncAssetSubscriptions is a generic type helper that performs the core logic of syncing subscriptions for a given asset type, with generic arguments corresponding to the asset's installed info type (T) and manifest type (U).
+func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, args assetSyncArgs[T, U]) ([]types.SubscriptionOperation, []types.UserProfilesError) {
+	errs := make([]types.UserProfilesError, 0)
+	operations := make([]types.SubscriptionOperation, 0)
+	installedVersion := buildVersionIndexFromItems(args.installedArgs)
+	availableVersions := buildAvailableVersionIndex(args.availableArgs, profileID, args.subscriptions, args.assetType, &errs)
+
+	log.Info("Built version indices for sync",
+		"asset_type", args.assetType,
+		"installed_count", len(installedVersion),
+		"available_count", len(availableVersions),
+	)
+
+	for assetID, version := range args.subscriptions {
+		versionText := strings.TrimSpace(version)
+		// If the desired version is already installed, skip to the next asset.
+		if current, ok := installedVersion[assetID]; ok && current == versionText {
+			log.Info("Asset already at desired version, skipping", "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
+			continue
+		}
+
+		// Check if desired version is available according to the registry before attempting installation.
+		if !isVersionAvailable(availableVersions, assetID, versionText) {
+			availableForAsset := availableVersions[assetID]
+			availableKeys := make([]string, 0, len(availableForAsset))
+			for k := range availableForAsset {
+				availableKeys = append(availableKeys, k)
+			}
+			log.Warn("Desired version not available",
+				"asset_type", args.assetType,
+				"asset_id", assetID,
+				"desired_version", versionText,
+				"available_versions", availableKeys,
+			)
+			errs = append(errs, userProfilesError(profileID, assetID, args.assetType, types.ErrorLookupFailed, fmt.Sprintf("Subscribe %s %q failed: version %q is not available", args.assetType, assetID, versionText)))
+			continue
+		}
+
+		// If a different version is installed for this asset ID, uninstall it first.
+		if current, ok := installedVersion[assetID]; ok && current != versionText {
+			log.Info("Uninstalling previous version before update", "asset_type", args.assetType, "asset_id", assetID, "current_version", current, "target_version", versionText)
+			uninstallResp := args.uninstall(assetID)
+			if err := syncActionError(types.SubscriptionActionUnsubscribe, args.assetType, assetID, uninstallResp); err != nil {
+				errs = append(errs, syncFailedError(profileID, assetID, args.assetType, err))
+				continue
+			}
+			operations = append(operations, types.SubscriptionOperation{
+				AssetID: assetID,
+				Type:    args.assetType,
+				Action:  types.SubscriptionActionUnsubscribe,
+				Version: types.Version(current),
+			})
+			delete(installedVersion, assetID)
+		}
+
+		log.Info("Installing asset", "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
+		response := args.install(assetID, versionText)
+		// If installation fails, record the error but continue.
+		if err := syncActionError(types.SubscriptionActionSubscribe, args.assetType, assetID, response); err != nil {
+			log.Error("Install failed during sync", err, "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
+			errs = append(errs, syncFailedError(profileID, assetID, args.assetType, err))
+			continue
+		}
+		log.Info("Successfully installed asset", "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
+		installedVersion[assetID] = versionText
+		operations = append(operations, types.SubscriptionOperation{
+			AssetID: assetID,
+			Type:    args.assetType,
+			Action:  types.SubscriptionActionSubscribe,
+			Version: types.Version(versionText),
+		})
+	}
+
+	// Check for installed assets that are no longer subscribed and attempt uninstallation.
+	for assetID, currentVersion := range installedVersion {
+		if _, ok := args.subscriptions[assetID]; ok {
+			continue
+		}
+		log.Info("Uninstalling asset no longer subscribed", "asset_type", args.assetType, "asset_id", assetID)
+		response := args.uninstall(assetID)
+		// If uninstallation fails, record the error but continue.
+		if err := syncActionError(types.SubscriptionActionUnsubscribe, args.assetType, assetID, response); err != nil {
+			errs = append(errs, syncFailedError(profileID, assetID, args.assetType, err))
+			continue
+		}
+		operations = append(operations, types.SubscriptionOperation{
+			AssetID: assetID,
+			Type:    args.assetType,
+			Action:  types.SubscriptionActionUnsubscribe,
+			Version: types.Version(currentVersion),
+		})
+	}
+
+	return operations, errs
+}
+
+// buildVersionIndexFromItems makes use of the registry to build an index of installed assets.
+func buildVersionIndexFromItems[T any](args installedVersionArgs[T]) map[string]string {
+	items := args.getInstalledAssetsFn()
+	versions := make(map[string]string, len(items))
+	for _, item := range items {
+		versions[args.idFn(item)] = args.versionFn(item)
+	}
+	return versions
+}
+
+// buildAvailableVersionIndex makes use of the registry to build an index of available versions for each asset to which the profile is subscribed.
+func buildAvailableVersionIndex[U any](
+	availableArgs availableVersionArgs[U],
+	profileID string,
+	subscriptions map[string]string,
+	assetType types.AssetType,
+	syncErrors *[]types.UserProfilesError,
+) map[string]map[string]struct{} {
+	available := make(map[string]map[string]struct{})
+	manifestByID := make(map[string]U)
+
+	// Collect all available manifests and index by assetID for lookup.
+	for _, manifest := range availableArgs.getManifestsFn() {
+		manifestByID[availableArgs.idFn(manifest)] = manifest
+	}
+
+	for assetID := range subscriptions {
+		// If a particular assetID is not found in the registry's available manifests, skip and consider it to be "unavailable".
+		manifest, ok := manifestByID[assetID]
+		if !ok {
+			continue
+		}
+
+		// Determine which versions are available for this asset, based on its update configuration.
+		versions, err := availableArgs.getVersionsFn(
+			availableArgs.updateTypeFn(manifest),
+			availableArgs.updateSourceFn(manifest),
+		)
+		if err != nil {
+			*syncErrors = append(*syncErrors, updateSubscriptionError(profileID, assetID, assetType, types.ErrorLookupFailed, fmt.Errorf("Failed to resolve available versions for %s %q: %w", assetType, assetID, err)))
+			continue
+		}
+
+		available[assetID] = make(map[string]struct{}, len(versions))
+		for _, version := range versions {
+			available[assetID][strings.TrimSpace(version.Version)] = struct{}{}
+		}
+	}
+
+	return available
+}
+
+func isVersionAvailable(available map[string]map[string]struct{}, assetID string, version string) bool {
+	versions, ok := available[assetID]
+	if !ok {
+		return false
+	}
+	_, ok = versions[strings.TrimSpace(version)]
+	return ok
+}

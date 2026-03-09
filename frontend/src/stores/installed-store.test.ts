@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useInstalledStore } from "./installed-store";
-import { activeProfileFixture, updateSubscriptionsError, updateSubscriptionsSuccess } from "@/test/helpers/profileMutationFixtures";
+import { activeProfileResultSuccess, updateSubscriptionsError, updateSubscriptionsSuccess } from "@/test/helpers/profileMutationFixtures";
 
 const {
   mockGetInstalledMods,
@@ -76,7 +76,7 @@ describe("useInstalledStore", () => {
   });
 
   it("installMap correctly updates subscriptions and refreshes installed lists", async () => {
-    mockGetActiveProfile.mockResolvedValue(activeProfileFixture("profile-a"));
+    mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsSuccess("subscriptions updated"));
     mockGetInstalledMods.mockResolvedValue([{ id: "mod-1", version: "1.0.0" }]);
     mockGetInstalledMaps.mockResolvedValue([{ id: "map-1", version: "2.0.0", config: { code: "AAA" } }]);
@@ -95,7 +95,7 @@ describe("useInstalledStore", () => {
   });
 
   it("uninstallMap correctly updates subscriptions and refreshes installed lists on success", async () => {
-    mockGetActiveProfile.mockResolvedValue(activeProfileFixture("profile-a"));
+    mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsSuccess("subscriptions updated"));
     mockGetInstalledMods.mockResolvedValue([{ id: "mod-1", version: "1.0.0" }]);
     mockGetInstalledMaps.mockResolvedValue([]);
@@ -114,7 +114,7 @@ describe("useInstalledStore", () => {
   });
 
   it("installMod errors when profile mutation fails", async () => {
-    mockGetActiveProfile.mockResolvedValue(activeProfileFixture("profile-a"));
+    mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsError("Install failed"));
 
     await expect(useInstalledStore.getState().installMod("mod-2", "1.2.3")).rejects.toThrow("Install failed");
@@ -131,7 +131,7 @@ describe("useInstalledStore", () => {
   });
 
   it("uninstallMod errors when profile mutation fails", async () => {
-    mockGetActiveProfile.mockResolvedValue(activeProfileFixture("profile-a"));
+    mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsError("Uninstall failed"));
 
     await expect(useInstalledStore.getState().uninstallMod("mod-9")).rejects.toThrow("Uninstall failed");

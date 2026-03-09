@@ -7,6 +7,15 @@ type UpdateConfig struct {
 	URL  string `json:"url,omitempty"`
 }
 
+// Source returns the canonical source identifier for update resolution.
+// For GitHub updates this is the repo slug; otherwise it is the direct URL.
+func (u UpdateConfig) Source() string {
+	if u.Type == "github" {
+		return u.Repo
+	}
+	return u.URL
+}
+
 // ModManifest is the manifest schema for a mod entry in the registry.
 type ModManifest struct {
 	SchemaVersion int          `json:"schema_version"`

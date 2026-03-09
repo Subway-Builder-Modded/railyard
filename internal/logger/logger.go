@@ -18,7 +18,17 @@ type Logger interface {
 	Info(msg string, attrs ...any)
 	Warn(msg string, attrs ...any)
 	Error(msg string, err error, attrs ...any)
+	MultipleError(msg string, errs []error, attrs ...any)
 	LogResponse(msg string, response types.GenericResponse, attrs ...any)
+}
+
+// AsErrors converts a typed error slice to a standard []error for logger helpers.
+func AsErrors[T error](errs []T) []error {
+	out := make([]error, len(errs))
+	for i, err := range errs {
+		out[i] = err
+	}
+	return out
 }
 
 // Global logger defaults
@@ -151,6 +161,20 @@ func (l *AppLogger) Error(msg string, err error, attrs ...any) {
 	if err != nil {
 		attrs = append([]any{"error", err}, attrs...)
 	}
+	l.base.Error(msg, attrs...)
+}
+
+// MultipleError is a helper for logging multiple related errors in a single log entry, such as when individual items are batch processed
+func (l *AppLogger) MultipleError(msg string, errs []error, attrs ...any) {
+	errorTexts := make([]string, len(errs))
+	for i, err := range errs {
+		errorTexts[i] = fmt.Sprint(err)
+	}
+
+	attrs = append([]any{
+		"error_count", len(errs),
+		"errors", errorTexts,
+	}, attrs...)
 	l.base.Error(msg, attrs...)
 }
 

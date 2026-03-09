@@ -29,9 +29,12 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     assetType: "map" | "mod",
     action: "subscribe" | "unsubscribe",
   ) => {
-    const profile = await GetActiveProfile();
+    const activeProfileResult = await GetActiveProfile();
+    if (activeProfileResult.status !== "success") {
+      throw new Error(activeProfileResult.message || "Failed to resolve active profile");
+    }
     const request = new types.UpdateSubscriptionsRequest({
-      profileId: profile.id,
+      profileId: activeProfileResult.profile.id,
       assets: {
         [id]: new types.SubscriptionUpdateItem({
           version,
