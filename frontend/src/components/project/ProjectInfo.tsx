@@ -90,10 +90,17 @@ export function ProjectInfo({ type, item, latestVersion, latestCompatibleVersion
       );
     }
     return (
+      <>
       <Button size="sm" onClick={() => handleInstallClick(v.version, v.prerelease)}>
         <Download className="h-4 w-4 mr-1.5" />
         {label}
       </Button>
+      {label.toLowerCase().includes("update") && (
+      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setUninstallOpen(true)}>
+        <Trash2 className="h-4 w-4" />
+      </Button>
+      )}
+      </>
     );
   };
 
