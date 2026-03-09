@@ -191,6 +191,20 @@ func VersionIsNewerThanInstalled(version string) bool {
 	installed = strings.TrimPrefix(installed, "v")
 	version = strings.TrimPrefix(version, "v")
 
+	newVersionIsRC := strings.Contains(version, "rc")
+	installedVersionIsRC := strings.Contains(installed, "rc")
+	if newVersionIsRC && !installedVersionIsRC {
+		return false
+	}
+
+	// Trim pattern +rc.x if present for comparison
+	if idx := strings.Index(version, "+rc."); idx >= 0 {
+		version = version[:idx]
+	}
+	if idx := strings.Index(installed, "+rc."); idx >= 0 {
+		installed = installed[:idx]
+	}
+
 	installedParts := strings.Split(installed, ".")
 	versionParts := strings.Split(version, ".")
 
