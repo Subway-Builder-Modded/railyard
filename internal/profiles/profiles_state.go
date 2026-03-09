@@ -158,8 +158,6 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 	defer s.mu.Unlock()
 	s.logRequest("UpdateUIPreferences", "theme", uiPrefs.Theme, "default_per_page", uiPrefs.DefaultPerPage)
 
-	profile := s.state.Profiles[s.state.ActiveProfileID]
-
 	// Create a deep copy of the current state
 	nextState := types.UserProfilesState{
 		ActiveProfileID: s.state.ActiveProfileID,
@@ -170,9 +168,9 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 	}
 
 	// Update the profile with new preferences
-	updatedProfile := nextState.Profiles[profile.ID]
-	updatedProfile.UIPreferences = uiPrefs
-	nextState.Profiles[profile.ID] = updatedProfile
+	profile := nextState.Profiles[s.state.ActiveProfileID]
+	profile.UIPreferences = uiPrefs
+	nextState.Profiles[s.state.ActiveProfileID] = profile
 
 	validatedState, err := types.ValidateState(nextState)
 	if err != nil {
@@ -180,26 +178,26 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 			GenericResponse: types.ErrorResponse("Invalid UI preferences"),
 			Profile:         s.state.Profiles[s.state.ActiveProfileID],
 			Errors: []types.UserProfilesError{
-				userProfilesError(profile.ID, "", "", types.ErrorUnknown, "Invalid UI preferences: "+err.Error()),
+				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "Invalid UI preferences: "+err.Error()),
 			},
 		}
 	}
 
-	s.state.Profiles[profile.ID] = validatedState.Profiles[profile.ID]
+	s.setState(validatedState)
 
-	if err := WriteUserProfilesState(s.state); err != nil {
+	if err := WriteUserProfilesState(validatedState); err != nil {
 		return types.UserProfileResult{
 			GenericResponse: types.ErrorResponse("Failed to persist UI preferences"),
-			Profile:         profile,
+			Profile:         validatedState.Profiles[s.state.ActiveProfileID],
 			Errors: []types.UserProfilesError{
-				userProfilesError(profile.ID, "", "", types.ErrorPersistFailed, "Failed to persist UI preferences: "+err.Error()),
+				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "Failed to persist UI preferences: "+err.Error()),
 			},
 		}
 	}
 
 	return types.UserProfileResult{
 		GenericResponse: types.SuccessResponse("UI preferences updated"),
-		Profile:         s.state.Profiles[profile.ID],
+		Profile:         validatedState.Profiles[s.state.ActiveProfileID],
 		Errors:          []types.UserProfilesError{},
 	}
 }
