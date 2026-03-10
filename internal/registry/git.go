@@ -1,19 +1,13 @@
 package registry
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
 // openOrClone opens an existing repo or force-clones if missing/corrupt.
@@ -47,44 +41,44 @@ func (r *Registry) refreshRepo() error {
 // getCredentials uses the system's git credential helper to resolve
 // credentials for the registry repo URL. Returns nil auth if no
 // credentials are found (for public repos).
-func (r *Registry) getCredentials() *githttp.BasicAuth {
-	parsed, err := url.Parse(RegistryRepoURL)
-	if err != nil {
-		return nil
-	}
-
-	input := fmt.Sprintf("protocol=%s\nhost=%s\npath=%s\n\n", parsed.Scheme, parsed.Host, strings.TrimPrefix(parsed.Path, "/"))
-
-	cmd := exec.Command("git", "credential", "fill")
-	cmd.Stdin = strings.NewReader(input)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return nil
-	}
-
-	var username, password string
-	scanner := bufio.NewScanner(&out)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if k, v, ok := strings.Cut(line, "="); ok {
-			switch k {
-			case "username":
-				username = v
-			case "password":
-				password = v
-			}
-		}
-	}
-
-	if username != "" && password != "" {
-		return &githttp.BasicAuth{
-			Username: username,
-			Password: password,
-		}
-	}
-	return nil
-}
+//func (r *Registry) getCredentials() *githttp.BasicAuth {
+//	parsed, err := url.Parse(RegistryRepoURL)
+//	if err != nil {
+//		return nil
+//	}
+//
+//	input := fmt.Sprintf("protocol=%s\nhost=%s\npath=%s\n\n", parsed.Scheme, parsed.Host, strings.TrimPrefix(parsed.Path, "/"))
+//
+//	cmd := exec.Command("git", "credential", "fill")
+//	cmd.Stdin = strings.NewReader(input)
+//	var out bytes.Buffer
+//	cmd.Stdout = &out
+//	if err := cmd.Run(); err != nil {
+//		return nil
+//	}
+//
+//	var username, password string
+//	scanner := bufio.NewScanner(&out)
+//	for scanner.Scan() {
+//		line := scanner.Text()
+//		if k, v, ok := strings.Cut(line, "="); ok {
+//			switch k {
+//			case "username":
+//				username = v
+//			case "password":
+//				password = v
+//			}
+//		}
+//	}
+//
+//	if username != "" && password != "" {
+//		return &githttp.BasicAuth{
+//			Username: username,
+//			Password: password,
+//		}
+//	}
+//	return nil
+//}
 
 // forceClone removes any existing directory and performs a fresh clone.
 func (r *Registry) forceClone() error {
@@ -102,9 +96,6 @@ func (r *Registry) forceClone() error {
 		ReferenceName: plumbing.NewBranchReferenceName("main"),
 		SingleBranch:  true,
 		Depth:         1,
-	}
-	if auth := r.getCredentials(); auth != nil {
-		cloneOpts.Auth = auth
 	}
 
 	_, err := git.PlainClone(r.repoPath, false, cloneOpts)
@@ -127,9 +118,6 @@ func (r *Registry) fetchAndReset(repo *git.Repository) error {
 			"+refs/heads/main:refs/remotes/origin/main",
 		},
 		Force: true,
-	}
-	if auth := r.getCredentials(); auth != nil {
-		fetchOpts.Auth = auth
 	}
 	err := repo.Fetch(fetchOpts)
 	if err != nil && err != git.NoErrAlreadyUpToDate {
