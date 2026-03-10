@@ -97,8 +97,21 @@ func (a *App) startup(ctx context.Context) {
 	if err := a.Logger.Start(); err != nil {
 		log.Printf("[WARN]: Failed to start app logger: %v", err)
 	}
-	runStartupRoutines(a)
+
+	activeProfile := resolveStartupProfile(a)
+	a.Logger.Info("Active user profile loaded on startup", "profile_id", activeProfile.ID)
+
+	if a.Config.Cfg.CheckForUpdatesOnLaunch {
+		updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger)
+	}
+
+	if err := a.Registry.Initialize(); err != nil {
+		a.Logger.Warn("Failed to ensure local registry repository", "error", err)
+	}
+
+	// Registry must be initialized + startup profile ready so that initial Frontend state is viable.
 	a.setStartupReady(true)
+	go runNonBlockingStartupRoutines(a, activeProfile)
 }
 
 func (a *App) setStartupReady(ready bool) {
@@ -163,19 +176,7 @@ func (a *App) recoverProfiles(cause types.UserProfileResult) types.UserProfile {
 	return resetResult.Profile
 }
 
-func runStartupRoutines(a *App) {
-	// TODO: Handle auto-update of application version...'
-	if a.Config.Cfg.CheckForUpdatesOnLaunch {
-		updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger)
-	}
-
-	activeProfile := resolveStartupProfile(a)
-
-	// TODO: Backend should control registry state; frontend should not force initialization of the registry on startup.
-	if err := a.Registry.Initialize(); err != nil {
-		a.Logger.Warn("Failed to ensure local registry repository", "error", err)
-	}
-
+func runNonBlockingStartupRoutines(a *App, activeProfile types.UserProfile) {
 	if activeProfile.SystemPreferences.RefreshRegistryOnStartup {
 		if err := a.Registry.Refresh(); err != nil {
 			a.Logger.Warn("Failed to refresh registry on startup", "error", err)
