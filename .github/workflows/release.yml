@@ -66,6 +66,8 @@ jobs:
     strategy:
       matrix:
         type: ["legacy", "current"]
+    env:
+      TYPE: ${{matrix.type}}
     steps:
       - uses: actions/checkout@v4
 
@@ -137,12 +139,12 @@ jobs:
           EOF
 
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage
-          mv Railyard-*.AppImage build/bin/railyard-${VERSION}-linux-amd64.AppImage
+          mv Railyard-*.AppImage build/bin/railyard-${VERSION}-${TYPE}-linux-amd64.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
           name: linux-artifacts
-          path: build/bin/railyard-${{ env.VERSION }}-linux-amd64.AppImage
+          path: build/bin/railyard-${{ env.VERSION }}-${{ matrix.type }}-linux-amd64.AppImage
 
   build-windows:
     runs-on: windows-latest
