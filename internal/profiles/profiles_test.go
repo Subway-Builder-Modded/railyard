@@ -1415,7 +1415,10 @@ func TestUpdateUIPreferences(t *testing.T) {
 	setEnv(t)
 
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
-	result := svc.UpdateUIPreferences(types.ThemeLight, types.PageSize24)
+	result := svc.UpdateUIPreferences(types.UIPreferences{
+		Theme:          types.ThemeLight,
+		DefaultPerPage: types.PageSize24,
+	})
 
 	require.Equal(t, types.ResponseSuccess, result.Status)
 	require.Equal(t, types.ThemeLight, result.Profile.UIPreferences.Theme)
@@ -1431,7 +1434,10 @@ func TestUpdateUIPreferencesRejectsInvalid(t *testing.T) {
 	setEnv(t)
 
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
-	result := svc.UpdateUIPreferences(types.ThemeMode("retro"), types.PageSize(30))
+	result := svc.UpdateUIPreferences(types.UIPreferences{
+		Theme:          types.ThemeMode("retro"),
+		DefaultPerPage: types.PageSize(30),
+	})
 
 	require.Equal(t, types.ResponseError, result.Status)
 	requireProfileErrorType(t, result.Errors, types.ErrorUnknown)

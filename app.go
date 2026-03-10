@@ -43,6 +43,8 @@ type App struct {
 	gameMu        sync.Mutex
 	gameCmd       *exec.Cmd
 	pmtilesServer *http.Server
+	startupMu     sync.RWMutex
+	startupReady  bool
 }
 
 // NewApp creates a new App application struct
@@ -63,6 +65,7 @@ func NewApp() *App {
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
+	a.setStartupReady(false)
 	a.ctx = ctx
 	a.Config.SetContext(ctx)
 	a.Downloader.OnExtractProgress = func(itemId string, extracted int64, total int64) {
@@ -94,8 +97,21 @@ func (a *App) startup(ctx context.Context) {
 	if err := a.Logger.Start(); err != nil {
 		log.Printf("[WARN]: Failed to start app logger: %v", err)
 	}
-
 	runStartupRoutines(a)
+	a.setStartupReady(true)
+}
+
+func (a *App) setStartupReady(ready bool) {
+	a.startupMu.Lock()
+	defer a.startupMu.Unlock()
+	a.startupReady = ready
+}
+
+// IsStartupReady reports whether backend startup routines have completed.
+func (a *App) IsStartupReady() bool {
+	a.startupMu.RLock()
+	defer a.startupMu.RUnlock()
+	return a.startupReady
 }
 
 // shutdown is called when the app shuts down.
@@ -116,6 +132,7 @@ func (a *App) shutdown(ctx context.Context) {
 	if err := a.Registry.WriteInstalledToDisk(); err != nil {
 		log.Printf("Warning: failed to persist installed registry state on shutdown: %v", err)
 	}
+
 }
 
 func resolveStartupProfile(a *App) types.UserProfile {
@@ -144,36 +161,6 @@ func (a *App) recoverProfiles(cause types.UserProfileResult) types.UserProfile {
 		return types.DefaultProfile()
 	}
 	return resetResult.Profile
-}
-
-func runStartupRoutines(a *App) {
-	// TODO: Handle auto-update of application version...'
-	if a.Config.Cfg.CheckForUpdatesOnLaunch {
-		updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger)
-	}
-
-	activeProfile := resolveStartupProfile(a)
-
-	// TODO: Backend should control registry state; frontend should not force initialization of the registry on startup.
-	if err := a.Registry.Initialize(); err != nil {
-		a.Logger.Warn("Failed to ensure local registry repository", "error", err)
-	}
-
-	if activeProfile.SystemPreferences.RefreshRegistryOnStartup {
-		if err := a.Registry.Refresh(); err != nil {
-			a.Logger.Warn("Failed to refresh registry on startup", "error", err)
-		}
-	}
-
-	// Sync subscriptions for active profile on startup
-	// TODO: Make this configurable within the profile itself
-	syncResult := a.Profiles.SyncSubscriptions(activeProfile.ID)
-	switch syncResult.Status {
-	case types.ResponseError:
-		a.Logger.MultipleError("Failed to sync profile subscriptions on startup", logger.AsErrors(syncResult.Errors), "profile_id", activeProfile.ID)
-	case types.ResponseWarn:
-		a.Logger.Warn("Profile subscriptions synced with warnings on startup", "message", syncResult.Message, "profile_id", activeProfile.ID, "error_count", len(syncResult.Errors))
-	}
 }
 
 // GetGameVersion attempts to detect the installed Subway Builder version.
