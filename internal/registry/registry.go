@@ -15,23 +15,36 @@ import (
 
 const RegistryRepoURL = "https://github.com/Subway-Builder-Modded/The-Railyard"
 
+type logSink interface {
+	Info(msg string, attrs ...any)
+	Warn(msg string, attrs ...any)
+	Error(msg string, err error, attrs ...any)
+}
+
 // Registry manages the local clone of The Railyard registry repository.
 type Registry struct {
-	repoPath      string
-	httpClient    *http.Client
-	mods          []types.ModManifest
-	maps          []types.MapManifest
-	installedMods []types.InstalledModInfo
-	installedMaps []types.InstalledMapInfo
+	repoPath       string
+	httpClient     *http.Client
+	logger         logSink
+	mods           []types.ModManifest
+	maps           []types.MapManifest
+	downloadCounts map[types.AssetType]map[string]map[string]int
+	installedMods  []types.InstalledModInfo
+	installedMaps  []types.InstalledMapInfo
 }
 
 // NewRegistry creates a new Registry instance with the platform-appropriate
 // storage path.
-func NewRegistry() *Registry {
+func NewRegistry(l logSink) *Registry {
 	return &Registry{
 		repoPath: paths.RegistryRepoPath(),
 		httpClient: &http.Client{
 			Timeout: 15 * time.Second,
+		},
+		logger: l,
+		downloadCounts: map[types.AssetType]map[string]map[string]int{
+			types.AssetTypeMap: {},
+			types.AssetTypeMod: {},
 		},
 	}
 }

@@ -5,23 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"railyard/internal/paths"
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
-
-func setEnv(t *testing.T) {
-	t.Helper()
-
-	root := t.TempDir()
-	t.Setenv("APPDATA", root)
-	t.Setenv("LOCALAPPDATA", root)
-	t.Setenv("ProgramFiles", root)
-	t.Setenv("ProgramFiles(x86)", root)
-	t.Setenv("XDG_CONFIG_HOME", root)
-	t.Setenv("HOME", root)
-}
 
 func readLogContent(t *testing.T) string {
 	t.Helper()
@@ -31,7 +20,7 @@ func readLogContent(t *testing.T) string {
 }
 
 func TestAppLoggerStartIsIdempotent(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -40,14 +29,14 @@ func TestAppLoggerStartIsIdempotent(t *testing.T) {
 }
 
 func TestAppLoggerShutdownBeforeStartIsNoOp(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Shutdown())
 }
 
 func TestAppLoggerShutdownIsIdempotent(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -57,7 +46,7 @@ func TestAppLoggerShutdownIsIdempotent(t *testing.T) {
 }
 
 func TestAppLoggerWritesBeforeStartAreDropped(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	l.Info("no meow :(")
@@ -69,7 +58,7 @@ func TestAppLoggerWritesBeforeStartAreDropped(t *testing.T) {
 }
 
 func TestAppLoggerShutdownFlushesBuffer(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -82,7 +71,7 @@ func TestAppLoggerShutdownFlushesBuffer(t *testing.T) {
 }
 
 func TestAppLoggerErrorIncludesErrorField(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -98,7 +87,7 @@ func TestAppLoggerErrorIncludesErrorField(t *testing.T) {
 }
 
 func TestAppLoggerMultipleErrorIncludesErrorCountAndList(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -121,7 +110,7 @@ func TestAppLoggerMultipleErrorIncludesErrorCountAndList(t *testing.T) {
 }
 
 func TestAppLoggerCanRestartAfterShutdown(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := NewAppLogger()
 	require.NoError(t, l.Start())
@@ -138,7 +127,7 @@ func TestAppLoggerCanRestartAfterShutdown(t *testing.T) {
 }
 
 func TestAppLoggerLogResponseMapsStatusToLevels(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	l := LoggerAtPath(filepath.Join(t.TempDir(), "test.log"))
 	require.NoError(t, l.Start())

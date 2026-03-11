@@ -10,6 +10,14 @@ export function AddInstalledMod(arg1, arg2) {
   return window['go']['registry']['Registry']['AddInstalledMod'](arg1, arg2);
 }
 
+export function GetAssetDownloadCounts(arg1, arg2) {
+  return window['go']['registry']['Registry']['GetAssetDownloadCounts'](arg1, arg2);
+}
+
+export function GetDownloadCountsByAssetType(arg1) {
+  return window['go']['registry']['Registry']['GetDownloadCountsByAssetType'](arg1);
+}
+
 export function GetGalleryImage(arg1, arg2, arg3) {
   return window['go']['registry']['Registry']['GetGalleryImage'](arg1, arg2, arg3);
 }

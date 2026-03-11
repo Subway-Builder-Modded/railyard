@@ -70,6 +70,16 @@ func IsValidAssetType(assetType AssetType) bool {
 	}
 }
 
+func AssetTypeDir(assetType AssetType) string {
+	switch assetType {
+	case AssetTypeMap:
+		return "maps"
+	case AssetTypeMod:
+		return "mods"
+	}
+	panic("unsupported asset type: " + string(assetType))
+}
+
 type Version string
 
 func IsValidSemverVersion(version Version) bool {

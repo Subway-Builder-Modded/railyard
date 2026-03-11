@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 	"testing"
 
@@ -14,18 +15,6 @@ type TestSetup struct {
 	cfg *Config
 }
 
-func setEnv(t *testing.T) {
-	t.Helper()
-
-	root := t.TempDir()
-	t.Setenv("APPDATA", root)           // Config directory for Windows
-	t.Setenv("LOCALAPPDATA", root)      // Executable default candidate on Windows
-	t.Setenv("ProgramFiles", root)      // Executable alternative candidate on Windows
-	t.Setenv("ProgramFiles(x86)", root) // Executable fallback candidate on Windows
-	t.Setenv("XDG_CONFIG_HOME", root)   // Config directory for Linux and MacOS
-	t.Setenv("HOME", root)              // Fallback for non-windows OS
-}
-
 func tryResolveConfig(t *testing.T, cfg *Config) {
 	t.Helper()
 	_, err := cfg.ResolveConfig()
@@ -34,7 +23,7 @@ func tryResolveConfig(t *testing.T, cfg *Config) {
 
 func setup(t *testing.T, persisted types.AppConfig) *TestSetup {
 	t.Helper()
-	setEnv(t)
+	testutil.NewHarness(t)
 	require.NoError(t, WriteAppConfig(persisted))
 
 	c := NewConfig()
@@ -123,7 +112,7 @@ func TestSaveConfigPersistsRuntimeState(t *testing.T) {
 }
 
 func TestResolveConfigOverridesRuntimeState(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	initial := types.AppConfig{
 		MetroMakerDataPath: "first/metro",
 		ExecutablePath:     "first.exe",
@@ -293,7 +282,7 @@ func TestOpenMetroMakerDialogAutoDetectSuccessDoesNotPersist(t *testing.T) {
 }
 
 func TestTryAutoDetectExecutableSucceedsWhenExecutablePathIsValid(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateFile(t, DefaultExecutableCandidates())
 
 	cfg := NewConfig()
@@ -313,7 +302,7 @@ func TestTryAutoDetectExecutableSucceedsWhenExecutablePathIsValid(t *testing.T) 
 }
 
 func TestTryAutoDetectMetroMakerSucceedsWhenMetroMakerDataPathIsValid(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateDir(t, DefaultMetroMakerDataFolderCandidates())
 
 	cfg := NewConfig()

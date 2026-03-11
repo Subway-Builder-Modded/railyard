@@ -58,8 +58,13 @@ type MapManifest struct {
 	GithubID      int          `json:"github_id"`
 	CityCode      string       `json:"city_code"`
 	Country       string       `json:"country"`
+	Location      string       `json:"location"`
 	Population    int          `json:"population"`
 	Description   string       `json:"description"`
+	DataSource    string       `json:"data_source"`
+	SourceQuality string       `json:"source_quality"`
+	LevelOfDetail string       `json:"level_of_detail"`
+	SpecialDemand []string     `json:"special_demand"`
 	Tags          []string     `json:"tags"`
 	Gallery       []string     `json:"gallery"`
 	Source        string       `json:"source"`
@@ -71,6 +76,28 @@ type IndexFile struct {
 	SchemaVersion int      `json:"schema_version"`
 	Mods          []string `json:"mods,omitempty"`
 	Maps          []string `json:"maps,omitempty"`
+}
+
+// DownloadsFile represents downloads.json on disk, keyed by asset ID then version.
+// Example:
+//
+//	{
+//	  "calgary": { "1.1.3": 60, "1.0.1": 62 },
+//	  "dublin": { "v1.0.0": 76 }
+//	}
+type DownloadsFile map[string]map[string]int
+
+type AssetDownloadCountsResponse struct {
+	GenericResponse
+	AssetType string         `json:"assetType"`
+	AssetID   string         `json:"assetId"`
+	Counts    map[string]int `json:"counts"`
+}
+
+type DownloadCountsByAssetTypeResponse struct {
+	GenericResponse
+	AssetType string                    `json:"assetType"`
+	Counts    map[string]map[string]int `json:"counts"`
 }
 
 // VersionInfo represents a single release version for a mod or map.

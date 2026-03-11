@@ -6,7 +6,11 @@ import (
 
 	"railyard/internal/files"
 	"railyard/internal/types"
+	"railyard/internal/utils"
 )
+
+const INDEX_JSON = "index.json"
+const MANIFEST_JSON = "manifest.json"
 
 // fetchFromDisk loads all registry data (mods, maps, installed mods, installed maps) from disk into memory.
 func (r *Registry) fetchFromDisk() error {
@@ -18,6 +22,14 @@ func (r *Registry) fetchFromDisk() error {
 	maps, err := r.getMapsFromDisk()
 	if err != nil {
 		return fmt.Errorf("failed to load maps from disk: %w", err)
+	}
+
+	downloadCounts, err := r.loadDownloadCounts([]types.AssetType{
+		types.AssetTypeMap,
+		types.AssetTypeMod,
+	})
+	if err != nil {
+		return err
 	}
 
 	installedMods, err := r.getInstalledModsFromDisk()
@@ -33,6 +45,7 @@ func (r *Registry) fetchFromDisk() error {
 	// Make updates only when all reads are successful to avoid partial registry updates
 	r.mods = mods
 	r.maps = maps
+	r.downloadCounts = downloadCounts
 	r.installedMods = installedMods
 	r.installedMaps = installedMaps
 
@@ -41,23 +54,12 @@ func (r *Registry) fetchFromDisk() error {
 
 // getModsFromDisk reads the mods index and returns all mod manifests.
 func (r *Registry) getModsFromDisk() ([]types.ModManifest, error) {
-	indexPath := filepath.Join(r.repoPath, "mods", "index.json")
+	indexPath := filepath.Join(r.repoPath, "mods", INDEX_JSON)
 	index, err := files.ReadJSON[types.IndexFile](indexPath, "mods index", files.JSONReadOptions{})
 	if err != nil {
 		return nil, err
 	}
-
-	mods := make([]types.ModManifest, 0, len(index.Mods))
-	for _, modID := range index.Mods {
-		manifestPath := filepath.Join(r.repoPath, "mods", modID, "manifest.json")
-		manifest, modErr := files.ReadJSON[types.ModManifest](manifestPath, fmt.Sprintf("manifest for mod %q", modID), files.JSONReadOptions{})
-		if modErr != nil {
-			return nil, modErr
-		}
-		mods = append(mods, manifest)
-	}
-
-	return mods, nil
+	return readManifestsFromDisk[types.ModManifest](r.repoPath, "mods", "mod", index.Mods)
 }
 
 func (r *Registry) SetInstalledMapsFromPath(path string) error {
@@ -80,21 +82,45 @@ func (r *Registry) SetInstalledModsFromPath(path string) error {
 
 // getMapsFromDisk reads the maps index and returns all map manifests.
 func (r *Registry) getMapsFromDisk() ([]types.MapManifest, error) {
-	indexPath := filepath.Join(r.repoPath, "maps", "index.json")
+	indexPath := filepath.Join(r.repoPath, "maps", INDEX_JSON)
 	index, indexErr := files.ReadJSON[types.IndexFile](indexPath, "maps index", files.JSONReadOptions{})
 	if indexErr != nil {
 		return nil, indexErr
 	}
+	return readManifestsFromDisk[types.MapManifest](r.repoPath, "maps", "map", index.Maps)
+}
 
-	maps := make([]types.MapManifest, 0, len(index.Maps))
-	for _, mapID := range index.Maps {
-		manifestPath := filepath.Join(r.repoPath, "maps", mapID, "manifest.json")
-		manifest, mapErr := files.ReadJSON[types.MapManifest](manifestPath, fmt.Sprintf("manifest for map %q", mapID), files.JSONReadOptions{})
-		if mapErr != nil {
-			return nil, mapErr
-		}
-		maps = append(maps, manifest)
+func (r *Registry) getDownloadCountsFromDisk(assetType types.AssetType) (map[string]map[string]int, error) {
+	assetDir := types.AssetTypeDir(assetType)
+	downloadsPath := filepath.Join(r.repoPath, assetDir, DOWNLOADS_JSON)
+	downloadsFile, err := files.ReadJSON[types.DownloadsFile](downloadsPath, fmt.Sprintf("%s download counts", assetType), files.JSONReadOptions{})
+	if err != nil {
+		return nil, err
 	}
+	return utils.CloneNestedMap(utils.OrEmptyNestedMap(downloadsFile)), nil
+}
 
-	return maps, nil
+func (r *Registry) loadDownloadCounts(assetTypes []types.AssetType) (map[types.AssetType]map[string]map[string]int, error) {
+	countsByType := make(map[types.AssetType]map[string]map[string]int, len(assetTypes))
+	for _, assetType := range assetTypes {
+		counts, err := r.getDownloadCountsFromDisk(assetType)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load %s download counts from disk: %w", assetType, err)
+		}
+		countsByType[assetType] = counts
+	}
+	return countsByType, nil
+}
+
+func readManifestsFromDisk[T any](repoPath string, assetDir string, assetLabel string, ids []string) ([]T, error) {
+	manifests := make([]T, 0, len(ids))
+	for _, assetID := range ids {
+		manifestPath := filepath.Join(repoPath, assetDir, assetID, MANIFEST_JSON)
+		manifest, err := files.ReadJSON[T](manifestPath, fmt.Sprintf("manifest for %s %q", assetLabel, assetID), files.JSONReadOptions{})
+		if err != nil {
+			return nil, err
+		}
+		manifests = append(manifests, manifest)
+	}
+	return manifests, nil
 }

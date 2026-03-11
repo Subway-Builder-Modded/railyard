@@ -18,6 +18,26 @@ export namespace types {
 	        this.setupCompleted = source["setupCompleted"];
 	    }
 	}
+	export class AssetDownloadCountsResponse {
+	    status: string;
+	    message: string;
+	    assetType: string;
+	    assetId: string;
+	    counts: Record<string, number>;
+	
+	    static createFrom(source: any = {}) {
+	        return new AssetDownloadCountsResponse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.assetType = source["assetType"];
+	        this.assetId = source["assetId"];
+	        this.counts = source["counts"];
+	    }
+	}
 	export class ConfigData {
 	    name: string;
 	    code: string;
@@ -81,6 +101,24 @@ export namespace types {
 	        this.isConfigured = source["isConfigured"];
 	        this.metroMakerDataPathValid = source["metroMakerDataPathValid"];
 	        this.executablePathValid = source["executablePathValid"];
+	    }
+	}
+	export class DownloadCountsByAssetTypeResponse {
+	    status: string;
+	    message: string;
+	    assetType: string;
+	    counts: Record<string, any>;
+	
+	    static createFrom(source: any = {}) {
+	        return new DownloadCountsByAssetTypeResponse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.assetType = source["assetType"];
+	        this.counts = source["counts"];
 	    }
 	}
 	export class Favorites {
@@ -219,8 +257,13 @@ export namespace types {
 	    github_id: number;
 	    city_code: string;
 	    country: string;
+	    location: string;
 	    population: number;
 	    description: string;
+	    data_source: string;
+	    source_quality: string;
+	    level_of_detail: string;
+	    special_demand: string[];
 	    tags: string[];
 	    gallery: string[];
 	    source: string;
@@ -239,8 +282,13 @@ export namespace types {
 	        this.github_id = source["github_id"];
 	        this.city_code = source["city_code"];
 	        this.country = source["country"];
+	        this.location = source["location"];
 	        this.population = source["population"];
 	        this.description = source["description"];
+	        this.data_source = source["data_source"];
+	        this.source_quality = source["source_quality"];
+	        this.level_of_detail = source["level_of_detail"];
+	        this.special_demand = source["special_demand"];
 	        this.tags = source["tags"];
 	        this.gallery = source["gallery"];
 	        this.source = source["source"];

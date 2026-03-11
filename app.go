@@ -50,8 +50,8 @@ type App struct {
 // NewApp creates a new App application struct
 func NewApp() *App {
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry()
 	l := logger.NewAppLogger()
+	reg := registry.NewRegistry(l)
 	dl := downloader.NewDownloader(cfg, reg, l)
 	return &App{
 		Registry:   reg,

@@ -1,39 +1,22 @@
 package profiles
 
 import (
-	"archive/zip"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"unsafe"
 
 	"railyard/internal/config"
 	"railyard/internal/downloader"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
 	"railyard/internal/registry"
+	"railyard/internal/testutil"
+	"railyard/internal/testutil/registrytest"
 	"railyard/internal/types"
-
-	"net/http"
-	"net/http/httptest"
-	"reflect"
 
 	"github.com/stretchr/testify/require"
 )
-
-func setEnv(t *testing.T) {
-	t.Helper()
-
-	root := t.TempDir()
-	t.Setenv("APPDATA", root)
-	t.Setenv("LOCALAPPDATA", root)
-	t.Setenv("ProgramFiles", root)
-	t.Setenv("ProgramFiles(x86)", root)
-	t.Setenv("XDG_CONFIG_HOME", root)
-	t.Setenv("HOME", root)
-}
 
 func testUserProfilesLogger(t *testing.T) logger.Logger {
 	t.Helper()
@@ -46,7 +29,6 @@ func requireProfileErrorType(t *testing.T, errs []types.UserProfilesError, expec
 	require.Equal(t, expected, errs[0].ErrorType)
 }
 
-// TODO: Let's move all of these service mocks into a single consolidated test helper
 func userProfilesService(t *testing.T) *UserProfiles {
 	t.Helper()
 	svc, _, _ := userProfilesServiceWithDependencies(t)
@@ -66,8 +48,8 @@ func loadedUserProfilesService(t *testing.T, state types.UserProfilesState) *Use
 func userProfilesServiceWithDependencies(t *testing.T) (*UserProfiles, *config.Config, *registry.Registry) {
 	t.Helper()
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry()
 	l := testUserProfilesLogger(t)
+	reg := registry.NewRegistry(l)
 	dl := downloader.NewDownloader(cfg, reg, l)
 	return NewUserProfiles(reg, dl, l, cfg), cfg, reg
 }
@@ -105,81 +87,6 @@ type registryFixture struct {
 	failVersions bool
 }
 
-func setRegistryManifestsForTest(t *testing.T, reg *registry.Registry, mods []types.ModManifest, maps []types.MapManifest) {
-	t.Helper()
-	setUnexportedField(t, reg, "mods", mods)
-	setUnexportedField(t, reg, "maps", maps)
-}
-
-func setUnexportedField(t *testing.T, target any, fieldName string, value any) {
-	t.Helper()
-	rv := reflect.ValueOf(target)
-	require.True(t, rv.Kind() == reflect.Ptr, "target must be pointer")
-	elem := rv.Elem()
-	field := elem.FieldByName(fieldName)
-	require.True(t, field.IsValid(), "field %q not found", fieldName)
-
-	reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Set(reflect.ValueOf(value))
-}
-
-// TODO: Create a global test helper to share these across different services that depend on Registry
-func mockZip(t *testing.T, files map[string][]byte) []byte {
-	t.Helper()
-	tempZip := filepath.Join(t.TempDir(), "fixture.zip")
-	f, err := os.Create(tempZip)
-	require.NoError(t, err)
-
-	w := zip.NewWriter(f)
-	for name, content := range files {
-		entry, createErr := w.Create(name)
-		require.NoError(t, createErr)
-		_, writeErr := entry.Write(content)
-		require.NoError(t, writeErr)
-	}
-	require.NoError(t, w.Close())
-	require.NoError(t, f.Close())
-
-	data, err := os.ReadFile(tempZip)
-	require.NoError(t, err)
-	return data
-}
-
-func mockMod(t *testing.T) []byte {
-	t.Helper()
-	manifest, err := json.Marshal(types.MetroMakerModManifest{
-		Id:          "fixture-mod",
-		Name:        "Fixture Mod",
-		Description: "Fixture mod for tests",
-		Version:     "1.0.0",
-		Main:        "index.js",
-	})
-	require.NoError(t, err)
-
-	return mockZip(t, map[string][]byte{
-		"manifest.json": manifest,
-		"index.js":      []byte("export default {};"),
-	})
-}
-
-func mockMap(t *testing.T, code string) []byte {
-	t.Helper()
-	configJSON, err := json.Marshal(types.ConfigData{
-		Code: code,
-		Name: "Fixture Map",
-	})
-	require.NoError(t, err)
-
-	return mockZip(t, map[string][]byte{
-		"config.json":              configJSON,
-		"demand_data.json":         []byte("{}"),
-		"roads.geojson":            []byte(`{"type":"FeatureCollection","features":[]}`),
-		"runways_taxiways.geojson": []byte(`{"type":"FeatureCollection","features":[]}`),
-		"buildings_index.json":     []byte("{}"),
-		"tiles.pmtiles":            []byte("tiles"),
-		"thumbnail.svg":            []byte("<svg></svg>"),
-	})
-}
-
 func configureConfig(t *testing.T, cfg *config.Config) {
 	t.Helper()
 	cfg.Cfg.MetroMakerDataPath = t.TempDir()
@@ -189,89 +96,17 @@ func configureConfig(t *testing.T, cfg *config.Config) {
 }
 
 func mockRegistry(t *testing.T, reg *registry.Registry, fixtures []registryFixture) func() {
-	t.Helper()
-	zipByDownloadPath := map[string][]byte{}
-	mods := []types.ModManifest{}
-	maps := []types.MapManifest{}
-	handler := http.NewServeMux()
-
-	for _, fixture := range fixtures {
-		current := fixture
-		updatePath := "/updates/" + current.assetID + ".json"
-
-		if current.assetType == types.AssetTypeMap {
-			maps = append(maps, types.MapManifest{
-				ID:     current.assetID,
-				Update: types.UpdateConfig{Type: "custom", URL: "{{BASE_URL}}" + updatePath},
-			})
-		} else {
-			mods = append(mods, types.ModManifest{
-				ID:     current.assetID,
-				Update: types.UpdateConfig{Type: "custom", URL: "{{BASE_URL}}" + updatePath},
-			})
-		}
-
-		handler.HandleFunc(updatePath, func(w http.ResponseWriter, r *http.Request) {
-			if current.failVersions {
-				http.Error(w, "failed to fetch versions", http.StatusInternalServerError)
-				return
-			}
-
-			payload := types.CustomUpdateFile{
-				SchemaVersion: 1,
-				Versions:      make([]types.CustomUpdateVersion, 0, len(current.versions)),
-			}
-
-			for _, version := range current.versions {
-				downloadPath := "/downloads/" + current.assetID + "-" + version + ".zip"
-				payload.Versions = append(payload.Versions, types.CustomUpdateVersion{
-					Version:  version,
-					Download: "http://" + r.Host + downloadPath,
-				})
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			require.NoError(t, json.NewEncoder(w).Encode(payload))
+	sharedFixtures := make([]registrytest.UpdateFixture, 0, len(fixtures))
+	for _, f := range fixtures {
+		sharedFixtures = append(sharedFixtures, registrytest.UpdateFixture{
+			AssetID:      f.assetID,
+			AssetType:    f.assetType,
+			Versions:     f.versions,
+			MapCode:      f.mapCode,
+			FailVersions: f.failVersions,
 		})
 	}
-
-	for _, fixture := range fixtures {
-		current := fixture
-		if current.failVersions {
-			continue
-		}
-		for _, version := range current.versions {
-			downloadPath := "/downloads/" + current.assetID + "-" + version + ".zip"
-			if current.assetType == types.AssetTypeMap {
-				mapCode := current.mapCode
-				if mapCode == "" {
-					mapCode = "AAA"
-				}
-				zipByDownloadPath[downloadPath] = mockMap(t, mapCode)
-				continue
-			}
-			zipByDownloadPath[downloadPath] = mockMod(t)
-		}
-	}
-
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if content, ok := zipByDownloadPath[r.URL.Path]; ok {
-			w.Header().Set("Content-Type", "application/zip")
-			_, _ = w.Write(content)
-			return
-		}
-		handler.ServeHTTP(w, r)
-	}))
-
-	for i := range mods {
-		mods[i].Update.URL = strings.ReplaceAll(mods[i].Update.URL, "{{BASE_URL}}", server.URL)
-	}
-	for i := range maps {
-		maps[i].Update.URL = strings.ReplaceAll(maps[i].Update.URL, "{{BASE_URL}}", server.URL)
-	}
-
-	setRegistryManifestsForTest(t, reg, mods, maps)
-	return server.Close
+	return registrytest.MockRegistryServer(t, reg, sharedFixtures)
 }
 
 type assetSyncTestFixture struct {
@@ -369,7 +204,7 @@ func mockModAssetSyncArgs(fixture assetSyncTestFixture, install func(string, str
 }
 
 func TestLoadProfilesBootstrapsAndPersistsStateWhenMissing(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	svc := userProfilesService(t)
 	loadResult := svc.LoadProfiles()
@@ -389,7 +224,7 @@ func TestLoadProfilesBootstrapsAndPersistsStateWhenMissing(t *testing.T) {
 }
 
 func TestResolveActiveProfileFailsWhenNotLoaded(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	svc := userProfilesService(t)
 	activeResult := svc.GetActiveProfile()
@@ -398,7 +233,7 @@ func TestResolveActiveProfileFailsWhenNotLoaded(t *testing.T) {
 }
 
 func TestLoadProfilesReturnsErrorForInvalidState(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	invalid := types.UserProfilesState{
 		ActiveProfileID: "custom",
@@ -415,7 +250,7 @@ func TestLoadProfilesReturnsErrorForInvalidState(t *testing.T) {
 }
 
 func TestResolveActiveProfileReturnsLoadedActiveProfile(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	state := types.InitialProfilesState()
 	custom := newTestUserProfile("custom", "Custom")
@@ -436,7 +271,7 @@ func TestResolveActiveProfileReturnsLoadedActiveProfile(t *testing.T) {
 }
 
 func TestQuarantineUserProfilesFileMovesSourceToBackup(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	writeRawUserProfilesFile(t, "{}")
 
 	svc := userProfilesService(t)
@@ -453,7 +288,7 @@ func TestQuarantineUserProfilesFileMovesSourceToBackup(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsSubscribeMapAddsOperationAndRuntimeOnlyByDefault(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 
 	req := types.UpdateSubscriptionsRequest{
@@ -483,7 +318,7 @@ func TestUpdateSubscriptionsSubscribeMapAddsOperationAndRuntimeOnlyByDefault(t *
 }
 
 func TestUpdateSubscriptionsForceSyncPersistsStateAndSyncs(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	state := types.InitialProfilesState()
 	profile := state.Profiles[types.DefaultProfileID]
 	profile.Subscriptions.Mods["mod-a"] = "2.0.0"
@@ -519,7 +354,7 @@ func TestUpdateSubscriptionsForceSyncPersistsStateAndSyncs(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsRepeatedSubscribeSameVersionEmitsOperation(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	state := types.InitialProfilesState()
 	profile := state.Profiles[types.DefaultProfileID]
 	profile.Subscriptions.Maps["map-a"] = "1.2.3"
@@ -542,7 +377,7 @@ func TestUpdateSubscriptionsRepeatedSubscribeSameVersionEmitsOperation(t *testin
 }
 
 func TestUpdateSubscriptionsUnsubscribeRemovesAndEmitsOperation(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	state := types.InitialProfilesState()
 	profile := state.Profiles[types.DefaultProfileID]
 	profile.Subscriptions.Mods["mod-a"] = "3.1.0"
@@ -566,7 +401,7 @@ func TestUpdateSubscriptionsUnsubscribeRemovesAndEmitsOperation(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsUnsubscribeMissingEntryIsNoOp(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 
 	result := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
@@ -583,7 +418,7 @@ func TestUpdateSubscriptionsUnsubscribeMissingEntryIsNoOp(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsRejectsInvalidRequests(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 
 	result := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
@@ -640,7 +475,7 @@ func TestUpdateSubscriptionsRejectsInvalidRequests(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsAcceptsSemverVersionString(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 
 	result := svc.UpdateSubscriptions(types.UpdateSubscriptionsRequest{
@@ -659,7 +494,7 @@ func TestUpdateSubscriptionsAcceptsSemverVersionString(t *testing.T) {
 }
 
 func TestUpdateSubscriptionsForceSyncErrors(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 	state := types.InitialProfilesState()
 	profile := state.Profiles[types.DefaultProfileID]
 	profile.Subscriptions.Maps["map-a"] = "1.0.0"
@@ -878,7 +713,7 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			setEnv(t)
+			testutil.NewHarness(t)
 			svc, cfg, reg := loadedUserProfilesServiceWithDependencies(t, tc.state)
 			var cleanup func()
 			if tc.setup != nil {
@@ -1208,7 +1043,7 @@ func TestSyncSubscriptions(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			setEnv(t)
+			testutil.NewHarness(t)
 
 			svc, cfg, reg := loadedUserProfilesServiceWithDependencies(t, tc.state)
 			for _, mod := range tc.initialMods {
@@ -1412,7 +1247,7 @@ func TestSyncAssetSubscriptionsInstallDecisionsMods(t *testing.T) {
 }
 
 func TestUpdateUIPreferences(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 	result := svc.UpdateUIPreferences(types.UIPreferences{
@@ -1431,7 +1266,7 @@ func TestUpdateUIPreferences(t *testing.T) {
 }
 
 func TestUpdateUIPreferencesRejectsInvalid(t *testing.T) {
-	setEnv(t)
+	testutil.NewHarness(t)
 
 	svc := loadedUserProfilesService(t, types.InitialProfilesState())
 	result := svc.UpdateUIPreferences(types.UIPreferences{

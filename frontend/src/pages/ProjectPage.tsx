@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import { useRegistryStore } from "@/stores/registry-store";
-import { GetVersions } from "../../wailsjs/go/registry/Registry";
+import { GetAssetDownloadCounts, GetVersions } from "../../wailsjs/go/registry/Registry";
 import { GetGameVersion } from "../../wailsjs/go/main/App";
 import { isCompatible } from "@/lib/semver";
 import { types } from "../../wailsjs/go/models";
+import { mergeVersionDownloads, withZeroDownloads } from "@/lib/version-downloads";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -56,11 +57,31 @@ export function ProjectPage() {
     setVersionsLoading(true);
     setVersionsError(null);
     GetVersions(item.update.type, source)
-      .then((v) => {
+      .then(async (v) => {
+        if (cancelled) return;
+        const all = v || [];
+        const visibleVersions = type === "mods" ? all.filter((ver) => ver.manifest) : all;
+
+        let mergedVersions = withZeroDownloads(visibleVersions);
+        const assetType = type === "mods" ? "mod" : "map";
+        try {
+          const countsResult = await GetAssetDownloadCounts(assetType, item.id);
+          if (countsResult.status === "success") {
+            mergedVersions = mergeVersionDownloads(
+              visibleVersions,
+              countsResult.counts ?? {},
+              `${assetType}:${item.id}`,
+            );
+          } else {
+            console.warn(`[${assetType}:${item.id}] Failed to fetch download counts: ${countsResult.message}`);
+          }
+        } catch (countErr) {
+          const message = countErr instanceof Error ? countErr.message : String(countErr);
+          console.warn(`[${assetType}:${item.id}] Failed to fetch download counts: ${message}`);
+        }
+
         if (!cancelled) {
-          const all = v || [];
-          // For mods, only show versions that have a manifest.json
-          setVersions(type === "mods" ? all.filter((ver) => ver.manifest) : all);
+          setVersions(mergedVersions);
           setVersionsLoading(false);
         }
       })
@@ -71,7 +92,7 @@ export function ProjectPage() {
         }
       });
     return () => { cancelled = true; };
-  }, [item?.update.type, item?.update.repo, item?.update.url]);
+  }, [type, item?.id, item?.update.type, item?.update.repo, item?.update.url]);
 
   const latestVersion = versions[0];
   const latestCompatibleVersion = useMemo(() => {

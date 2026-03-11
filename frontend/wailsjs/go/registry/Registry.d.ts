@@ -6,6 +6,10 @@ export function AddInstalledMap(arg1:string,arg2:string,arg3:types.ConfigData):P
 
 export function AddInstalledMod(arg1:string,arg2:string):Promise<void>;
 
+export function GetAssetDownloadCounts(arg1:types.AssetType,arg2:string):Promise<types.AssetDownloadCountsResponse>;
+
+export function GetDownloadCountsByAssetType(arg1:types.AssetType):Promise<types.DownloadCountsByAssetTypeResponse>;
+
 export function GetGalleryImage(arg1:string,arg2:string,arg3:string):Promise<string>;
 
 export function GetInstalledMapCodes():Promise<Array<string>>;

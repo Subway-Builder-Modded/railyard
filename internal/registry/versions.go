@@ -14,6 +14,8 @@ import (
 	"railyard/internal/types"
 )
 
+const DOWNLOADS_JSON = "downloads.json"
+
 // modManifestDeps is the minimal schema needed to extract dependencies from a mod's manifest.json.
 type modManifestDeps struct {
 	Dependencies map[string]string `json:"dependencies"`

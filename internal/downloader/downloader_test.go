@@ -288,7 +288,7 @@ func TestEnqueueOperationRunsSequentially(t *testing.T) {
 }
 
 func TestInstallMapForExistingIsNoOp(t *testing.T) {
-	reg := registry.NewRegistry()
+	reg := registry.NewRegistry(nil)
 	expectedConfig := types.ConfigData{
 		Code:        "ABC",
 		Name:        "Map A",
@@ -311,7 +311,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 }
 
 func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
-	reg := registry.NewRegistry()
+	reg := registry.NewRegistry(nil)
 	d := &Downloader{
 		Registry: reg,
 		Config:   config.NewConfig(),
