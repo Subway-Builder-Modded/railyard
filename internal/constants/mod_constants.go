@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-const MOD_VERSION = "1.0.0"
+//go:embed version.txt
+var MOD_VERSION string
 
 // GameDependencyKey is the manifest dependency key used to declare the required Subway Builder version.
 const GameDependencyKey = "subway-builder"

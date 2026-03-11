@@ -365,6 +365,15 @@ func (a *App) StopGame() error {
 	return cmd.Process.Kill()
 }
 
+func (a *App) ManuallyCheckForUpdates() {
+	a.Logger.Info("Manually checking for updates")
+	updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger)
+}
+
+func (a *App) GetCurrentVersion() string {
+	return strings.ToValidUTF8(constants.RAILYARD_VERSION, "")
+}
+
 func (a *App) startPMTilesServer() (int, error) {
 	listener, err := net.Listen("tcp", ":0")
 	if err != nil {

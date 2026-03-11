@@ -20,7 +20,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { FolderOpen, Gamepad2, AlertTriangle } from "lucide-react";
+import { FolderOpen, Gamepad2, AlertTriangle, RefreshCw } from "lucide-react";
+import { ManuallyCheckForUpdates } from "../../wailsjs/go/main/App";
 
 const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
 const THEME_OPTIONS = ["dark", "light", "system"] as const;
@@ -202,7 +203,10 @@ export function SettingsPage() {
 
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Check For Updates On Launch</label>
-            <Button variant="outline" size="sm" onClick={handleChangeUpdatesOnLaunch}>{config?.checkForUpdatesOnLaunch ? "Disable" : "Enable"}</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleChangeUpdatesOnLaunch}>{config?.checkForUpdatesOnLaunch ? "Disable" : "Enable"}</Button>
+              <Button variant="outline" size="sm" onClick={ManuallyCheckForUpdates}><RefreshCw/>Check For Updates</Button>
+            </div>
           </div>
         </CardContent>
       </Card>
