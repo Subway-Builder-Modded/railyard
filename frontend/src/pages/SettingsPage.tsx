@@ -42,6 +42,15 @@ export function SettingsPage() {
 
   const [confirmAction, setConfirmAction] = useState<"config" | "profile" | null>(null);
 
+  const handleUpdatesCheck = async () => {
+    try {
+      await ManuallyCheckForUpdates();
+      toast.success("No updates found, or installation was cancelled.");
+    } catch (error: any) {
+      toast.error("Failed to check for updates.");
+    }
+  }
+
   const handleChangeUpdatesOnLaunch = async () => {
     try {
       const newValue = !config?.checkForUpdatesOnLaunch;
@@ -205,7 +214,7 @@ export function SettingsPage() {
             <label className="text-sm font-medium">Check For Updates On Launch</label>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleChangeUpdatesOnLaunch}>{config?.checkForUpdatesOnLaunch ? "Disable" : "Enable"}</Button>
-              <Button variant="outline" size="sm" onClick={ManuallyCheckForUpdates}><RefreshCw/>Check For Updates</Button>
+              <Button variant="outline" size="sm" onClick={handleUpdatesCheck}><RefreshCw/>Check For Updates</Button>
             </div>
           </div>
         </CardContent>
