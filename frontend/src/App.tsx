@@ -19,10 +19,12 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { LogsPage } from "@/pages/LogsPage";
 import { ExtractNotification } from "./components/layout/ExtractNotification";
 import { IsStartupReady } from "../wailsjs/go/main/App";
+import { EventsOn } from "../wailsjs/runtime/runtime";
 
 function App() {
   useTheme();
   const [startupReady, setStartupReady] = useState(false);
+  const updateInstalledLists = useInstalledStore((s) => s.updateInstalledLists);
 
   const initConfig = useConfigStore((s) => s.initialize);
   const configInitialized = useConfigStore((s) => s.initialized);
@@ -40,6 +42,9 @@ function App() {
   const initGame = useGameStore((s) => s.initialize);
 
   useEffect(() => {
+    EventsOn("registry:update", () => {
+      updateInstalledLists();
+    });
     let cancelled = false;
     let timer: number | undefined;
 
@@ -128,7 +133,7 @@ function App() {
       </Layout>
       <DownloadNotification />
       <ExtractNotification />
-      <Toaster />
+      <Toaster/>
     </TooltipProvider>
   );
 }

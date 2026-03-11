@@ -20,6 +20,7 @@ interface InstalledState {
   isInstalled: (id: string) => boolean;
   getInstalledVersion: (id: string) => string | null;
   isOperating: (id: string) => boolean;
+  updateInstalledLists: () => Promise<void>;
 }
 
 export const useInstalledStore = create<InstalledState>((set, get) => {
@@ -66,6 +67,16 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     try {
       const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
       set({ installedMods: mods || [], installedMaps: maps || [], initialized: true, loading: false });
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err), loading: false });
+    }
+  },
+
+  updateInstalledLists: async () => {
+    set({ loading: true, error: null });
+    try {
+      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
+      set({ installedMods: mods || [], installedMaps: maps || [], loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });
     }

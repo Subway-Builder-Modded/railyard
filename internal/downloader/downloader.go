@@ -1,6 +1,7 @@
 package downloader
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -19,6 +20,7 @@ import (
 	"railyard/internal/registry"
 	"railyard/internal/types"
 
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -40,6 +42,7 @@ type Downloader struct {
 	pending map[downloadQueueKey]*downloadOperation
 	// Track running operations to prevent concurrent operations for the same asset
 	running map[downloadQueueKey]*downloadOperation
+	ctx     context.Context
 }
 
 // downloadQueueKey is used to coalesce download operations for a specific asset (mod/map) ensuring that only one operation is in process or queued at a given time
@@ -91,6 +94,10 @@ func NewDownloader(cfg *config.Config, reg *registry.Registry, l logger.Logger) 
 	return d
 }
 
+func (d *Downloader) SetContext(ctx context.Context) {
+	d.ctx = ctx
+}
+
 // startQueue initializes the download queue and starts the worker goroutine if it hasn't been started yet.
 func (d *Downloader) startQueue() {
 	d.downloadMu.Lock()
@@ -133,6 +140,7 @@ func (d *Downloader) runQueue() {
 
 		op.completed <- result
 		close(op.completed)
+		wailsruntime.EventsEmit(d.ctx, "registry:update") // Emit update event after each operation completes to trigger UI refresh
 	}
 }
 

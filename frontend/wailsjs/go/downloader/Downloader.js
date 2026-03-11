@@ -10,6 +10,10 @@ export function InstallMod(arg1, arg2) {
   return window['go']['downloader']['Downloader']['InstallMod'](arg1, arg2);
 }
 
+export function SetContext(arg1) {
+  return window['go']['downloader']['Downloader']['SetContext'](arg1);
+}
+
 export function UninstallMap(arg1) {
   return window['go']['downloader']['Downloader']['UninstallMap'](arg1);
 }
