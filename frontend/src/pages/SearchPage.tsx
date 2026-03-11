@@ -10,9 +10,26 @@ import { ErrorBanner } from "@/components/shared/ErrorBanner";
 import { Pagination } from "@/components/shared/Pagination";
 import { SortSelect } from "@/components/search/SortSelect";
 import { SearchX } from "lucide-react";
+import { useInstalledStore } from "@/stores/installed-store";
 
 export function SearchPage() {
   const { mods, maps, loading, error } = useRegistryStore();
+  const {installedMaps, installedMods} = useInstalledStore();
+  const installedItems = useMemo(() => {
+    const items: Array<{ type: "mods" | "maps"; item: typeof mods[number] | typeof maps[number]; installedVersion: string }> = [];
+    for (const installed of installedMods) {
+      const manifest = mods.find((m) => m.id === installed.id);
+      if (manifest) items.push({ type: "mods", item: manifest, installedVersion: installed.version });
+    }
+    for (const installed of installedMaps) {
+      const manifest = maps.find((m) => m.id === installed.id);
+      if (manifest) items.push({ type: "maps", item: manifest, installedVersion: installed.version });
+    }
+    return items;
+  }, [mods, maps, installedMods, installedMaps]);
+  const manifests = useMemo(() => {
+    return installedItems.map((i) => i.item);
+  }, [installedItems]);
 
   const allTags = useMemo(() => {
     const modTags = mods.flatMap((m) => m.tags ?? []);
@@ -106,9 +123,17 @@ export function SearchPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {items.map(({ type: itemType, item }) => (
-                  <ItemCard key={`${itemType}-${item.id}`} type={itemType} item={item} />
-                ))}
+                {items.map(({ type: itemType, item }) => {
+                  if (manifests.indexOf(item) !== -1) {
+                    return (
+                      <ItemCard key={`${itemType}-${item.id}`} type={itemType} item={item} installedVersion={installedItems.find((i) => i.item === item)?.installedVersion} />
+                    );
+                  } else {
+                    return (
+                      <ItemCard key={`${itemType}-${item.id}`} type={itemType} item={item} />
+                    );
+                  }
+                })}
               </div>
               <Pagination
                 page={page}
