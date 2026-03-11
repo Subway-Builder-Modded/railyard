@@ -88,6 +88,7 @@ function getTotalDownloads(
     : mapDownloadTotals[item.item.id] ?? 0;
 }
 
+// Helper to determine comparation logic based on sort field and direction
 function compareItems(
   a: TaggedItem,
   b: TaggedItem,
@@ -122,6 +123,7 @@ function compareItems(
   return compareField(sort.field);
 }
 
+// Seeded hash function to provide consistent "random" sorting. Stable across renders, but different across sessions
 function seededHash(value: string, seed: number): number {
   const FNV_OFFSET_BASIS_32 = 0x811c9dc5;
   const FNV_PRIME_32 = 0x01000193;
