@@ -190,7 +190,7 @@ jobs:
       - name: Build Windows (${{ matrix.arch }}) with NSIS installer
         run: |
           chcp 65001
-          <nul set /p="%VERSION%" > internal/constants/version.txt
+          $Env:VERSION | Set-Content internal/constants/version.txt -NoNewline
           wails build -platform windows/${{ matrix.arch }} -nsis
 
       - name: Rename artifacts
