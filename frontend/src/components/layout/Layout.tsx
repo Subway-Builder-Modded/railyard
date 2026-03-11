@@ -17,7 +17,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
       <footer className="text-center text-sm text-muted-foreground py-4">
         <p>
-          Railyard {version}, &copy; Railyard Team 2026.
+          Railyard {version}, &copy; Subway Builder Modded 2026.
         </p>
       </footer>
     </div>
