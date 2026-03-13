@@ -117,7 +117,7 @@ type assetSyncTestFixture struct {
 	availableVersions map[string]map[string]struct{}
 }
 
-func mockInstallResponseFn(
+func mockInstallResponse(
 	assetType types.AssetType,
 	callCount *int,
 	overrides map[string]types.AssetInstallResponse,
@@ -145,7 +145,7 @@ func mockInstallResponseFn(
 	}
 }
 
-func mockUninstallResponseFn(
+func mockUninstallResponse(
 	assetType types.AssetType,
 	callCount *int,
 	overrides map[string]types.AssetUninstallResponse,
@@ -1296,8 +1296,8 @@ func TestSyncAssetSubscriptionsInstallDecisionsMaps(t *testing.T) {
 				installedVersion:  tc.installedVersion,
 				availableVersions: tc.availableVersions,
 			},
-				mockInstallResponseFn(types.AssetTypeMap, &installCalls, nil),
-				mockUninstallResponseFn(types.AssetTypeMap, &uninstallCalls, nil),
+				mockInstallResponse(types.AssetTypeMap, &installCalls, nil),
+				mockUninstallResponse(types.AssetTypeMap, &uninstallCalls, nil),
 			))
 
 			require.Equal(t, tc.expectedInstalls, installCalls)
@@ -1333,7 +1333,7 @@ func TestSyncAssetSubscriptionsPropagatesInstallErrors(t *testing.T) {
 	uninstallCalls := 0
 	_, errs, assetsToPurge := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
 		fixture,
-		mockInstallResponseFn(types.AssetTypeMap, &installCalls, map[string]types.AssetInstallResponse{
+		mockInstallResponse(types.AssetTypeMap, &installCalls, map[string]types.AssetInstallResponse{
 			"map-a": {
 				GenericResponse: types.GenericResponse{
 					Status:  types.ResponseError,
@@ -1342,7 +1342,7 @@ func TestSyncAssetSubscriptionsPropagatesInstallErrors(t *testing.T) {
 				ErrorType: types.InstallErrorExtractFailed,
 			},
 		}),
-		mockUninstallResponseFn(types.AssetTypeMap, &uninstallCalls, nil),
+		mockUninstallResponse(types.AssetTypeMap, &uninstallCalls, nil),
 	))
 
 	require.Len(t, errs, 1)
@@ -1369,7 +1369,7 @@ func TestSyncAssetSubscriptionsChecksumFailureProducesPurgeCandidate(t *testing.
 
 	_, errs, assetsToPurge := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
 		fixture,
-		mockInstallResponseFn(types.AssetTypeMap, nil, map[string]types.AssetInstallResponse{
+		mockInstallResponse(types.AssetTypeMap, nil, map[string]types.AssetInstallResponse{
 			"map-a": {
 				GenericResponse: types.GenericResponse{
 					Status:  types.ResponseError,
@@ -1378,7 +1378,7 @@ func TestSyncAssetSubscriptionsChecksumFailureProducesPurgeCandidate(t *testing.
 				ErrorType: types.InstallErrorChecksumFailed,
 			},
 		}),
-		mockUninstallResponseFn(types.AssetTypeMap, nil, nil),
+		mockUninstallResponse(types.AssetTypeMap, nil, nil),
 	))
 
 	require.Empty(t, errs)
@@ -1525,8 +1525,8 @@ func TestSyncAssetSubscriptionsInstallDecisionsMods(t *testing.T) {
 			},
 		},
 	},
-		mockInstallResponseFn(types.AssetTypeMod, &installCalls, nil),
-		mockUninstallResponseFn(types.AssetTypeMod, &uninstallCalls, nil),
+		mockInstallResponse(types.AssetTypeMod, &installCalls, nil),
+		mockUninstallResponse(types.AssetTypeMod, &uninstallCalls, nil),
 	))
 
 	require.Empty(t, errs)
