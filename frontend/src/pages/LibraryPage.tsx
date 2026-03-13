@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "wouter";
 import { useRegistryStore } from "@/stores/registry-store";
 import { useInstalledStore } from "@/stores/installed-store";
@@ -17,14 +17,7 @@ import { Button } from "@/components/ui/button";
 import {
   Inbox,
   Plus,
-  Download,
 } from "lucide-react";
-import {
-  GetActiveProfile,
-  HasSubscriptionUpdates,
-  UpdateAllSubscriptionsToLatest,
-} from "../../wailsjs/go/profiles/UserProfiles";
-import { toast } from "sonner";
 import { createRandomSeed } from "@/stores/search-store";
 
 export function LibraryPage() {
@@ -35,8 +28,7 @@ export function LibraryPage() {
     mapDownloadTotals,
     ensureDownloadTotals,
   } = useRegistryStore();
-  const { installedMods, installedMaps, updateInstalledLists } =
-    useInstalledStore();
+  const { installedMods, installedMaps } = useInstalledStore();
 
   useEffect(() => {
     ensureDownloadTotals();
@@ -93,70 +85,6 @@ export function LibraryPage() {
     modDownloadTotals,
     mapDownloadTotals,
   });
-
-  const [updatingAll, setUpdatingAll] = useState(false);
-  const [hasAvailableUpdates, setHasAvailableUpdates] = useState(false);
-
-  const resolveActiveProfileId = async (): Promise<string> => {
-    const activeResult = await GetActiveProfile();
-    if (activeResult.status !== "success") {
-      throw new Error(activeResult.message || "Failed to resolve active profile");
-    }
-
-    return activeResult.profile.id;
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (installedItems.length === 0) {
-      setHasAvailableUpdates(false);
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const checkForAvailableUpdates = async () => {
-      try {
-        const profileID = await resolveActiveProfileId();
-        const updateResult = await HasSubscriptionUpdates(profileID);
-        if (!cancelled) {
-          setHasAvailableUpdates(updateResult.status !== "error" && updateResult.hasUpdates);
-        }
-      } catch {
-        if (!cancelled) {
-          setHasAvailableUpdates(false);
-        }
-      }
-    };
-
-    void checkForAvailableUpdates();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [installedItems]);
-
-  const handleUpdateAll = async () => {
-    setUpdatingAll(true);
-    try {
-      const profileID = await resolveActiveProfileId();
-      const result = await UpdateAllSubscriptionsToLatest(
-        profileID,
-      );
-      if (result.status === "error") {
-        throw new Error(result.message || "Update all failed");
-      }
-      await updateInstalledLists();
-      toast.success("Library updated.");
-    } catch (err) {
-      toast.error(
-        `Update all failed: ${err instanceof Error ? err.message : String(err)}`,
-      );
-    } finally {
-      setUpdatingAll(false);
-    }
-  };
 
   const modCount = installedItems.filter((i) => i.type === "mod").length;
   const mapCount = installedItems.filter((i) => i.type === "map").length;
@@ -251,18 +179,6 @@ export function LibraryPage() {
                 }
                 tab={filters.type}
               />
-              {hasAvailableUpdates && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleUpdateAll}
-                  disabled={updatingAll}
-                  className="gap-1.5"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Update all
-                </Button>
-              )}
             </div>
           </div>
 
