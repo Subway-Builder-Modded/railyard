@@ -11,6 +11,34 @@ import {
 import { useDownloadQueueStore } from './download-queue-store';
 import type { AssetType } from "@/lib/asset-types";
 
+export class SubscriptionSyncError extends Error {
+  readonly status: string;
+  readonly profileErrors: types.UserProfilesError[];
+
+  constructor(message: string, status: string, profileErrors: types.UserProfilesError[]) {
+    super(message);
+    this.name = "SubscriptionSyncError";
+    this.status = status;
+    this.profileErrors = profileErrors;
+  }
+}
+
+function resolveSubscriptionSyncMessage(
+  result: types.UpdateSubscriptionsResult,
+  fallback: string,
+): string {
+  if (result.message?.trim()) {
+    return result.message;
+  }
+
+  const firstError = result.errors?.[0];
+  if (firstError?.message?.trim()) {
+    return firstError.message;
+  }
+
+  return fallback;
+}
+
 type DirectInstallResponse = {
   status: string;
   message: string;
@@ -85,8 +113,12 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
       forceSync: true,
     });
     const result = await UpdateSubscriptions(request);
-    if (result.status === "error") {
-      throw new Error(result.message || "Subscription update failed");
+    if (result.status !== "success") {
+      throw new SubscriptionSyncError(
+        resolveSubscriptionSyncMessage(result, "Subscription update failed"),
+        result.status,
+        result.errors ?? [],
+      );
     }
     return result;
   };

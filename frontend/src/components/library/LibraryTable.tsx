@@ -11,7 +11,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, FolderOpen, Trash2 } from "lucide-react";
 import { UninstallDialog } from "@/components/dialogs/UninstallDialog";
 import { useLibraryStore } from "@/stores/library-store";
 import { useConfigStore } from "@/stores/config-store";
@@ -25,10 +25,14 @@ import { OpenInFileExplorer } from "../../../wailsjs/go/main/App";
 import { toast } from "sonner";
 import type { AssetType } from "@/lib/asset-types";
 import { assetTypeToListingPath } from "@/lib/asset-types";
+import type { SortState } from "@/lib/constants";
+import { toggleSortField } from "@/lib/constants";
 
 interface LibraryTableProps {
   items: InstalledTaggedItem[];
   activeType: AssetType;
+  sort: SortState;
+  onSortChange: (sort: SortState) => void;
 }
 
 function composeItemKey(item: InstalledTaggedItem): string {
@@ -38,6 +42,8 @@ function composeItemKey(item: InstalledTaggedItem): string {
 export function LibraryTable({
   items,
   activeType,
+  sort,
+  onSortChange,
 }: LibraryTableProps) {
   const { selectedIds, toggleSelected, selectAll, clearSelection } =
     useLibraryStore();
@@ -57,6 +63,15 @@ export function LibraryTable({
     }
   };
 
+  const isNameSorted = sort.field === "name";
+  const NameSortIcon = isNameSorted && sort.direction === "asc"
+    ? ChevronUp
+    : ChevronDown;
+  const isCountrySorted = sort.field === "country";
+  const CountrySortIcon = isCountrySorted && sort.direction === "asc"
+    ? ChevronUp
+    : ChevronDown;
+
   return (
     <div className="rounded-md border border-border">
       <Table>
@@ -70,10 +85,38 @@ export function LibraryTable({
               />
             </TableHead>
             <TableHead>
-              <span className="text-foreground font-medium">Name</span>
+              <button
+                type="button"
+                onClick={() => onSortChange(toggleSortField(sort, "name"))}
+                className="inline-flex items-center gap-1 text-foreground font-medium hover:text-foreground/80 transition-colors"
+                aria-label={isNameSorted && sort.direction === "asc" ? "Sort name descending" : "Sort name ascending"}
+              >
+                <span>Name</span>
+                <NameSortIcon
+                  className={cn(
+                    "h-4 w-4",
+                    isNameSorted ? "opacity-100" : "opacity-40",
+                  )}
+                />
+              </button>
             </TableHead>
             {showCountryColumn && (
-              <TableHead className="w-32 text-center">Country</TableHead>
+              <TableHead className="w-32 text-center">
+                <button
+                  type="button"
+                  onClick={() => onSortChange(toggleSortField(sort, "country"))}
+                  className="inline-flex items-center gap-1 text-foreground font-medium hover:text-foreground/80 transition-colors"
+                  aria-label={isCountrySorted && sort.direction === "asc" ? "Sort country descending" : "Sort country ascending"}
+                >
+                  <span>Country</span>
+                  <CountrySortIcon
+                    className={cn(
+                      "h-4 w-4",
+                      isCountrySorted ? "opacity-100" : "opacity-40",
+                    )}
+                  />
+                </button>
+              </TableHead>
             )}
             <TableHead className="w-28 text-center">Version</TableHead>
             <TableHead className="w-24"></TableHead>

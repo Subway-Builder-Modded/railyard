@@ -12,13 +12,11 @@ import { LibraryActionBar } from "@/components/library/LibraryActionBar";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Pagination } from "@/components/shared/Pagination";
 import { ErrorBanner } from "@/components/shared/ErrorBanner";
-import { SortSelect } from "@/components/search/SortSelect";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
   Plus,
 } from "lucide-react";
-import { createRandomSeed } from "@/stores/search-store";
 
 export function LibraryPage() {
   const {
@@ -165,21 +163,6 @@ export function LibraryPage() {
                 Projects
               </span>
             </div>
-
-            <div className="flex items-center gap-2">
-              <SortSelect
-                value={filters.sort}
-                onChange={(value) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    sort: value,
-                    randomSeed:
-                      value.field === "random" ? createRandomSeed() : prev.randomSeed,
-                  }))
-                }
-                tab={filters.type}
-              />
-            </div>
           </div>
 
           <div className="flex gap-6 items-start">
@@ -211,6 +194,13 @@ export function LibraryPage() {
                   <LibraryTable
                     items={paginatedItems}
                     activeType={filters.type}
+                    sort={filters.sort}
+                    onSortChange={(value) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        sort: value,
+                      }))
+                    }
                   />
                   <Pagination
                     page={page}

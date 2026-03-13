@@ -8,11 +8,19 @@ const {
   mockGetInstalledMaps,
   mockGetActiveProfile,
   mockUpdateSubscriptions,
+  mockInstallMapFiles,
+  mockInstallModFiles,
+  mockUninstallMapFiles,
+  mockUninstallModFiles,
 } = vi.hoisted(() => ({
   mockGetInstalledMods: vi.fn(),
   mockGetInstalledMaps: vi.fn(),
   mockGetActiveProfile: vi.fn(),
   mockUpdateSubscriptions: vi.fn(),
+  mockInstallMapFiles: vi.fn(),
+  mockInstallModFiles: vi.fn(),
+  mockUninstallMapFiles: vi.fn(),
+  mockUninstallModFiles: vi.fn(),
 }));
 
 vi.mock("../../wailsjs/go/registry/Registry", () => ({
@@ -23,6 +31,13 @@ vi.mock("../../wailsjs/go/registry/Registry", () => ({
 vi.mock("../../wailsjs/go/profiles/UserProfiles", () => ({
   GetActiveProfile: mockGetActiveProfile,
   UpdateSubscriptions: mockUpdateSubscriptions,
+}));
+
+vi.mock("../../wailsjs/go/downloader/Downloader", () => ({
+  InstallMap: mockInstallMapFiles,
+  InstallMod: mockInstallModFiles,
+  UninstallMap: mockUninstallMapFiles,
+  UninstallMod: mockUninstallModFiles,
 }));
 
 type ProfilesRequest = {
@@ -74,6 +89,10 @@ describe("useInstalledStore", () => {
       error: null,
       initialized: false,
     });
+    mockInstallMapFiles.mockResolvedValue({ status: "success", message: "" });
+    mockInstallModFiles.mockResolvedValue({ status: "success", message: "" });
+    mockUninstallMapFiles.mockResolvedValue({ status: "success", message: "" });
+    mockUninstallModFiles.mockResolvedValue({ status: "success", message: "" });
   });
 
   it("installMap correctly updates subscriptions and refreshes installed lists", async () => {
@@ -131,13 +150,13 @@ describe("useInstalledStore", () => {
     validateFinalState("installing", "mod-2", "Install failed");
   });
 
-  it("installMap does not throw when profile mutation returns warn", async () => {
+  it("installMap throws when profile mutation returns warn", async () => {
     mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsWarn("sync completed with warnings"));
     mockGetInstalledMods.mockResolvedValue([{ id: "mod-1", version: "1.0.0" }]);
     mockGetInstalledMaps.mockResolvedValue([{ id: "map-1", version: "2.0.0", config: { code: "AAA" } }]);
 
-    await expect(useInstalledStore.getState().installMap("map-1", "2.0.0")).resolves.toBeDefined();
+    await expect(useInstalledStore.getState().installMap("map-1", "2.0.0")).rejects.toThrow("sync completed with warnings");
 
     validateProfilesRequest({
       profileId: "profile-a",
@@ -146,8 +165,8 @@ describe("useInstalledStore", () => {
       assetType: "map",
       version: "2.0.0",
     });
-    validateInstallationRefreshes(1);
-    validateFinalState("installing", "map-1", null);
+    validateInstallationRefreshes(0);
+    validateFinalState("installing", "map-1", "sync completed with warnings");
   });
 
   it("uninstallMod errors when profile mutation fails", async () => {

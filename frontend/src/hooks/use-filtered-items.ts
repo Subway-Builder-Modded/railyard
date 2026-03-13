@@ -29,6 +29,17 @@ type SearchableItem = {
   searchText: string;
 };
 
+export interface TaggedItemFilterState {
+  query: string;
+  type: "mod" | "map";
+  sort: SortState;
+  randomSeed: number;
+  mod: {
+    tags: string[];
+  };
+  map: SearchFilterState["map"];
+}
+
 export function buildSearchText(item: TaggedItem): string {
   const base = item.item;
   const values: string[] = [base.name ?? "", base.author ?? "", base.description ?? ""];
@@ -110,6 +121,11 @@ export function compareItems(
     switch (field) {
       case "name":
         return compareText(a.item.name ?? "", b.item.name ?? "", sort.direction);
+      case "country": {
+        const countryA = a.type === "map" ? ((a.item as types.MapManifest).country ?? "") : "";
+        const countryB = b.type === "map" ? ((b.item as types.MapManifest).country ?? "") : "";
+        return compareText(countryA, countryB, sort.direction);
+      }
       case "author":
         return compareText(a.item.author ?? "", b.item.author ?? "", sort.direction);
       case "population": {
@@ -159,6 +175,48 @@ export function sortItemsBySeed(items: TaggedItem[], seed: number): TaggedItem[]
   });
 }
 
+export function filterAndSortTaggedItems<T extends TaggedItem>(
+  items: T[],
+  filters: TaggedItemFilterState,
+  modDownloadTotals: Record<string, number>,
+  mapDownloadTotals: Record<string, number>
+): T[] {
+  let result = items.filter((i) => i.type === filters.type);
+
+  if (filters.mod.tags.length > 0) {
+    result = result.filter((i) =>
+      i.type === "mod" ? matchesZeroOrManyValuesFilter(i.item.tags, filters.mod.tags) : true
+    );
+  }
+
+  result = result.filter((i) => matchesMapAttributeFilters(i, filters.map));
+  const query = filters.query.trim();
+  if (query) {
+    const searchable: SearchableItem[] = result.map((entry) => ({
+      entry,
+      searchText: buildSearchText(entry),
+    }));
+
+    const fuse = new Fuse(searchable, FUSE_SEARCH_OPTIONS);
+
+    result = fuse.search(query).map(({ item }) => item.entry as T);
+  }
+
+  if (filters.sort.field === "random") {
+    return sortItemsBySeed(result, filters.randomSeed) as T[];
+  }
+
+  return [...result].sort((a, b) =>
+    compareItems(
+      a,
+      b,
+      filters.sort,
+      modDownloadTotals,
+      mapDownloadTotals
+    )
+  );
+}
+
 export function useFilteredItems({
   mods,
   maps,
@@ -198,39 +256,11 @@ export function useFilteredItems({
   }, [mods, maps]);
 
   const filtered = useMemo(() => {
-    let result = allItems.filter((i) => i.type === filters.type);
-
-    if (filters.mod.tags.length > 0) {
-      result = result.filter((i) =>
-        i.type === "mod" ? matchesZeroOrManyValuesFilter(i.item.tags, filters.mod.tags) : true
-      );
-    }
-
-    result = result.filter((i) => matchesMapAttributeFilters(i, filters.map));
-    const query = filters.query.trim();
-    if (query) {
-      const searchable: SearchableItem[] = result.map((entry) => ({
-        entry,
-        searchText: buildSearchText(entry),
-      }));
-
-      const fuse = new Fuse(searchable, FUSE_SEARCH_OPTIONS);
-
-      result = fuse.search(query).map(({ item }) => item.entry);
-    }
-
-    if (filters.sort.field === "random") {
-      return sortItemsBySeed(result, filters.randomSeed);
-    }
-
-    return [...result].sort((a, b) =>
-      compareItems(
-        a,
-        b,
-        filters.sort,
-        modDownloadTotals,
-        mapDownloadTotals
-      )
+    return filterAndSortTaggedItems(
+      allItems,
+      filters,
+      modDownloadTotals,
+      mapDownloadTotals
     );
   }, [allItems, filters, mapDownloadTotals, modDownloadTotals]);
 

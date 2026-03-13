@@ -21,6 +21,7 @@ import {
   SOURCE_QUALITY_VALUES,
 } from "@/lib/map-filter-values";
 import { SEARCH_FILTER_EMPTY_LABELS } from "@/lib/search";
+import { normalizeSortStateForType } from "@/lib/constants";
 
 const FILTER_SECTION_TITLE_CLASS =
   "text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 px-1";
@@ -69,7 +70,11 @@ export function LibrarySidebar({
             <button
               key={value}
               onClick={() =>
-                onFiltersChange((prev) => ({ ...prev, type: value }))
+                onFiltersChange((prev) => ({
+                  ...prev,
+                  type: value,
+                  sort: normalizeSortStateForType(prev.sort, value),
+                }))
               }
               className={cn(
                 "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm transition-colors",

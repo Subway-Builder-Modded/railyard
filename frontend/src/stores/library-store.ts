@@ -45,7 +45,11 @@ const defaultLibraryFilters: LibraryFilterState = {
   query: "",
   type: "mod",
   perPage: 12,
-  sort: DEFAULT_SORT_STATE,
+  sort: {
+    ...DEFAULT_SORT_STATE,
+    field: "name",
+    direction: "asc",
+  },
   randomSeed: createRandomSeed(),
   mod: {
     tags: [],

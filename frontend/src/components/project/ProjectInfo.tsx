@@ -12,6 +12,7 @@ import { useInstalledStore } from "@/stores/installed-store";
 import { UninstallDialog } from "@/components/dialogs/UninstallDialog";
 import { InstallErrorDialog } from "@/components/dialogs/InstallErrorDialog";
 import { PrereleaseConfirmDialog } from "@/components/dialogs/PrereleaseConfirmDialog";
+import { SubscriptionSyncErrorDialog } from "@/components/dialogs/SubscriptionSyncErrorDialog";
 import { toast } from "sonner";
 import {
   ExternalLink,
@@ -22,6 +23,7 @@ import {
   Trash2,
   CheckCircle,
   Download,
+  TriangleAlert,
 } from "lucide-react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -30,6 +32,10 @@ import { types } from "../../../wailsjs/go/models";
 import { formatSourceQuality } from "@/lib/map-filter-values";
 import { useDownloadQueueStore } from "@/stores/download-queue-store";
 import type { AssetType } from "@/lib/asset-types";
+import {
+  INSTALL_SUBSCRIPTION_SYNC_FAILED_TOAST,
+  toSubscriptionSyncErrorState,
+} from "@/lib/subscription-sync-error";
 
 interface ProjectInfoProps {
   type: AssetType;
@@ -60,6 +66,11 @@ export function ProjectInfo({
     message: string;
   } | null>(null);
   const [prereleasePrompt, setPrereleasePrompt] = useState(false);
+  const [subscriptionSyncError, setSubscriptionSyncError] = useState<{
+    version: string;
+    message: string;
+    errors: types.UserProfilesError[];
+  } | null>(null);
   const { installMod, installMap, getInstalledVersion, isOperating } =
     useInstalledStore();
 
@@ -96,10 +107,18 @@ export function ProjectInfo({
         `${item.name} ${version} installed successfully.${queueText}`,
       );
     } catch (err) {
-      setInstallError({
-        version,
-        message: err instanceof Error ? err.message : String(err),
-      });
+      const syncError = toSubscriptionSyncErrorState(err, version);
+      if (syncError) {
+        toast.warning(INSTALL_SUBSCRIPTION_SYNC_FAILED_TOAST, {
+          icon: <TriangleAlert className="h-4 w-4 text-amber-500" />,
+        });
+        setSubscriptionSyncError(syncError);
+      } else {
+        setInstallError({
+          version,
+          message: err instanceof Error ? err.message : String(err),
+        });
+      }
     }
   };
 
@@ -300,6 +319,21 @@ export function ProjectInfo({
           itemName={item.name}
           version={installError.version}
           error={installError.message}
+        />
+      )}
+
+      {subscriptionSyncError && (
+        <SubscriptionSyncErrorDialog
+          open={!!subscriptionSyncError}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSubscriptionSyncError(null);
+            }
+          }}
+          itemName={item.name}
+          version={subscriptionSyncError.version}
+          message={subscriptionSyncError.message}
+          errors={subscriptionSyncError.errors}
         />
       )}
     </div>

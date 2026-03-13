@@ -5,6 +5,7 @@ export type PerPage = typeof PER_PAGE_OPTIONS[number];
 
 export type SortField =
   | "name"
+  | "country"
   | "author"
   | "population"
   | "downloads"
@@ -30,6 +31,7 @@ const SORT_FIELDS = [
   "last_updated",
   "downloads",
   "population",
+  "country",
   "name",
   "author",
   "random",
@@ -44,6 +46,8 @@ function sortOptionLabel(field: SortField, direction: SortDirection): string {
   switch (field) {
     case "name":
       return direction === "asc" ? "Name (A-Z)" : "Name (Z-A)";
+    case "country":
+      return direction === "asc" ? "Country (A-Z)" : "Country (Z-A)";
     case "author":
       return direction === "asc" ? "Author (A-Z)" : "Author (Z-A)";
     case "population":
@@ -64,7 +68,7 @@ export const SORT_OPTIONS = SORT_FIELDS.flatMap((field) =>
     value: `${field}:${direction}` as SortKey,
     label: sortOptionLabel(field, direction),
     sort: { field, direction },
-    mapOnly: field === "population",
+    mapOnly: field === "population" || field === "country",
   }))
 ) satisfies SortOption[];
 
@@ -111,4 +115,34 @@ export function sortStateToOptionKey(state: SortState, type: AssetType): SortKey
     defaultOption;
 
   return option.value;
+}
+
+export function toggleSortField(
+  current: SortState,
+  field: Exclude<SortField, "random">,
+): SortState {
+  if (current.field === field) {
+    return {
+      field,
+      direction: current.direction === "asc" ? "desc" : "asc",
+    };
+  }
+
+  return {
+    field,
+    direction: "asc",
+  };
+}
+
+export function normalizeSortStateForType(state: SortState, type: AssetType): SortState {
+  const options = getSortOptionsForType(type);
+  const requestedKey = SortKey.fromState(state);
+  const requested = options.find((option) => SortKey.equals(option.value, requestedKey));
+  if (requested) {
+    return requested.sort;
+  }
+
+  const fallbackField = type === "map" ? "name" : "name";
+  const fallback = options.find((option) => option.sort.field === fallbackField);
+  return fallback?.sort ?? options[0]?.sort ?? DEFAULT_SORT_STATE;
 }
