@@ -92,7 +92,9 @@ export function ProjectPage() {
           setVersionsLoading(false);
         }
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [type, item?.id, item?.update.type, item?.update.repo, item?.update.url]);
 
   const latestVersion = versions[0];
@@ -136,11 +138,27 @@ export function ProjectPage() {
 
       <ProjectHero type={type} id={item.id} gallery={gallery} />
 
-      <ProjectInfo type={type} item={item} latestVersion={latestVersion} latestCompatibleVersion={latestCompatibleVersion} versionsLoading={versionsLoading} gameVersion={gameVersion} />
+      <ProjectInfo
+        type={type}
+        item={item}
+        latestVersion={latestVersion}
+        latestCompatibleVersion={latestCompatibleVersion}
+        versionsLoading={versionsLoading}
+        gameVersion={gameVersion}
+      />
 
       <Separator />
 
-      <VersionsTable type={type} itemId={item.id} itemName={item.name} update={item.update} versions={versions} loading={versionsLoading} error={versionsError} gameVersion={gameVersion} />
+      <VersionsTable
+        type={type}
+        itemId={item.id}
+        itemName={item.name}
+        update={item.update}
+        versions={versions}
+        loading={versionsLoading}
+        error={versionsError}
+        gameVersion={gameVersion}
+      />
     </div>
   );
 }

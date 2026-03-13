@@ -145,12 +145,10 @@ export function VersionsTable({ type, itemId, itemName, versions, loading, error
                       )}
                     </span>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(v.date)}
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{formatDate(v.date)}</TableCell>
                   {hasAnyGameVersion && (
                     <TableCell className="text-muted-foreground font-mono text-xs">
-                      {v.game_version || "\u2014"}
+                      {v.game_version || "—"}
                     </TableCell>
                   )}
                   <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
@@ -204,7 +202,9 @@ export function VersionsTable({ type, itemId, itemName, versions, loading, error
       {prereleasePrompt && (
         <PrereleaseConfirmDialog
           open={!!prereleasePrompt}
-          onOpenChange={(open) => { if (!open) setPrereleasePrompt(null); }}
+          onOpenChange={(open) => {
+            if (!open) setPrereleasePrompt(null);
+          }}
           itemName={itemName}
           version={prereleasePrompt.version}
           onConfirm={() => doInstall(prereleasePrompt.version)}
@@ -214,7 +214,9 @@ export function VersionsTable({ type, itemId, itemName, versions, loading, error
       {installError && (
         <InstallErrorDialog
           open={!!installError}
-          onOpenChange={(open) => { if (!open) setInstallError(null); }}
+          onOpenChange={(open) => {
+            if (!open) setInstallError(null);
+          }}
           itemName={itemName}
           version={installError.version}
           error={installError.message}

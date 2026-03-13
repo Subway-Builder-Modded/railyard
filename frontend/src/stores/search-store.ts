@@ -12,7 +12,9 @@ export interface SearchFilterState extends SharedAssetFilterState {
   randomSeed: number;
 }
 
-type SearchFilterUpdater = SearchFilterState | ((prev: SearchFilterState) => SearchFilterState);
+type SearchFilterUpdater =
+  | SearchFilterState
+  | ((prev: SearchFilterState) => SearchFilterState);
 
 interface SearchState {
   filters: SearchFilterState;

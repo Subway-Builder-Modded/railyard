@@ -6,6 +6,7 @@ import { Users, CheckCircle, Package, MapPin, Download } from "lucide-react";
 import { formatSourceQuality } from "@/lib/map-filter-values";
 import { MAX_CARD_BADGES } from "@/lib/search";
 import { getCountryFlagIcon } from "@/lib/flags";
+import { assetTypeToListingPath, type AssetType } from "@/lib/asset-types";
 import { types } from "../../../wailsjs/go/models";
 import { assetTypeToListingPath, type AssetType } from "@/lib/asset-types";
 
@@ -52,7 +53,6 @@ export function ItemCard({
           installedVersion && "ring-1 ring-primary/40",
         )}
       >
-        {/* Thumbnail */}
         <div className="relative aspect-video overflow-hidden bg-muted shrink-0">
           {installedVersion && (
             <div className="absolute top-2 right-2 z-10">
@@ -62,14 +62,9 @@ export function ItemCard({
               </Badge>
             </div>
           )}
-          {/* Type pill */}
           <div className="absolute top-2 left-2 z-10">
             <span className="inline-flex items-center gap-1 bg-background/80 backdrop-blur-sm border border-border/50 text-foreground text-xs font-medium px-2 py-0.5 rounded-full">
-              {isMap ? (
-                <MapPin className="h-2.5 w-2.5" />
-              ) : (
-                <Package className="h-2.5 w-2.5" />
-              )}
+              {isMap ? <MapPin className="h-2.5 w-2.5" /> : <Package className="h-2.5 w-2.5" />}
               {isMap ? "Map" : "Mod"}
             </span>
           </div>
@@ -81,9 +76,7 @@ export function ItemCard({
           />
         </div>
 
-        {/* Card body */}
         <div className="flex flex-col flex-1 p-4 gap-3">
-          {/* Title row */}
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-sm leading-snug text-foreground truncate">
@@ -100,12 +93,9 @@ export function ItemCard({
                     {mapCityCode}
                   </span>
                 )}
-                {/* Show the country flag as an icon next to the country code*/}
                 {mapCountry && (
                   <span className="inline-flex items-center justify-end gap-1 text-xs text-muted-foreground">
-                    {CountryFlag && (
-                      <CountryFlag className="h-3 w-4 rounded-[1px]" />
-                    )}
+                    {CountryFlag && <CountryFlag className="h-3 w-4 rounded-[1px]" />}
                     <span>{mapCountry.toUpperCase()}</span>
                   </span>
                 )}
@@ -113,16 +103,13 @@ export function ItemCard({
             )}
           </div>
 
-          {/* Description */}
           <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 flex-1">
             {item.description}
           </p>
 
-          {/* Footer: population + tags */}
           <div className="flex items-end justify-between gap-2 mt-auto">
             {(isMap && item.population > 0) || showDownloads ? (
               <div className="flex flex-col gap-1 text-xs text-muted-foreground shrink-0">
-                {/* Show population above downloads if both are available. */}
                 {isMap && item.population > 0 && (
                   <div className="flex items-center gap-1">
                     <Users className="h-3 w-3" aria-hidden="true" />

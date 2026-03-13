@@ -26,7 +26,6 @@ export function SortSelect({ value, onChange, tab }: SortSelectProps) {
   const sortOptions = getSortOptionsForType(tab);
   const selectedOptionKey = sortStateToOptionKey(value, tab);
 
-  // Reset to default if current value is not available in filtered options
   useEffect(() => {
     if (!sortOptions.some((opt) => opt.value === selectedOptionKey)) {
       const defaultKey = SortKey.fromState(DEFAULT_SORT_STATE);
@@ -47,7 +46,6 @@ export function SortSelect({ value, onChange, tab }: SortSelectProps) {
       <SelectTrigger className="w-36 h-8 text-xs">
         <SelectValue placeholder="Sort by..." />
       </SelectTrigger>
-      {/* Make sure that the selected option is always visible and ensure the dropdown renders downwards */}
       <SelectContent
         side="bottom"
         sideOffset={4}

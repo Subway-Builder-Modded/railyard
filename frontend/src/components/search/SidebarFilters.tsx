@@ -56,7 +56,6 @@ export function SidebarFilters({
 
   return (
     <div className="space-y-5">
-      {/* Type filter */}
       <div>
         <FilterSectionTitle title="Type" />
         <nav className="space-y-0.5" aria-label="Content type filter">

@@ -27,7 +27,5 @@ export function GalleryImage({ type, id, imagePath, className }: GalleryImagePro
     );
   }
 
-  return (
-    <img src={imageUrl} alt="" className={cn("w-full object-cover", className)} />
-  );
+  return <img src={imageUrl} alt="" className={cn("w-full object-cover", className)} />;
 }
