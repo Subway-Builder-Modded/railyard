@@ -157,12 +157,6 @@ func (d *Downloader) runQueue() {
 	}
 }
 
-func (d *Downloader) emitDownloadCancelled(assetType types.AssetType, assetID, phase string) {
-	if d.OnCancelled != nil {
-		d.OnCancelled(assetID, assetType, phase)
-	}
-}
-
 // replaceQueuedOperation replaces an existing queued operation for the same asset with a new operation, returning a boolean to indicate success
 func (d *Downloader) replaceQueuedOperation(target *downloadOperation, replacement *downloadOperation) bool {
 	for i, queued := range d.queue {
@@ -209,7 +203,7 @@ func (d *Downloader) cancelPendingQueuedInstall(assetType types.AssetType, asset
 	}
 	pending.completed <- pending.supersededResult
 	close(pending.completed)
-	d.emitDownloadCancelled(assetType, assetID, cancelledPhaseQueued)
+	d.OnCancelled(assetID, assetType, cancelledPhaseQueued)
 	return true
 }
 
@@ -233,7 +227,7 @@ func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQ
 		// If an uninstall action is enqueued while an install is running for the same asset, attempt to cancel the install
 		if running, ok := d.running[assetKey]; ok && running.action == operationActionInstall && running.cancel != nil {
 			running.cancel()
-			d.emitDownloadCancelled(assetKey.assetType, assetKey.assetID, cancelledPhaseRunning)
+			d.OnCancelled(assetKey.assetID, assetKey.assetType, cancelledPhaseRunning)
 		}
 	}
 	// If there's an existing pending operation for the same asset, replace it in-place in the queue and mark it as superseded.

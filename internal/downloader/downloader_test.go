@@ -314,6 +314,7 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 		Registry: reg,
 		Config:   cfg,
 		Logger:   logger.LoggerAtPath(""),
+		OnCancelled: func(string, types.AssetType, string) {}, // no-op for testing
 	}
 	cancelledEvents := captureCancelledEvents(d)
 
@@ -439,6 +440,7 @@ func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 		Registry: reg,
 		Config:   cfg,
 		Logger:   logger.LoggerAtPath(""),
+		OnCancelled: func(string, types.AssetType, string) {}, // no-op for testing
 	}
 	d.tempPath = t.TempDir()
 	d.mapTilePath = d.getMapTilePath()
