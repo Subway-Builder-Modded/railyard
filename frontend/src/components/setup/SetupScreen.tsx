@@ -26,8 +26,15 @@ export function SetupScreen() {
   const [saving, setSaving] = useState(false);
   const [checkForUpdates, setCheckForUpdates] = useState<boolean | null>(null);
   const [githubToken, setGithubToken] = useState("");
-  const { config, validation, openDataFolderDialog, openExecutableDialog, updateCheckForUpdatesOnLaunch, updateGithubToken, completeSetup } =
-    useConfigStore();
+  const {
+    config,
+    validation,
+    openDataFolderDialog,
+    openExecutableDialog,
+    updateCheckForUpdatesOnLaunch,
+    updateGithubToken,
+    completeSetup,
+  } = useConfigStore();
 
   const handleDataFolder = async (autoDetect: boolean) => {
     try {
@@ -53,8 +60,9 @@ export function SetupScreen() {
       if (checkForUpdates !== null) {
         await updateCheckForUpdatesOnLaunch(checkForUpdates);
       }
-      if (githubToken.trim() !== "") {
-        await updateGithubToken(githubToken);
+      const trimmedGithubToken = githubToken.trim();
+      if (trimmedGithubToken !== "") {
+        await updateGithubToken(trimmedGithubToken);
       }
       await completeSetup();
     } finally {
@@ -98,15 +106,17 @@ export function SetupScreen() {
             </>
           ) : (
             <>
-            <div className="mx-auto mb-2">
-              <CheckCircle className="h-10 w-10 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl">Automatically Check for Updates</CardTitle>
-            <CardDescription>
-              Would you like Railyard to check for updates when it launches?
-            </CardDescription>            
+              <div className="mx-auto mb-2">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl">
+                Automatically Check for Updates
+              </CardTitle>
+              <CardDescription>
+                Would you like Railyard to automatically check for updates when
+                it launches? You can change this later in settings.
+              </CardDescription>
             </>
-
           )}
 
           {/* Step indicators */}
@@ -246,7 +256,8 @@ export function SetupScreen() {
                   className="font-mono whitespace-nowrap overflow-x-auto"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Leave blank to skip. You can add or change this later in Settings.
+                  Leave blank to skip. You can add or change this later in
+                  Settings.
                 </p>
               </div>
 
@@ -263,7 +274,9 @@ export function SetupScreen() {
           ) : (
             <>
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Check for updates on launch</p>
+                <p className="text-sm text-muted-foreground">
+                  Check for updates on launch
+                </p>
                 <div className="flex items-center gap-4 w-full justify-center">
                   <Button
                     variant={checkForUpdates === true ? "default" : "outline"}
@@ -284,7 +297,10 @@ export function SetupScreen() {
                 <Button variant="outline" onClick={() => setStep(3)}>
                   Back
                 </Button>
-                <Button onClick={handleFinish} disabled={checkForUpdates === null || saving}>
+                <Button
+                  onClick={handleFinish}
+                  disabled={checkForUpdates === null || saving}
+                >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Finish Setup
                 </Button>

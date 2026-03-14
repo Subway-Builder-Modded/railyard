@@ -107,7 +107,7 @@ func (r *Registry) getGithubToken() string {
 	if r.githubTokenGetter == nil {
 		return ""
 	}
-	return strings.TrimSpace(r.githubTokenGetter())
+	return r.githubTokenGetter()
 }
 
 func (r *Registry) doGitHubRequestWithOptionalToken(apiURL, repo string) (*http.Response, error) {
@@ -142,7 +142,7 @@ func (r *Registry) doGitHubRequest(apiURL, token string) (*http.Response, error)
 		return nil, fmt.Errorf("failed to create GitHub API request: %w", err)
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "Railyard-Desktop-App")
+	req.Header.Set("User-Agent", types.RequestUserAgent)
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
@@ -164,7 +164,7 @@ func (r *Registry) enrichGameVersions(versions []types.VersionInfo) {
 			if err != nil {
 				return
 			}
-			req.Header.Set("User-Agent", "Railyard-Desktop-App")
+			req.Header.Set("User-Agent", types.RequestUserAgent)
 			req.Header.Set("Accept", "application/octet-stream")
 			resp, err := r.httpClient.Do(req)
 			if err != nil {
@@ -200,7 +200,7 @@ func (r *Registry) getCustomVersions(updateURL string) ([]types.VersionInfo, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for custom update URL: %w", err)
 	}
-	req.Header.Set("User-Agent", "Railyard-Desktop-App")
+	req.Header.Set("User-Agent", types.RequestUserAgent)
 
 	resp, err := r.httpClient.Do(req)
 	if err != nil {

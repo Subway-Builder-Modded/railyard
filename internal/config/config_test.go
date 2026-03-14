@@ -156,14 +156,14 @@ func TestUpdateGithubTokenRuntimeAndClear(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, updated.HasGithubToken)
 	require.Empty(t, updated.Config.GithubToken)
-	require.Equal(t, "ghp_token_123", h.cfg.GetGithubToken())
+	require.Equal(t, "  ghp_token_123  ", h.cfg.GetGithubToken())
 
 	// Runtime-only update should not mutate persisted config until SaveConfig.
 	require.Equal(t, types.AppConfig{}, h.persisted())
 
 	_, err = h.cfg.SaveConfig()
 	require.NoError(t, err)
-	require.Equal(t, "ghp_token_123", h.persisted().GithubToken)
+	require.Equal(t, "  ghp_token_123  ", h.persisted().GithubToken)
 
 	cleared, err := h.cfg.ClearGithubToken()
 	require.NoError(t, err)

@@ -17,6 +17,7 @@ const (
 )
 
 const RequestTimeout = 15 * time.Second
+const RequestUserAgent = "Railyard-Desktop-App"
 
 type GenericResponse struct {
 	Status  Status `json:"status"`

@@ -55,7 +55,7 @@ func resolveConfigResultFromAppConfig(cfg types.AppConfig) types.ResolveConfigRe
 	return types.ResolveConfigResult{
 		Config:         redacted,
 		Validation:     validation,
-		HasGithubToken: strings.TrimSpace(cfg.GithubToken) != "",
+		HasGithubToken: cfg.GithubToken != "",
 	}
 }
 
@@ -131,7 +131,7 @@ func (s *Config) SetConfig(next types.AppConfig) (types.AppConfig, error) {
 		*cfg = types.AppConfig{
 			MetroMakerDataPath:      strings.TrimSpace(next.MetroMakerDataPath),
 			ExecutablePath:          strings.TrimSpace(next.ExecutablePath),
-			GithubToken:             strings.TrimSpace(next.GithubToken),
+			GithubToken:             next.GithubToken,
 			CheckForUpdatesOnLaunch: next.CheckForUpdatesOnLaunch,
 			SetupCompleted:          next.SetupCompleted,
 		}
@@ -155,7 +155,7 @@ func (s *Config) SaveConfig() (types.ResolveConfigResult, error) {
 
 func (s *Config) UpdateGithubToken(githubToken string) (types.ResolveConfigResult, error) {
 	return s.UpdateConfig(func(cfg *types.AppConfig) {
-		cfg.GithubToken = strings.TrimSpace(githubToken)
+		cfg.GithubToken = githubToken
 	}, false)
 }
 
@@ -168,7 +168,7 @@ func (s *Config) ClearGithubToken() (types.ResolveConfigResult, error) {
 func (s *Config) GetGithubToken() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return strings.TrimSpace(s.Cfg.GithubToken)
+	return s.Cfg.GithubToken
 }
 
 /* ===== Dialog Functions ===== */

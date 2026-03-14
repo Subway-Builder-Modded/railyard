@@ -125,7 +125,7 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
   updateGithubToken: async (token: string) => {
     set({ error: null });
     try {
-      const result = await UpdateGithubToken(token);
+      const result = await UpdateGithubToken(token.trim());
       set({
         config: result.config,
         validation: result.validation,

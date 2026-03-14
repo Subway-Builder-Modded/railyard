@@ -213,8 +213,7 @@ func pullReleases(log logger.Logger, githubToken string) ([]types.RailyardVersio
 	}
 
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "Railyard-Desktop-App")
-	githubToken = strings.TrimSpace(githubToken)
+	req.Header.Set("User-Agent", types.RequestUserAgent)
 	if githubToken != "" {
 		req.Header.Set("Authorization", "Bearer "+githubToken)
 	}
@@ -233,7 +232,7 @@ func pullReleases(log logger.Logger, githubToken string) ([]types.RailyardVersio
 			return nil, fmt.Errorf("failed to create unauthenticated GitHub API request: %w", reqErr)
 		}
 		reqNoAuth.Header.Set("Accept", "application/vnd.github+json")
-		reqNoAuth.Header.Set("User-Agent", "Railyard-Desktop-App")
+		reqNoAuth.Header.Set("User-Agent", types.RequestUserAgent)
 
 		resp, err = updaterHTTPClient.Do(reqNoAuth)
 		if err != nil {

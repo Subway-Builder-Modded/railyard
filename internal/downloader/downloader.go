@@ -678,7 +678,7 @@ func (d *Downloader) downloadTempZip(url string, itemId string) types.DownloadTe
 	}
 	defer file.Close()
 
-	zip, err := d.doDownloadRequest(url, d.Config.GetGithubToken())
+	zip, err := d.downloadRequest(url, d.Config.GetGithubToken())
 
 	if err != nil {
 		return d.throwDownloadError("Failed to download file", err, "url", url)
@@ -707,17 +707,17 @@ func (d *Downloader) downloadTempZip(url string, itemId string) types.DownloadTe
 	return d.toDownloadResponse(d.successResponse("File downloaded successfully", "url", url), file.Name())
 }
 
-func (d *Downloader) doDownloadRequest(downloadURL, githubToken string) (*http.Response, error) {
+// downloadRequest performs an HTTP GET request to the specified URL, including an optional authentication for GitHub URL
+func (d *Downloader) downloadRequest(downloadURL, githubToken string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", downloadURL, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "Railyard-Desktop-App")
-	trimmedToken := strings.TrimSpace(githubToken)
+	req.Header.Set("User-Agent", types.RequestUserAgent)
 	tokenApplied := false
-	if trimmedToken != "" && shouldAuthenticateDownloadURL(downloadURL) {
-		req.Header.Set("Authorization", "Bearer "+trimmedToken)
+	if githubToken != "" && shouldAuthenticateDownloadURL(downloadURL) {
+		req.Header.Set("Authorization", "Bearer "+githubToken)
 		tokenApplied = true
 	}
 
@@ -732,7 +732,7 @@ func (d *Downloader) doDownloadRequest(downloadURL, githubToken string) (*http.R
 		if reqErr != nil {
 			return nil, reqErr
 		}
-		reqNoAuth.Header.Set("User-Agent", "Railyard-Desktop-App")
+		reqNoAuth.Header.Set("User-Agent", types.RequestUserAgent)
 		return downloaderHTTPClient.Do(reqNoAuth)
 	}
 
