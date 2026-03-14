@@ -24,7 +24,6 @@ import {
   CheckCircle,
   Download,
   X,
-  TriangleAlert,
 } from "lucide-react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -34,7 +33,8 @@ import { formatSourceQuality } from "@/lib/map-filter-values";
 import { useDownloadQueueStore } from "@/stores/download-queue-store";
 import type { AssetType } from "@/lib/asset-types";
 import {
-  INSTALL_SUBSCRIPTION_SYNC_FAILED_TOAST,
+  isCancellationSyncError,
+  isCancellationMessage,
   toSubscriptionSyncErrorState,
 } from "@/lib/subscription-sync-error";
 
@@ -61,6 +61,7 @@ export function ProjectInfo({
   versionsLoading,
   gameVersion,
 }: ProjectInfoProps) {
+  const cancellationToastId = `cancel-install-${type}-${item.id}`;
   const [uninstallOpen, setUninstallOpen] = useState(false);
   const [installError, setInstallError] = useState<{
     version: string;
@@ -72,7 +73,7 @@ export function ProjectInfo({
     message: string;
     errors: types.UserProfilesError[];
   } | null>(null);
-  const { installMod, installMap, uninstallMod, uninstallMap, getInstalledVersion, isInstalling, isUninstalling } =
+  const { installMod, installMap, cancelPendingInstall, getInstalledVersion, isInstalling, isUninstalling } =
     useInstalledStore();
 
   const installedVersion = getInstalledVersion(item.id);
@@ -105,7 +106,11 @@ export function ProjectInfo({
         result = await installMap(item.id, version);
       }
       if (result.status === "warn") {
-        toast.warning(result.message || `Install for ${item.name} completed with warnings.`);
+        if (isCancellationMessage(result.message)) {
+          toast.success(`Cancelled pending install for ${item.name}.`, { id: cancellationToastId });
+        } else {
+          toast.warning(result.message || `Install for ${item.name} completed with warnings.`);
+        }
         return;
       }
       const { completed, total } = useDownloadQueueStore.getState();
@@ -116,9 +121,10 @@ export function ProjectInfo({
     } catch (err) {
       const syncError = toSubscriptionSyncErrorState(err, version);
       if (syncError) {
-        toast.warning(INSTALL_SUBSCRIPTION_SYNC_FAILED_TOAST, {
-          icon: <TriangleAlert className="h-4 w-4 text-amber-500" />,
-        });
+        if (useInstalledStore.getState().isUninstalling(item.id) || isCancellationSyncError(syncError)) {
+          toast.success(`Cancelled pending install for ${item.name}.`, { id: cancellationToastId });
+          return;
+        }
         setSubscriptionSyncError(syncError);
       } else {
         setInstallError({
@@ -131,17 +137,8 @@ export function ProjectInfo({
 
   const handleCancelInstall = async () => {
     try {
-      let result: types.UpdateSubscriptionsResult;
-      if (type === "mod") {
-        result = await uninstallMod(item.id);
-      } else {
-        result = await uninstallMap(item.id);
-      }
-      if (result.status === "warn") {
-        toast.warning(result.message || `Cancel request for ${item.name} completed with warnings.`);
-      } else {
-        toast.success(`Cancelled pending install for ${item.name}.`);
-      }
+      await cancelPendingInstall(type, item.id);
+      toast.success(`Cancelled pending install for ${item.name}.`, { id: cancellationToastId });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     }

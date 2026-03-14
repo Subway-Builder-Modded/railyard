@@ -22,5 +22,28 @@ export function toSubscriptionSyncErrorState(
   }
 }
 
-export const INSTALL_SUBSCRIPTION_SYNC_FAILED_TOAST =
-  "Installation failed: subscription sync failed."
+export function isCancellationMessage(message: string | undefined | null): boolean {
+  if (!message) {
+    return false;
+  }
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes("cancel") ||
+    normalized.includes("superseded by newer queued request") ||
+    normalized.includes("not currently installed")
+  );
+}
+
+export function isCancellationSyncError(
+  err: SubscriptionSyncErrorState | null | undefined,
+): boolean {
+  if (!err) {
+    return false;
+  }
+  if (isCancellationMessage(err.message)) {
+    return true;
+  }
+  return (err.errors ?? []).some((profileError) =>
+    isCancellationMessage(profileError.message),
+  );
+}

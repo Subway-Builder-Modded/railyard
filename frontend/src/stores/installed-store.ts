@@ -4,6 +4,7 @@ import { GetInstalledMods, GetInstalledMaps } from '../../wailsjs/go/registry/Re
 import { GetActiveProfile, UpdateSubscriptions } from '../../wailsjs/go/profiles/UserProfiles';
 import { useDownloadQueueStore } from './download-queue-store';
 import type { AssetType } from "@/lib/asset-types";
+import { emitDownloadCancelled } from "@/lib/download-cancel";
 
 export class SubscriptionSyncError extends Error {
   readonly status: string;
@@ -238,8 +239,11 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
 
   uninstallAssets,
 
-  cancelPendingInstall: (type: AssetType, id: string) =>
-    uninstallAssets([{ id, type }]),
+  cancelPendingInstall: async (type: AssetType, id: string) => {
+    const result = await uninstallAssets([{ id, type }]);
+    emitDownloadCancelled(id);
+    return result;
+  },
 
   isInstalled: (id: string) => {
     const { installedMods, installedMaps } = get();

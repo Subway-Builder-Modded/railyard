@@ -189,6 +189,7 @@ describe("useInstalledStore", () => {
   });
 
   it("cancelPendingInstall routes through unsubscribe and tolerates warn", async () => {
+    const dispatchSpy = vi.spyOn(window, "dispatchEvent");
     mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsWarn("not installed; nothing to do"));
     mockGetInstalledMods.mockResolvedValue([]);
@@ -206,5 +207,7 @@ describe("useInstalledStore", () => {
     validateInstallationRefreshes(1);
     validateFinalState("uninstalling", "map-42", null);
     expect(result.status).toBe("warn");
+    expect(dispatchSpy).toHaveBeenCalled();
+    dispatchSpy.mockRestore();
   });
 });

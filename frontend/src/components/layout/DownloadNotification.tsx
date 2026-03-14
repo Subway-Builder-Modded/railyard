@@ -3,6 +3,7 @@ import { EventsOn } from "../../../wailsjs/runtime/runtime";
 import { toast } from "sonner";
 import { Download, CheckCircle } from "lucide-react";
 import { useDownloadQueueStore } from "@/stores/download-queue-store";
+import { onDownloadCancelled } from "@/lib/download-cancel";
 
 interface DownloadProgress {
   itemId: string;
@@ -95,7 +96,19 @@ export function DownloadNotification() {
       }
     });
 
-    return cancel;
+    const offCancelled = onDownloadCancelled(({ itemId }) => {
+      const existingId = toastIds.current.get(itemId);
+      if (!existingId) {
+        return;
+      }
+      toast.dismiss(existingId);
+      toastIds.current.delete(itemId);
+    });
+
+    return () => {
+      offCancelled();
+      cancel();
+    };
   }, []);
 
   return null;
