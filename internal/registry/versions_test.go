@@ -8,13 +8,14 @@ import (
 	"testing"
 
 	"railyard/internal/config"
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestFilterSemverVersions(t *testing.T) {
-	reg := NewRegistry(testLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
 	filtered := reg.filterSemverVersions([]types.VersionInfo{
 		{Version: "1.2.3"},
 		{Version: "v2.3.4"},
@@ -34,7 +35,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 	cfg := config.NewConfig()
 	_, err := cfg.UpdateGithubToken("ghp_test_token")
 	require.NoError(t, err)
-	reg := NewRegistry(testLogSink{}, cfg)
+	reg := NewRegistry(testutil.NoopLogger{}, cfg)
 	originalBaseURL := registryGitHubAPIBaseURL
 	t.Cleanup(func() {
 		registryGitHubAPIBaseURL = originalBaseURL
@@ -73,7 +74,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 }
 
 func TestClearVersionsCache(t *testing.T) {
-	reg := NewRegistry(testLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
 	reg.setCachedVersions("github|owner/repo", []types.VersionInfo{{Version: "v1.0.0"}})
 
 	_, ok := reg.getCachedVersions("github|owner/repo")

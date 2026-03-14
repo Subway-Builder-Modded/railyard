@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"railyard/internal/config"
+	"railyard/internal/testutil"
 	"railyard/internal/testutil/registrytest"
 	"railyard/internal/types"
 
@@ -19,7 +20,7 @@ func mustUnix(t *testing.T, value string) int64 {
 	return parsed.Unix()
 }
 func TestResolveLastUpdated(t *testing.T) {
-	reg := NewRegistry(testLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-a",
@@ -56,7 +57,7 @@ func TestDetermineLatestTimestampWithStable(t *testing.T) {
 		{Version: "1.5.0", Date: "2026-01-01T00:00:00Z", Prerelease: false},
 	}
 
-	latest, err := determineLatestTimestamp(testLogSink{}, versions, "github")
+	latest, err := determineLatestTimestamp(testutil.NoopLogger{}, versions, "github")
 	require.NoError(t, err)
 	require.Equal(t, mustUnix(t, "2026-01-01T00:00:00Z"), latest)
 }
@@ -67,7 +68,7 @@ func TestDetermineLatestTimestampFallbackToPreRelease(t *testing.T) {
 		{Version: "1.0.1", Date: "2026-01-03T00:00:00Z", Prerelease: true},
 	}
 
-	latest, err := determineLatestTimestamp(testLogSink{}, versions, "github")
+	latest, err := determineLatestTimestamp(testutil.NoopLogger{}, versions, "github")
 	require.NoError(t, err)
 	require.Equal(t, mustUnix(t, "2026-01-03T00:00:00Z"), latest)
 }
@@ -76,18 +77,18 @@ func TestDetermineLatestTimestampRejectsWrongLayout(t *testing.T) {
 	githubVersions := []types.VersionInfo{
 		{Version: "1.0.0", Date: "2026-01-01"},
 	}
-	_, githubErr := determineLatestTimestamp(testLogSink{}, githubVersions, "github")
+	_, githubErr := determineLatestTimestamp(testutil.NoopLogger{}, githubVersions, "github")
 	require.Error(t, githubErr)
 
 	customVersions := []types.VersionInfo{
 		{Version: "1.0.0", Date: "2026-01-01T00:00:00Z"},
 	}
-	_, customErr := determineLatestTimestamp(testLogSink{}, customVersions, "custom")
+	_, customErr := determineLatestTimestamp(testutil.NoopLogger{}, customVersions, "custom")
 	require.Error(t, customErr)
 }
 
 func TestLoadLastUpdatedFallsBackToEpochOnFailures(t *testing.T) {
-	reg := NewRegistry(testLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-bad",

@@ -48,9 +48,12 @@ interface InstalledState {
   uninstallMod: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallMap: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallAssets: (assets: Array<{ id: string; type: AssetType }>) => Promise<types.UpdateSubscriptionsResult>;
+  cancelPendingInstall: (type: AssetType, id: string) => Promise<types.UpdateSubscriptionsResult>;
   isInstalled: (id: string) => boolean;
   getInstalledVersion: (id: string) => string | null;
   isOperating: (id: string) => boolean;
+  isInstalling: (id: string) => boolean;
+  isUninstalling: (id: string) => boolean;
   updateInstalledLists: () => Promise<void>;
 }
 
@@ -119,7 +122,7 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
       forceSync: true,
     });
     const result = await UpdateSubscriptions(request);
-    if (result.status !== "success") {
+    if (result.status === "error") {
       throw new SubscriptionSyncError(
         resolveSubscriptionSyncMessage(result, "Subscription update failed"),
         result.status,
@@ -235,6 +238,9 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
 
   uninstallAssets,
 
+  cancelPendingInstall: (type: AssetType, id: string) =>
+    uninstallAssets([{ id, type }]),
+
   isInstalled: (id: string) => {
     const { installedMods, installedMaps } = get();
     return installedMods.some((m) => m.id === id) || installedMaps.some((m) => m.id === id);
@@ -252,5 +258,9 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   isOperating: (id: string) => {
     return get().installing.has(id) || get().uninstalling.has(id);
   },
+
+  isInstalling: (id: string) => get().installing.has(id),
+
+  isUninstalling: (id: string) => get().uninstalling.has(id),
   });
 });

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -56,10 +57,12 @@ type downloadQueueKey struct {
 }
 
 type downloadOperation struct {
+	action           operationAction
 	key              string
 	assetKey         downloadQueueKey
 	run              func() operationResult
 	supersededResult operationResult
+	cancel           context.CancelFunc
 	completed        chan operationResult
 }
 
@@ -164,18 +167,25 @@ func (d *Downloader) replaceQueuedOperation(target *downloadOperation, replaceme
 
 // enqueueOperation adds a new operation to the queue using asset-level coalescing.
 // Only one queued operation per asset is retained; later requests supersede older pending requests.
-func (d *Downloader) enqueueOperation(assetKey downloadQueueKey, key string, run func() operationResult, supersededResult operationResult) operationResult {
+func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQueueKey, key string, run func() operationResult, supersededResult operationResult, cancel context.CancelFunc) operationResult {
 	d.startQueue()
 
 	op := &downloadOperation{
+		action:           action,
 		key:              key,
 		assetKey:         assetKey,
 		run:              run,
 		supersededResult: supersededResult,
+		cancel:           cancel,
 		completed:        make(chan operationResult, 1),
 	}
 
 	d.downloadMu.Lock()
+	if action == operationActionUninstall {
+		if running, ok := d.running[assetKey]; ok && running.action == operationActionInstall && running.cancel != nil {
+			running.cancel()
+		}
+	}
 	// If there's an existing pending operation for the same asset, replace it in-place in the queue and mark it as superseded.
 	// Prefer in-place replacement so that any other callers waiting on the initial result no longer have to wait until all other pending requests are completed
 	if existingPending, ok := d.pending[assetKey]; ok {
@@ -183,6 +193,9 @@ func (d *Downloader) enqueueOperation(assetKey downloadQueueKey, key string, run
 		if !replaced {
 			// Fallback guard: if pending bookkeeping is ever out of sync, keep progress by appending.
 			d.queue = append(d.queue, op)
+		}
+		if existingPending.cancel != nil {
+			existingPending.cancel()
 		}
 		existingPending.completed <- existingPending.supersededResult
 		close(existingPending.completed)
@@ -375,7 +388,7 @@ func (d *Downloader) UninstallAsset(assetType types.AssetType, assetID string) t
 
 	key := d.operationKey(operationActionUninstall, assetType, assetID, "")
 	assetKey := downloadQueueKey{assetType: assetType, assetID: assetID}
-	result := d.enqueueOperation(assetKey, key, func() operationResult {
+	result := d.enqueueOperation(operationActionUninstall, assetKey, key, func() operationResult {
 		switch assetType {
 		case types.AssetTypeMap:
 			return operationResult{assetUninstallResponse: d.uninstallMapNow(assetID)}
@@ -391,7 +404,7 @@ func (d *Downloader) UninstallAsset(assetType types.AssetType, assetID string) t
 				"asset_type", assetType, "asset_id", assetID,
 			)}
 		}
-	}, d.supersededOperationResult(operationActionUninstall, assetType, assetID, ""))
+	}, d.supersededOperationResult(operationActionUninstall, assetType, assetID, ""), nil)
 	return result.assetUninstallResponse
 }
 
@@ -464,12 +477,14 @@ func (d *Downloader) InstallAsset(assetType types.AssetType, assetID string, ver
 
 	key := d.operationKey(operationActionInstall, assetType, assetID, version)
 	assetKey := downloadQueueKey{assetType: assetType, assetID: assetID}
-	result := d.enqueueOperation(assetKey, key, func() operationResult {
+	opCtx, cancel := context.WithCancel(context.Background())
+	result := d.enqueueOperation(operationActionInstall, assetKey, key, func() operationResult {
+		defer cancel()
 		switch assetType {
 		case types.AssetTypeMap:
-			return operationResult{assetInstallResponse: d.installMapNow(assetID, version)}
+			return operationResult{assetInstallResponse: d.installMapNow(opCtx, assetID, version)}
 		case types.AssetTypeMod:
-			return operationResult{assetInstallResponse: d.installModNow(assetID, version)}
+			return operationResult{assetInstallResponse: d.installModNow(opCtx, assetID, version)}
 		default:
 			return operationResult{assetInstallResponse: d.installError(
 				assetType,
@@ -482,12 +497,12 @@ func (d *Downloader) InstallAsset(assetType types.AssetType, assetID string, ver
 				"asset_type", assetType, "asset_id", assetID, "version", version,
 			)}
 		}
-	}, d.supersededOperationResult(operationActionInstall, assetType, assetID, version))
+	}, d.supersededOperationResult(operationActionInstall, assetType, assetID, version), cancel)
 	return result.assetInstallResponse
 }
 
 // installModNow handles the installation of a mod given its ID and version, including downloading, extracting, and updating the registry.
-func (d *Downloader) installModNow(modId string, version string) types.AssetInstallResponse {
+func (d *Downloader) installModNow(ctx context.Context, modId string, version string) types.AssetInstallResponse {
 	d.Logger.Info("InstallMod started", "mod_id", modId, "version", version)
 	if state, installed := d.getInstalledState(types.AssetTypeMod, modId); installed && state.version == version {
 		return d.installWarn(
@@ -545,7 +560,10 @@ func (d *Downloader) installModNow(modId string, version string) types.AssetInst
 	}
 
 	d.Logger.Info("Downloading mod", "mod_id", modId, "version", version, "download_url", versionInfo.DownloadURL)
-	downloadResp := d.downloadTempZip(versionInfo.DownloadURL, modId)
+	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, modId)
+	if downloadResp.Status == types.ResponseWarn {
+		return d.installWarn(types.AssetTypeMod, modId, version, types.ConfigData{}, downloadResp.Message, "mod_id", modId, "version", version)
+	}
 	if downloadResp.Status != types.ResponseSuccess {
 		os.Remove(downloadResp.Path)
 		return d.installError(types.AssetTypeMod, modId, version, types.ConfigData{}, types.InstallErrorDownloadFailed, "Failed to download mod zip: "+downloadResp.Message, nil, "mod_id", modId, "version", version)
@@ -572,7 +590,7 @@ func (d *Downloader) installModNow(modId string, version string) types.AssetInst
 }
 
 // installMapNow handles the installation of a map given its ID and version, including downloading, extracting, validating files, and updating the registry.
-func (d *Downloader) installMapNow(mapId string, version string) types.AssetInstallResponse {
+func (d *Downloader) installMapNow(ctx context.Context, mapId string, version string) types.AssetInstallResponse {
 	d.Logger.Info("InstallMap started", "map_id", mapId, "version", version)
 	if state, installed := d.getInstalledState(types.AssetTypeMap, mapId); installed && state.version == version {
 		return d.installWarn(
@@ -622,7 +640,10 @@ func (d *Downloader) installMapNow(mapId string, version string) types.AssetInst
 	}
 
 	d.Logger.Info("Downloading map", "map_id", mapId, "version", version, "download_url", versionInfo.DownloadURL)
-	downloadResp := d.downloadTempZip(versionInfo.DownloadURL, mapId)
+	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, mapId)
+	if downloadResp.Status == types.ResponseWarn {
+		return d.installWarn(types.AssetTypeMap, mapId, version, types.ConfigData{}, downloadResp.Message, "map_id", mapId, "version", version)
+	}
 	if downloadResp.Status != types.ResponseSuccess {
 		os.Remove(downloadResp.Path)
 		return d.installError(types.AssetTypeMap, mapId, version, types.ConfigData{}, types.InstallErrorDownloadFailed, "Failed to download map zip: "+downloadResp.Message, nil, "map_id", mapId, "version", version)
@@ -649,7 +670,7 @@ func (d *Downloader) installMapNow(mapId string, version string) types.AssetInst
 }
 
 // downloadTempZip downloads a zip file from the given URL and saves it to a temporary location, returning the path or an error message.
-func (d *Downloader) downloadTempZip(url string, itemId string) types.DownloadTempResponse {
+func (d *Downloader) downloadTempZip(ctx context.Context, url string, itemId string) types.DownloadTempResponse {
 	if err := os.MkdirAll(d.tempPath, os.ModePerm); err != nil {
 		return d.throwDownloadError("Failed to create temp directory", err, "url", url)
 	}
@@ -663,6 +684,9 @@ func (d *Downloader) downloadTempZip(url string, itemId string) types.DownloadTe
 	zip, err := d.downloadRequest(url, d.Config.GetGithubToken())
 
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return d.toDownloadResponse(d.warnResponse("Download cancelled by newer uninstall request", "url", url), "")
+		}
 		return d.throwDownloadError("Failed to download file", err, "url", url)
 	}
 	defer zip.Body.Close()

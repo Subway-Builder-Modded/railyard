@@ -225,6 +225,10 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 
 		log.Info("Installing asset", "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
 		response := args.install(assetID, versionText)
+		if response.Status == types.ResponseWarn {
+			log.Warn("Install skipped during sync", "asset_type", args.assetType, "asset_id", assetID, "version", versionText, "message", response.Message)
+			continue
+		}
 		// If installation fails, record the error but continue.
 		if err := syncInstallActionError(types.SubscriptionActionSubscribe, args.assetType, assetID, response); err != nil {
 			log.Error("Install failed during sync", err, "asset_type", args.assetType, "asset_id", assetID, "version", versionText, "install_error_code", response.ErrorType)

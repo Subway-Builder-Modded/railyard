@@ -25,6 +25,16 @@ func (s *UserProfiles) UpdateSubscriptions(req types.UpdateSubscriptionsRequest)
 	}
 
 	if req.ForceSync {
+		for _, operation := range result.Operations {
+			if operation.Action != types.SubscriptionActionUnsubscribe {
+				continue
+			}
+			cancelResp := s.Downloader.UninstallAsset(operation.Type, operation.AssetID)
+			if cancelResp.Status == types.ResponseError {
+				s.Logger.Warn("Failed to enqueue uninstall cancellation", "asset_type", operation.Type, "asset_id", operation.AssetID, "message", cancelResp.Message)
+			}
+		}
+
 		// TODO: Implement per-profile request coalescing so burst frontend updates reconcile once
 		// against the latest desired subscriptions state instead of running multiple stale snapshots.
 		syncResult := s.SyncSubscriptions(req.ProfileID)

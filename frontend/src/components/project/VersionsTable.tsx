@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Download,
+  X,
   FileText,
   ArrowDownToLine,
   Loader2,
@@ -60,8 +61,15 @@ export function VersionsTable({
   error,
   gameVersion,
 }: VersionsTableProps) {
-  const { getInstalledVersion, installMod, installMap, isOperating } =
-    useInstalledStore();
+  const {
+    getInstalledVersion,
+    installMod,
+    installMap,
+    uninstallMod,
+    uninstallMap,
+    isInstalling,
+    isUninstalling,
+  } = useInstalledStore();
   const installedVersion = getInstalledVersion(itemId);
   const [installError, setInstallError] = useState<{
     version: string;
@@ -78,10 +86,15 @@ export function VersionsTable({
 
   const doInstall = async (version: string) => {
     try {
+      let result: types.UpdateSubscriptionsResult;
       if (type === "mod") {
-        await installMod(itemId, version);
+        result = await installMod(itemId, version);
       } else {
-        await installMap(itemId, version);
+        result = await installMap(itemId, version);
+      }
+      if (result.status === "warn") {
+        toast.warning(result.message || `Install for ${itemName} completed with warnings.`);
+        return;
       }
       const { completed, total } = useDownloadQueueStore.getState();
       const queueText = total > 1 ? ` (${completed}/${total} Downloaded)` : "";
@@ -99,6 +112,24 @@ export function VersionsTable({
           message: err instanceof Error ? err.message : String(err),
         });
       }
+    }
+  };
+
+  const doCancelInstall = async () => {
+    try {
+      let result: types.UpdateSubscriptionsResult;
+      if (type === "mod") {
+        result = await uninstallMod(itemId);
+      } else {
+        result = await uninstallMap(itemId);
+      }
+      if (result.status === "warn") {
+        toast.warning(result.message || `Cancel request for ${itemName} completed with warnings.`);
+      } else {
+        toast.success(`Cancelled pending install for ${itemName}.`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -171,7 +202,8 @@ export function VersionsTable({
           <TableBody>
             {versions.map((v) => {
               const isThisInstalled = installedVersion === v.version;
-              const isInstalling = isOperating(itemId);
+              const installing = isInstalling(itemId);
+              const uninstalling = isUninstalling(itemId);
               const compat = isCompatible(gameVersion, v.game_version);
               const incompatible = compat === false;
 
@@ -232,9 +264,13 @@ export function VersionsTable({
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    ) : isInstalling ? (
+                    ) : uninstalling ? (
                       <Button variant="outline" size="sm" disabled>
                         <Loader2 className="h-4 w-4 animate-spin" />
+                      </Button>
+                    ) : installing ? (
+                      <Button variant="outline" size="sm" onClick={doCancelInstall}>
+                        <X className="h-4 w-4" />
                       </Button>
                     ) : (
                       <Button

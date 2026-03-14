@@ -15,17 +15,12 @@ import (
 	"railyard/internal/config"
 	"railyard/internal/logger"
 	"railyard/internal/registry"
+	"railyard/internal/testutil"
 	"railyard/internal/testutil/registrytest"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
 )
-
-type testRegistryLogSink struct{}
-
-func (testRegistryLogSink) Info(string, ...any)         {}
-func (testRegistryLogSink) Warn(string, ...any)         {}
-func (testRegistryLogSink) Error(string, error, ...any) {}
 
 func newTestDownloader() *Downloader {
 	return &Downloader{}
@@ -79,10 +74,12 @@ func supersededSuccess(message string) operationResult {
 
 func enqueueOperation(d *Downloader, action operationAction, assetType types.AssetType, assetID string, version string, run func() operationResult) operationResult {
 	return d.enqueueOperation(
+		action,
 		downloadQueueKey{assetType: assetType, assetID: assetID},
 		d.operationKey(action, assetType, assetID, version),
 		run,
 		supersededSuccess("Operation superseded by newer queued request. No action taken."),
+		nil,
 	)
 }
 
@@ -102,6 +99,23 @@ func waitForPendingOperation(t *testing.T, d *Downloader, assetKey downloadQueue
 	}
 
 	t.Fatalf("timed out waiting for pending operation: %s", assetKey)
+}
+
+func waitForRunningOperation(t *testing.T, d *Downloader, assetKey downloadQueueKey) {
+	t.Helper()
+
+	deadline := time.Now().Add(2 * time.Second)
+	for time.Now().Before(deadline) {
+		d.downloadMu.Lock()
+		_, ok := d.running[assetKey]
+		d.downloadMu.Unlock()
+		if ok {
+			return
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+
+	t.Fatalf("timed out waiting for running operation: %s", assetKey)
 }
 
 func updateAtomicMax(max *int32, current int32) {
@@ -277,6 +291,140 @@ func TestEnqueueOperationUsesLatestRequestForPendingAsset(t *testing.T) {
 	require.Equal(t, int32(1), atomic.LoadInt32(&uninstallRunCount))
 }
 
+func TestUninstallCancelsRunningInstallForSameAsset(t *testing.T) {
+	d := newTestDownloader()
+
+	releaseInstall := make(chan struct{})
+	cancelCalled := make(chan struct{}, 1)
+	installResultCh := make(chan operationResult, 1)
+
+	go func() {
+		installResultCh <- d.enqueueOperation(
+			operationActionInstall,
+			downloadQueueKey{assetType: types.AssetTypeMap, assetID: "map-a"},
+			d.operationKey(operationActionInstall, types.AssetTypeMap, "map-a", "1.0.0"),
+			func() operationResult {
+				<-releaseInstall
+				return operationResult{genericResponse: types.GenericResponse{Status: types.ResponseSuccess, Message: "install cancelled and exited"}}
+			},
+			supersededSuccess("Operation superseded by newer queued request. No action taken."),
+			func() {
+				cancelCalled <- struct{}{}
+				close(releaseInstall)
+			},
+		)
+	}()
+
+	waitForRunningOperation(t, d, downloadQueueKey{assetType: types.AssetTypeMap, assetID: "map-a"})
+
+	uninstallResultCh := make(chan operationResult, 1)
+	go func() {
+		uninstallResultCh <- enqueueOperation(
+			d,
+			operationActionUninstall,
+			types.AssetTypeMap,
+			"map-a",
+			"",
+			operationSuccess("uninstall ran", 0, nil),
+		)
+	}()
+
+	select {
+	case <-cancelCalled:
+	case <-time.After(2 * time.Second):
+		t.Fatal("expected running install cancel func to be called")
+	}
+
+	installResult := <-installResultCh
+	require.Equal(t, types.ResponseSuccess, installResult.genericResponse.Status)
+
+	uninstallResult := <-uninstallResultCh
+	require.Equal(t, types.ResponseSuccess, uninstallResult.genericResponse.Status)
+	require.Equal(t, "uninstall ran", uninstallResult.genericResponse.Message)
+}
+
+func TestCancelDuringExtractEventuallyRemovesInstalledFiles(t *testing.T) {
+	testutil.SetEnv(t)
+
+	cfg := config.NewConfig()
+	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+	configureDownloaderConfig(t, cfg)
+
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+	d.tempPath = t.TempDir()
+	d.mapTilePath = d.getMapTilePath()
+
+	cleanup := registrytest.MockRegistryServer(t, reg, []registrytest.UpdateFixture{
+		{AssetID: "map-a", AssetType: types.AssetTypeMap, Versions: []string{"1.0.0"}, MapCode: "QAZ"},
+	})
+	defer cleanup()
+
+	extractStarted := make(chan struct{})
+	releaseExtract := make(chan struct{})
+	var extractOnce sync.Once
+	d.OnExtractProgress = func(_ string, extracted int64, _ int64) {
+		if extracted != 0 {
+			return
+		}
+		extractOnce.Do(func() {
+			close(extractStarted)
+			<-releaseExtract
+		})
+	}
+
+	installDone := make(chan types.AssetInstallResponse, 1)
+	go func() {
+		installDone <- d.InstallAsset(types.AssetTypeMap, "map-a", "1.0.0")
+	}()
+
+	select {
+	case <-extractStarted:
+	case <-time.After(3 * time.Second):
+		t.Fatal("timed out waiting for extract to start")
+	}
+
+	uninstallDone := make(chan types.AssetUninstallResponse, 1)
+	go func() {
+		uninstallDone <- d.UninstallAsset(types.AssetTypeMap, "map-a")
+	}()
+
+	close(releaseExtract)
+
+	var installResp types.AssetInstallResponse
+	select {
+	case installResp = <-installDone:
+	case <-time.After(10 * time.Second):
+		t.Fatal("timed out waiting for install to complete")
+	}
+	require.Equal(t, types.ResponseSuccess, installResp.Status, installResp.Message)
+
+	var uninstallResp types.AssetUninstallResponse
+	select {
+	case uninstallResp = <-uninstallDone:
+	case <-time.After(10 * time.Second):
+		t.Fatal("timed out waiting for uninstall to complete")
+	}
+	require.Equal(t, types.ResponseSuccess, uninstallResp.Status, uninstallResp.Message)
+
+	for _, installed := range reg.GetInstalledMaps() {
+		require.NotEqual(t, "map-a", installed.ID)
+	}
+
+	mapDataPath := filepath.Join(d.getMapDataPath(), "QAZ")
+	tilePath := filepath.Join(d.getMapTilePath(), "QAZ.pmtiles")
+	thumbnailPath := filepath.Join(d.getMapThumbnailPath(), "QAZ.svg")
+	_, err := os.Stat(mapDataPath)
+	require.True(t, os.IsNotExist(err), "expected map data path removed: %s", mapDataPath)
+	_, err = os.Stat(tilePath)
+	require.True(t, os.IsNotExist(err), "expected tile path removed: %s", tilePath)
+	_, err = os.Stat(thumbnailPath)
+	require.True(t, os.IsNotExist(err), "expected thumbnail path removed: %s", thumbnailPath)
+}
+
 func TestEnqueueOperationRunsSequentially(t *testing.T) {
 	d := newTestDownloader()
 	const jobs = 5
@@ -308,7 +456,7 @@ func TestEnqueueOperationRunsSequentially(t *testing.T) {
 
 func TestInstallMapForExistingIsNoOp(t *testing.T) {
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry(testRegistryLogSink{}, cfg)
+	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
 	expectedConfig := types.ConfigData{
 		Code:        "ABC",
 		Name:        "Map A",
@@ -333,7 +481,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 
 func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry(testRegistryLogSink{}, cfg)
+	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
 	d := &Downloader{
 		Registry: reg,
 		Config:   cfg,
@@ -444,7 +592,7 @@ func TestInstallAssetError(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewConfig()
-			reg := registry.NewRegistry(testRegistryLogSink{}, cfg)
+			reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
 			d := &Downloader{
 				Registry: reg,
 				Config:   cfg,
@@ -505,7 +653,7 @@ func TestInstallAssetSuccess(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewConfig()
-			reg := registry.NewRegistry(testRegistryLogSink{}, cfg)
+			reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
 			configureDownloaderConfig(t, cfg)
 			d := &Downloader{
 				Registry: reg,

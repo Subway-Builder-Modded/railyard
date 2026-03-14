@@ -150,13 +150,13 @@ describe("useInstalledStore", () => {
     validateFinalState("installing", "mod-2", "Install failed");
   });
 
-  it("installMap throws when profile mutation returns warn", async () => {
+  it("installMap resolves when profile mutation returns warn", async () => {
     mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
     mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsWarn("sync completed with warnings"));
     mockGetInstalledMods.mockResolvedValue([{ id: "mod-1", version: "1.0.0" }]);
     mockGetInstalledMaps.mockResolvedValue([{ id: "map-1", version: "2.0.0", config: { code: "AAA" } }]);
 
-    await expect(useInstalledStore.getState().installMap("map-1", "2.0.0")).rejects.toThrow("sync completed with warnings");
+    const result = await useInstalledStore.getState().installMap("map-1", "2.0.0");
 
     validateProfilesRequest({
       profileId: "profile-a",
@@ -165,8 +165,10 @@ describe("useInstalledStore", () => {
       assetType: "map",
       version: "2.0.0",
     });
-    validateInstallationRefreshes(0);
-    validateFinalState("installing", "map-1", "sync completed with warnings");
+    validateInstallationRefreshes(1);
+    validateFinalState("installing", "map-1", null);
+    expect(result.status).toBe("warn");
+    expect(result.message).toContain("sync completed with warnings");
   });
 
   it("uninstallMod errors when profile mutation fails", async () => {
@@ -184,5 +186,25 @@ describe("useInstalledStore", () => {
     });
     validateInstallationRefreshes(0);
     validateFinalState("uninstalling", "mod-9", "Uninstall failed");
+  });
+
+  it("cancelPendingInstall routes through unsubscribe and tolerates warn", async () => {
+    mockGetActiveProfile.mockResolvedValue(activeProfileResultSuccess("profile-a"));
+    mockUpdateSubscriptions.mockResolvedValue(updateSubscriptionsWarn("not installed; nothing to do"));
+    mockGetInstalledMods.mockResolvedValue([]);
+    mockGetInstalledMaps.mockResolvedValue([]);
+
+    const result = await useInstalledStore.getState().cancelPendingInstall("map", "map-42");
+
+    validateProfilesRequest({
+      profileId: "profile-a",
+      action: "unsubscribe",
+      assetId: "map-42",
+      assetType: "map",
+      version: "",
+    });
+    validateInstallationRefreshes(1);
+    validateFinalState("uninstalling", "map-42", null);
+    expect(result.status).toBe("warn");
   });
 });
