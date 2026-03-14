@@ -35,6 +35,36 @@ function emptyRecordByAssetType<T>(factory: () => T): Record<AssetType, T> {
   ) as Record<AssetType, T>;
 }
 
+function filterMapsAndModsByIntegrity(maps: types.MapManifest[], mods: types.ModManifest[], mapIntegrity: types.RegistryIntegrityReport, modIntegrity: types.RegistryIntegrityReport) {
+  const finalMaps = [];
+  const finalMods = [];
+  let invalidCounter = 0;
+  for(const mod of mods) {
+    if(modIntegrity.listings[mod.id].has_complete_version) {
+      finalMods.push(mod);
+    } else {
+      invalidCounter++;
+    }
+  }
+  if(invalidCounter > 0) {
+    console.warn(`Excluding ${invalidCounter} mods from registry due to incomplete versions`);
+  }
+
+  invalidCounter = 0;
+  for(const map of maps) {
+    if(mapIntegrity.listings[map.id].has_complete_version) {
+      finalMaps.push(map);
+    }
+    else {
+      invalidCounter++;
+    }
+  }
+  if(invalidCounter > 0) {
+    console.warn(`Excluding ${invalidCounter} maps from registry due to incomplete versions`);
+  }
+  return { finalMaps, finalMods };
+}
+
 export const useRegistryStore = create<RegistryState>((set, get) => ({
   mods: [],
   maps: [],
@@ -102,23 +132,7 @@ export const useRegistryStore = create<RegistryState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const [mods, maps, mapIntegrity, modIntegrity] = await Promise.all([GetMods(), GetMaps(), GetIntegrityReport("map"), GetIntegrityReport("mod")]);
-      const finalMaps = [];
-      const finalMods = [];
-      for(const mod of mods) {
-        if(modIntegrity.listings[mod.id].has_complete_version) {
-          finalMods.push(mod);
-        } else {
-          console.warn(`Excluding mod ${mod.id} from registry due to incomplete versions`);
-        }
-      }
-      for(const map of maps) {
-        if(mapIntegrity.listings[map.id].has_complete_version) {
-          finalMaps.push(map);
-        }
-        else {
-          console.warn(`Excluding map ${map.id} from registry due to incomplete versions`);
-        }
-      }
+      const {finalMaps, finalMods} = filterMapsAndModsByIntegrity(maps, mods, mapIntegrity, modIntegrity);
       set({
         mods: finalMods || [],
         maps: finalMaps || [],
@@ -137,23 +151,7 @@ export const useRegistryStore = create<RegistryState>((set, get) => ({
     try {
       await Refresh();
       const [mods, maps, mapIntegrity, modIntegrity] = await Promise.all([GetMods(), GetMaps(), GetIntegrityReport("map"), GetIntegrityReport("mod")]);
-      const finalMaps = [];
-      const finalMods = [];
-      for(const mod of mods) {
-        if(modIntegrity.listings[mod.id].has_complete_version) {
-          finalMods.push(mod);
-        } else {
-          console.warn(`Excluding mod ${mod.id} from registry due to incomplete versions`);
-        }
-      }
-      for(const map of maps) {
-        if(mapIntegrity.listings[map.id].has_complete_version) {
-          finalMaps.push(map);
-        }
-        else {
-          console.warn(`Excluding map ${map.id} from registry due to incomplete versions`);
-        }
-      }
+      const {finalMaps, finalMods} = filterMapsAndModsByIntegrity(maps, mods, mapIntegrity, modIntegrity);
       set({
         mods: finalMods || [],
         maps: finalMaps || [],
