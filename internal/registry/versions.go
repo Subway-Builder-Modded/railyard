@@ -26,6 +26,7 @@ var registryGitHubAPIBaseURL = types.GitHubAPIBaseURL
 // updateType must be "github" or "custom".
 // repoOrURL is "owner/repo" for github, or a URL for custom.
 func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]types.VersionInfo, error) {
+	// Check cache first to avoid redundant network requests
 	cacheKey := updateType + "|" + repoOrURL
 	if cached, ok := r.getCachedVersions(cacheKey); ok {
 		return cached, nil
@@ -49,7 +50,9 @@ func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]types.Ver
 		return nil, err
 	}
 
+	// If version resolution succeeded, cache the results for future calls
 	r.setCachedVersions(cacheKey, versions)
+	// Return a copy of the versions to prevent external mutation by callers
 	return cloneVersionInfos(versions), nil
 }
 
@@ -229,8 +232,8 @@ func cloneVersionInfos(input []types.VersionInfo) []types.VersionInfo {
 }
 
 func (r *Registry) getCachedVersions(key string) ([]types.VersionInfo, bool) {
-	r.versionsCacheMu.RLock()
-	defer r.versionsCacheMu.RUnlock()
+	r.versionsMu.RLock()
+	defer r.versionsMu.RUnlock()
 	versions, ok := r.versionsCache[key]
 	if !ok {
 		return nil, false
@@ -239,13 +242,13 @@ func (r *Registry) getCachedVersions(key string) ([]types.VersionInfo, bool) {
 }
 
 func (r *Registry) setCachedVersions(key string, versions []types.VersionInfo) {
-	r.versionsCacheMu.Lock()
-	defer r.versionsCacheMu.Unlock()
+	r.versionsMu.Lock()
+	defer r.versionsMu.Unlock()
 	r.versionsCache[key] = cloneVersionInfos(versions)
 }
 
 func (r *Registry) clearVersionsCache() {
-	r.versionsCacheMu.Lock()
-	defer r.versionsCacheMu.Unlock()
+	r.versionsMu.Lock()
+	defer r.versionsMu.Unlock()
 	r.versionsCache = map[string][]types.VersionInfo{}
 }

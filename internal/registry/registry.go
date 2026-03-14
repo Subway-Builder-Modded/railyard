@@ -33,7 +33,7 @@ type Registry struct {
 	maps            []types.MapManifest
 	downloadCounts  map[types.AssetType]map[string]map[string]int
 	versionsCache   map[string][]types.VersionInfo
-	versionsCacheMu sync.RWMutex
+	versionsMu      sync.RWMutex
 	installedMods   []types.InstalledModInfo
 	installedMaps   []types.InstalledMapInfo
 	integrityMaps   types.RegistryIntegrityReport
@@ -73,7 +73,7 @@ func (r *Registry) Initialize() error {
 
 // Refresh forces a pull of the latest registry changes.
 func (r *Registry) Refresh() error {
-	r.clearVersionsCache()
+	r.clearVersionsCache() // Clear versions cache on refresh to ensure we fetch fresh version 
 	if err := r.refreshRepo(); err != nil {
 		return err
 	}
