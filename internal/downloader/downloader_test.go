@@ -84,6 +84,38 @@ func enqueueOperation(d *Downloader, action operationAction, assetType types.Ass
 	)
 }
 
+type cancelledEvent struct {
+	itemID    string
+	assetType string
+	phase     string
+}
+
+func captureCancelledEvents(t *testing.T) <-chan cancelledEvent {
+	t.Helper()
+
+	original := emitRuntimeEvent
+	events := make(chan cancelledEvent, 8)
+	emitRuntimeEvent = func(_ context.Context, eventName string, optionalData ...interface{}) {
+		if eventName != downloadCancelledEventName || len(optionalData) == 0 {
+			return
+		}
+		payload, ok := optionalData[0].(map[string]any)
+		if !ok {
+			return
+		}
+		itemID, _ := payload["itemId"].(string)
+		assetType, _ := payload["assetType"].(string)
+		phase, _ := payload["phase"].(string)
+		events <- cancelledEvent{itemID: itemID, assetType: assetType, phase: phase}
+	}
+	t.Cleanup(func() {
+		emitRuntimeEvent = original
+		close(events)
+	})
+
+	return events
+}
+
 // waitForPendingOperation is a helper function that waits until the specified asset key is present in the downloader's pending map, or fails the test if it times out.
 func waitForPendingOperation(t *testing.T, d *Downloader, assetKey downloadQueueKey) {
 	t.Helper()
@@ -301,6 +333,8 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 		Config:   cfg,
 		Logger:   logger.LoggerAtPath(""),
 	}
+	d.SetContext(context.Background())
+	cancelledEvents := captureCancelledEvents(t)
 
 	blockerStarted := make(chan struct{})
 	releaseBlocker := make(chan struct{})
@@ -332,6 +366,14 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 	require.Less(t, time.Since(started), 500*time.Millisecond)
 	require.Equal(t, types.ResponseWarn, uninstallResp.Status)
 	require.Contains(t, strings.ToLower(uninstallResp.Message), "cancelled pending install")
+	select {
+	case event := <-cancelledEvents:
+		require.Equal(t, "map-a", event.itemID)
+		require.Equal(t, string(types.AssetTypeMap), event.assetType)
+		require.Equal(t, cancelledPhaseQueued, event.phase)
+	case <-time.After(time.Second):
+		t.Fatal("expected download:cancelled queued event")
+	}
 
 	pendingInstallResult := <-pendingInstallResultCh
 	// Validate that the pending install was superseded and did not run
@@ -346,6 +388,8 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 
 func TestUninstallCancelsRunningInstall(t *testing.T) {
 	d := newTestDownloader()
+	d.SetContext(context.Background())
+	cancelledEvents := captureCancelledEvents(t)
 
 	releaseInstall := make(chan struct{})
 	cancelCalled := make(chan struct{}, 1)
@@ -386,6 +430,14 @@ func TestUninstallCancelsRunningInstall(t *testing.T) {
 	case <-cancelCalled:
 	case <-time.After(2 * time.Second):
 		t.Fatal("expected running install cancel func to be called")
+	}
+	select {
+	case event := <-cancelledEvents:
+		require.Equal(t, "map-a", event.itemID)
+		require.Equal(t, string(types.AssetTypeMap), event.assetType)
+		require.Equal(t, cancelledPhaseRunning, event.phase)
+	case <-time.After(time.Second):
+		t.Fatal("expected download:cancelled running event")
 	}
 
 	installResult := <-installResultCh

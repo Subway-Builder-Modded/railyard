@@ -4,7 +4,6 @@ import { GetInstalledMods, GetInstalledMaps } from '../../wailsjs/go/registry/Re
 import { GetActiveProfile, UpdateSubscriptions } from '../../wailsjs/go/profiles/UserProfiles';
 import { useDownloadQueueStore } from './download-queue-store';
 import type { AssetType } from "@/lib/asset-types";
-import { emitDownloadCancelled } from "@/lib/download-cancel";
 
 export class SubscriptionSyncError extends Error {
   readonly status: string;
@@ -50,6 +49,7 @@ interface InstalledState {
   uninstallMap: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallAssets: (assets: Array<{ id: string; type: AssetType }>) => Promise<types.UpdateSubscriptionsResult>;
   cancelPendingInstall: (type: AssetType, id: string) => Promise<types.UpdateSubscriptionsResult>;
+  ackCancelledInstall: (id: string) => void;
   isInstalled: (id: string) => boolean;
   getInstalledVersion: (id: string) => string | null;
   isOperating: (id: string) => boolean;
@@ -240,9 +240,18 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   uninstallAssets,
 
   cancelPendingInstall: async (type: AssetType, id: string) => {
-    const result = await uninstallAssets([{ id, type }]);
-    emitDownloadCancelled(id);
-    return result;
+    return uninstallAssets([{ id, type }]);
+  },
+
+  ackCancelledInstall: (id: string) => {
+    set((state) => {
+      if (!state.installing.has(id)) {
+        return state;
+      }
+      const nextInstalling = new Set(state.installing);
+      nextInstalling.delete(id);
+      return { installing: nextInstalling };
+    });
   },
 
   isInstalled: (id: string) => {

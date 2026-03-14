@@ -21,11 +21,17 @@ import { LibraryPage } from "@/pages/LibraryPage";
 import { ExtractNotification } from "./components/layout/ExtractNotification";
 import { IsStartupReady } from "../wailsjs/go/main/App";
 import { EventsOn } from "../wailsjs/runtime/runtime";
+import { emitDownloadCancelled } from "@/lib/download-cancel";
+
+interface DownloadCancelledEvent {
+  itemId?: string;
+}
 
 function App() {
   useTheme();
   const [startupReady, setStartupReady] = useState(false);
   const updateInstalledLists = useInstalledStore((s) => s.updateInstalledLists);
+  const ackCancelledInstall = useInstalledStore((s) => s.ackCancelledInstall);
 
   const initConfig = useConfigStore((s) => s.initialize);
   const configInitialized = useConfigStore((s) => s.initialized);
@@ -46,9 +52,19 @@ function App() {
   const initGame = useGameStore((s) => s.initialize);
 
   useEffect(() => {
-    EventsOn("registry:update", () => {
+    const offRegistryUpdate = EventsOn("registry:update", () => {
       updateInstalledLists();
     });
+    const offDownloadCancelled = EventsOn(
+      "download:cancelled",
+      (payload: DownloadCancelledEvent) => {
+        if (!payload?.itemId) {
+          return;
+        }
+        ackCancelledInstall(payload.itemId);
+        emitDownloadCancelled(payload.itemId);
+      },
+    );
     let cancelled = false;
     let timer: number | undefined;
 
@@ -72,12 +88,14 @@ function App() {
     pollStartupReady();
 
     return () => {
+      offRegistryUpdate();
+      offDownloadCancelled();
       cancelled = true;
       if (timer !== undefined) {
         window.clearTimeout(timer);
       }
     };
-  }, []);
+  }, [updateInstalledLists, ackCancelledInstall]);
 
   // Phase 1: config + profile + game events
   useEffect(() => {

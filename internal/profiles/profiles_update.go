@@ -35,8 +35,7 @@ func (s *UserProfiles) UpdateSubscriptions(req types.UpdateSubscriptionsRequest)
 			}
 		}
 
-		// Unsubscribe requests already issue direct uninstall/cancel operations above.
-		// Skip the full sync pass to avoid blocking on unrelated in-flight installs.
+		// Unsubscribe requests already issue direct uninstall/cancel operations above. Skip the full sync routine to avoid redundant processing
 		if req.Action == types.SubscriptionActionUnsubscribe {
 			return result
 		}

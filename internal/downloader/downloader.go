@@ -30,6 +30,7 @@ type ExtractProgressFunc func(itemId string, extracted int64, total int64)
 
 // TODO: Consider adding this as an injectable dependency for other services
 var downloaderHTTPClient = requests.NewDownloadClient()
+var emitRuntimeEvent = wailsruntime.EventsEmit
 
 type Downloader struct {
 	tempPath          string
@@ -78,6 +79,12 @@ type operationAction string
 const (
 	operationActionInstall   operationAction = "install"
 	operationActionUninstall operationAction = "uninstall"
+)
+
+const (
+	downloadCancelledEventName = "download:cancelled"
+	cancelledPhaseQueued       = "queued"
+	cancelledPhaseRunning      = "running"
 )
 
 func isValidOperationAction(action operationAction) bool {
@@ -148,10 +155,23 @@ func (d *Downloader) runQueue() {
 
 		op.completed <- result
 		close(op.completed)
-		if d.ctx != nil {
-			wailsruntime.EventsEmit(d.ctx, "registry:update") // Emit update event after each operation completes to trigger UI refresh
-		}
+		d.emitEvent("registry:update") // Emit update event after each operation completes to trigger UI refresh
 	}
+}
+
+func (d *Downloader) emitEvent(eventName string, data ...any) {
+	if d.ctx == nil {
+		return
+	}
+	emitRuntimeEvent(d.ctx, eventName, data...)
+}
+
+func (d *Downloader) emitDownloadCancelled(assetType types.AssetType, assetID, phase string) {
+	d.emitEvent(downloadCancelledEventName, map[string]any{
+		"itemId":    assetID,
+		"assetType": string(assetType),
+		"phase":     phase,
+	})
 }
 
 // replaceQueuedOperation replaces an existing queued operation for the same asset with a new operation, returning a boolean to indicate success
@@ -200,6 +220,7 @@ func (d *Downloader) cancelPendingQueuedInstall(assetType types.AssetType, asset
 	}
 	pending.completed <- pending.supersededResult
 	close(pending.completed)
+	d.emitDownloadCancelled(assetType, assetID, cancelledPhaseQueued)
 	return true
 }
 
@@ -223,6 +244,7 @@ func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQ
 		// If an uninstall action is enqueued while an install is running for the same asset, attempt to cancel the install
 		if running, ok := d.running[assetKey]; ok && running.action == operationActionInstall && running.cancel != nil {
 			running.cancel()
+			d.emitDownloadCancelled(assetKey.assetType, assetKey.assetID, cancelledPhaseRunning)
 		}
 	}
 	// If there's an existing pending operation for the same asset, replace it in-place in the queue and mark it as superseded.
