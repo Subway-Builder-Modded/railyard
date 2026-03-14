@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"railyard/internal/constants"
+	"railyard/internal/requests"
 	"railyard/internal/types"
 )
 
@@ -18,6 +19,8 @@ import (
 type modManifestDeps struct {
 	Dependencies map[string]string `json:"dependencies"`
 }
+
+var registryGitHubAPIBaseURL = types.GitHubAPIBaseURL
 
 // GetVersions fetches available versions for a mod or map.
 // updateType must be "github" or "custom".
@@ -56,12 +59,28 @@ func (r *Registry) getGitHubVersions(repo string) ([]types.VersionInfo, error) {
 		return nil, fmt.Errorf("invalid GitHub repo format %q: expected \"owner/repo\"", repo)
 	}
 
-	baseURL := strings.TrimRight(r.githubAPIBaseURL, "/")
+	baseURL := strings.TrimRight(registryGitHubAPIBaseURL, "/")
 	apiURL := fmt.Sprintf("%s/repos/%s/releases", baseURL, repo)
 
-	resp, err := r.doGitHubRequestWithOptionalToken(apiURL, repo)
+	resp, err := requests.DoGetWithOptionalGitHubToken(r.httpClient, requests.GetWithGitHubTokenOptions{
+		URL:            apiURL,
+		GitHubToken:    r.getGithubToken(),
+		ForceTokenAuth: true,
+		Headers: map[string]string{
+			"Accept": "application/vnd.github+json",
+		},
+		OnTokenRejected: func(statusCode int) {
+			r.logger.Warn("GitHub token rejected; retrying unauthenticated request", "repo", repo, "status", statusCode)
+		},
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch GitHub releases for %q: %w", repo, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		status := resp.StatusCode
+		resp.Body.Close()
+		return nil, fmt.Errorf("GitHub API returned status %d for %q", status, repo)
 	}
 	defer resp.Body.Close()
 
@@ -110,45 +129,6 @@ func (r *Registry) getGithubToken() string {
 	return r.config.GetGithubToken()
 }
 
-func (r *Registry) doGitHubRequestWithOptionalToken(apiURL, repo string) (*http.Response, error) {
-	token := r.getGithubToken()
-	resp, err := r.doGitHubRequest(apiURL, token)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch GitHub releases for %q: %w", repo, err)
-	}
-
-	if token != "" && (resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden) {
-		r.logger.Warn("GitHub token rejected; retrying unauthenticated request", "repo", repo, "status", resp.StatusCode)
-		resp.Body.Close()
-
-		resp, err = r.doGitHubRequest(apiURL, "")
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch GitHub releases for %q after unauthenticated retry: %w", repo, err)
-		}
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		status := resp.StatusCode
-		resp.Body.Close()
-		return nil, fmt.Errorf("GitHub API returned status %d for %q", status, repo)
-	}
-
-	return resp, nil
-}
-
-func (r *Registry) doGitHubRequest(apiURL, token string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", apiURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create GitHub API request: %w", err)
-	}
-	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", types.RequestUserAgent)
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
-	}
-	return r.httpClient.Do(req)
-}
-
 // enrichGameVersions fetches manifest.json URLs in parallel and populates GameVersion
 // from the game dependency key in the manifest. Errors are silently ignored per-version.
 func (r *Registry) enrichGameVersions(versions []types.VersionInfo) {
@@ -160,13 +140,12 @@ func (r *Registry) enrichGameVersions(versions []types.VersionInfo) {
 		wg.Add(1)
 		go func(v *types.VersionInfo) {
 			defer wg.Done()
-			req, err := http.NewRequest("GET", v.Manifest, nil)
-			if err != nil {
-				return
-			}
-			req.Header.Set("User-Agent", types.RequestUserAgent)
-			req.Header.Set("Accept", "application/octet-stream")
-			resp, err := r.httpClient.Do(req)
+			resp, err := requests.DoGetWithOptionalGitHubToken(r.httpClient, requests.GetWithGitHubTokenOptions{
+				URL: v.Manifest,
+				Headers: map[string]string{
+					"Accept": "application/octet-stream",
+				},
+			})
 			if err != nil {
 				return
 			}
@@ -196,13 +175,9 @@ func (r *Registry) getCustomVersions(updateURL string) ([]types.VersionInfo, err
 		return nil, fmt.Errorf("invalid custom update URL %q: must be http or https", updateURL)
 	}
 
-	req, err := http.NewRequest("GET", updateURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request for custom update URL: %w", err)
-	}
-	req.Header.Set("User-Agent", types.RequestUserAgent)
-
-	resp, err := r.httpClient.Do(req)
+	resp, err := requests.DoGetWithOptionalGitHubToken(r.httpClient, requests.GetWithGitHubTokenOptions{
+		URL: updateURL,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch custom update from %q: %w", updateURL, err)
 	}

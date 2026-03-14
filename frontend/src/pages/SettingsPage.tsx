@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useConfigStore } from "@/stores/config-store";
 import { useProfileStore } from "@/stores/profile-store";
 import {
@@ -27,7 +27,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { FolderOpen, Gamepad2, AlertTriangle, RefreshCw } from "lucide-react";
+import {
+  FolderOpen,
+  Gamepad2,
+  Github,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
 import { ManuallyCheckForUpdates } from "../../wailsjs/go/main/App";
 
 const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
@@ -53,6 +59,7 @@ export function SettingsPage() {
   const [confirmAction, setConfirmAction] = useState<
     "config" | "profile" | null
   >(null);
+  const [githubTokenDialogOpen, setGithubTokenDialogOpen] = useState(false);
   const [githubTokenDraft, setGithubTokenDraft] = useState("");
 
   const handleUpdatesCheck = async () => {
@@ -154,6 +161,7 @@ export function SettingsPage() {
       await updateGithubToken(githubTokenDraft);
       await saveConfig();
       setGithubTokenDraft("");
+      setGithubTokenDialogOpen(false);
       toast.success("GitHub token updated.");
     } catch {
       toast.error("Failed to update GitHub token.");
@@ -165,6 +173,7 @@ export function SettingsPage() {
       await clearGithubToken();
       await saveConfig();
       setGithubTokenDraft("");
+      setGithubTokenDialogOpen(false);
       toast.success("GitHub token cleared.");
     } catch {
       toast.error("Failed to clear GitHub token.");
@@ -177,9 +186,9 @@ export function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Game Paths</CardTitle>
+          <CardTitle>Global Settings</CardTitle>
           <CardDescription>
-            Configure paths to your Metro Maker data and game executable.
+            Configure global paths and optional GitHub token.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -254,6 +263,30 @@ export function SettingsPage() {
               </Button>
             </div>
           </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <Github className="h-5 w-5 shrink-0 text-muted-foreground" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium">GitHub Token (Optional)</p>
+                <p className="text-xs text-muted-foreground font-mono truncate">
+                  {hasGithubToken ? "********" : "Not set"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge variant={hasGithubToken ? "default" : "outline"}>
+                {hasGithubToken ? "Set" : "Unset"}
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setGithubTokenDialogOpen(true)}
+              >
+                Change
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -317,42 +350,50 @@ export function SettingsPage() {
               </Button>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <label className="text-sm font-medium">GitHub Token (Optional)</label>
-              <Badge variant={hasGithubToken ? "default" : "outline"}>
-                {hasGithubToken ? "Saved" : "Not Set"}
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Input
-                type="password"
-                placeholder={hasGithubToken ? "••••••••••••••••" : "ghp_..."}
-                value={githubTokenDraft}
-                onChange={(event) => setGithubTokenDraft(event.target.value)}
-                className="flex-1 min-w-0 font-mono whitespace-nowrap overflow-x-auto"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSaveGithubToken}
-                disabled={githubTokenDraft.trim() === ""}
-              >
-                Save
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearGithubToken}
-                disabled={!hasGithubToken}
-              >
-                Clear
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={githubTokenDialogOpen}
+        onOpenChange={(open) => {
+          setGithubTokenDialogOpen(open);
+          if (!open) {
+            setGithubTokenDraft("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit GitHub Token</DialogTitle>
+            <DialogDescription>
+              Provide a GitHub token to avoid unauthorized Github API rate
+              limits.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            type="password"
+            placeholder={hasGithubToken ? "********" : "ghp_..."}
+            value={githubTokenDraft}
+            onChange={(event) => setGithubTokenDraft(event.target.value)}
+            className="font-mono"
+          />
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={handleClearGithubToken}
+              disabled={!hasGithubToken}
+            >
+              Clear
+            </Button>
+            <Button
+              onClick={handleSaveGithubToken}
+              disabled={githubTokenDraft.trim() === ""}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Card className="border-destructive/50">
         <CardHeader>

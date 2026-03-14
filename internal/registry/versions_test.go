@@ -35,6 +35,10 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 	_, err := cfg.UpdateGithubToken("ghp_test_token")
 	require.NoError(t, err)
 	reg := NewRegistry(testLogSink{}, cfg)
+	originalBaseURL := registryGitHubAPIBaseURL
+	t.Cleanup(func() {
+		registryGitHubAPIBaseURL = originalBaseURL
+	})
 
 	var requestCount int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +58,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 	}))
 	defer server.Close()
 
-	reg.githubAPIBaseURL = server.URL
+	registryGitHubAPIBaseURL = server.URL
 	versions, err := reg.GetVersions("github", "owner/repo")
 	require.NoError(t, err)
 	require.Len(t, versions, 1)
