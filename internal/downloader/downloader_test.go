@@ -291,7 +291,7 @@ func TestEnqueueOperationUsesLatestRequestForPendingAsset(t *testing.T) {
 	require.Equal(t, int32(1), atomic.LoadInt32(&uninstallRunCount))
 }
 
-func TestUninstallCancelsRunningInstallForSameAsset(t *testing.T) {
+func TestUninstallCancelsRunningInstall(t *testing.T) {
 	d := newTestDownloader()
 
 	releaseInstall := make(chan struct{})
@@ -343,11 +343,11 @@ func TestUninstallCancelsRunningInstallForSameAsset(t *testing.T) {
 	require.Equal(t, "uninstall ran", uninstallResult.genericResponse.Message)
 }
 
-func TestCancelDuringExtractEventuallyRemovesInstalledFiles(t *testing.T) {
+func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 	testutil.SetEnv(t)
 
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	configureDownloaderConfig(t, cfg)
 
 	d := &Downloader{
@@ -456,7 +456,7 @@ func TestEnqueueOperationRunsSequentially(t *testing.T) {
 
 func TestInstallMapForExistingIsNoOp(t *testing.T) {
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	expectedConfig := types.ConfigData{
 		Code:        "ABC",
 		Name:        "Map A",
@@ -481,7 +481,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 
 func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
 	cfg := config.NewConfig()
-	reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	d := &Downloader{
 		Registry: reg,
 		Config:   cfg,
@@ -592,7 +592,7 @@ func TestInstallAssetError(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewConfig()
-			reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			d := &Downloader{
 				Registry: reg,
 				Config:   cfg,
@@ -653,7 +653,7 @@ func TestInstallAssetSuccess(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewConfig()
-			reg := registry.NewRegistry(testutil.NoopLogger{}, cfg)
+			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			configureDownloaderConfig(t, cfg)
 			d := &Downloader{
 				Registry: reg,

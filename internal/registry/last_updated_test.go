@@ -20,7 +20,7 @@ func mustUnix(t *testing.T, value string) int64 {
 	return parsed.Unix()
 }
 func TestResolveLastUpdated(t *testing.T) {
-	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-a",
@@ -57,7 +57,7 @@ func TestDetermineLatestTimestampWithStable(t *testing.T) {
 		{Version: "1.5.0", Date: "2026-01-01T00:00:00Z", Prerelease: false},
 	}
 
-	latest, err := determineLatestTimestamp(testutil.NoopLogger{}, versions, "github")
+	latest, err := determineLatestTimestamp(testutil.TestLogSink{}, versions, "github")
 	require.NoError(t, err)
 	require.Equal(t, mustUnix(t, "2026-01-01T00:00:00Z"), latest)
 }
@@ -68,7 +68,7 @@ func TestDetermineLatestTimestampFallbackToPreRelease(t *testing.T) {
 		{Version: "1.0.1", Date: "2026-01-03T00:00:00Z", Prerelease: true},
 	}
 
-	latest, err := determineLatestTimestamp(testutil.NoopLogger{}, versions, "github")
+	latest, err := determineLatestTimestamp(testutil.TestLogSink{}, versions, "github")
 	require.NoError(t, err)
 	require.Equal(t, mustUnix(t, "2026-01-03T00:00:00Z"), latest)
 }
@@ -77,18 +77,18 @@ func TestDetermineLatestTimestampRejectsWrongLayout(t *testing.T) {
 	githubVersions := []types.VersionInfo{
 		{Version: "1.0.0", Date: "2026-01-01"},
 	}
-	_, githubErr := determineLatestTimestamp(testutil.NoopLogger{}, githubVersions, "github")
+	_, githubErr := determineLatestTimestamp(testutil.TestLogSink{}, githubVersions, "github")
 	require.Error(t, githubErr)
 
 	customVersions := []types.VersionInfo{
 		{Version: "1.0.0", Date: "2026-01-01T00:00:00Z"},
 	}
-	_, customErr := determineLatestTimestamp(testutil.NoopLogger{}, customVersions, "custom")
+	_, customErr := determineLatestTimestamp(testutil.TestLogSink{}, customVersions, "custom")
 	require.Error(t, customErr)
 }
 
 func TestLoadLastUpdatedFallsBackToEpochOnFailures(t *testing.T) {
-	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-bad",

@@ -182,6 +182,7 @@ func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQ
 
 	d.downloadMu.Lock()
 	if action == operationActionUninstall {
+		// If an uninstall action is enqueued while an install is running for the same asset, attempt to cancel the install
 		if running, ok := d.running[assetKey]; ok && running.action == operationActionInstall && running.cancel != nil {
 			running.cancel()
 		}
@@ -194,6 +195,7 @@ func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQ
 			// Fallback guard: if pending bookkeeping is ever out of sync, keep progress by appending.
 			d.queue = append(d.queue, op)
 		}
+		// Cancel the context of the existing pending operation (e.g. if it's currently running an install) so that it can exit early and return the superseded result.
 		if existingPending.cancel != nil {
 			existingPending.cancel()
 		}
@@ -560,6 +562,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 	}
 
 	d.Logger.Info("Downloading mod", "mod_id", modId, "version", version, "download_url", versionInfo.DownloadURL)
+  // Pass in context to the download function so that it can be cancelled if the operation is no longer needed
 	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, modId)
 	if downloadResp.Status == types.ResponseWarn {
 		return d.installWarn(types.AssetTypeMod, modId, version, types.ConfigData{}, downloadResp.Message, "mod_id", modId, "version", version)
@@ -575,6 +578,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 	}
 
 	d.Logger.Info("Extracting mod", "mod_id", modId, "version", version, "temp_path", downloadResp.Path)
+	// No context is passed here (for cancellation)
 	extractResp := d.handleModExtract(downloadResp.Path, modId, version)
 	if extractResp.Status != types.ResponseSuccess {
 		os.Remove(downloadResp.Path)
@@ -640,6 +644,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 	}
 
 	d.Logger.Info("Downloading map", "map_id", mapId, "version", version, "download_url", versionInfo.DownloadURL)
+	// Pass in context to the download function so that it can be cancelled if the operation is no longer needed
 	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, mapId)
 	if downloadResp.Status == types.ResponseWarn {
 		return d.installWarn(types.AssetTypeMap, mapId, version, types.ConfigData{}, downloadResp.Message, "map_id", mapId, "version", version)
@@ -655,6 +660,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 	}
 
 	d.Logger.Info("Extracting map", "map_id", mapId, "version", version, "temp_path", downloadResp.Path)
+	// No context is passed here (for cancellation)
 	extractResp := d.handleMapExtract(downloadResp.Path, mapId, version)
 	if extractResp.Status == types.ResponseError {
 		os.Remove(downloadResp.Path)
@@ -680,9 +686,9 @@ func (d *Downloader) downloadTempZip(ctx context.Context, url string, itemId str
 		return d.throwDownloadError("Failed to create temp file", err, "url", url)
 	}
 	defer file.Close()
+	zip, err := d.downloadRequest(ctx, url, d.Config.GetGithubToken())
 
-	zip, err := d.downloadRequest(url, d.Config.GetGithubToken())
-
+	// Return a warning response instead of an error on cancellation
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return d.toDownloadResponse(d.warnResponse("Download cancelled by newer uninstall request", "url", url), "")
@@ -714,10 +720,11 @@ func (d *Downloader) downloadTempZip(ctx context.Context, url string, itemId str
 }
 
 // downloadRequest performs an HTTP GET request to the specified URL, including an optional authentication for GitHub URL
-func (d *Downloader) downloadRequest(downloadURL, githubToken string) (*http.Response, error) {
+func (d *Downloader) downloadRequest(ctx context.Context, downloadURL, githubToken string) (*http.Response, error) {
 	return requests.GetWithGithubToken(downloaderHTTPClient, requests.GithubTokenRequestArgs{
 		URL:                    downloadURL,
 		GitHubToken:            githubToken,
+		Context:                ctx,
 		ShouldAuthenticateHost: isGitHubDownloadHost,
 	})
 }

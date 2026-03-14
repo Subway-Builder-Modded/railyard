@@ -11,6 +11,7 @@ import (
 
 // WriteInstalledToDisk persists installed mods and maps state to disk.
 func (r *Registry) WriteInstalledToDisk() error {
+	// TODO: Make this transactional across installed_mods.json + installed_maps.json (and future other asset classes) to avoid partial state writes
 	if err := files.WriteJSON[types.InstalledModFile](paths.InstalledModsPath(), "installed mod file", r.installedMods); err != nil {
 		return fmt.Errorf("failed to write installed mods to disk: %w", err)
 	}

@@ -59,7 +59,9 @@ func ParseJSON[T any](data []byte, label string) (T, error) {
 // WriteJSON formats the value to JSON and writes it to path.
 // The label is used for annotating error messages.
 func WriteJSON[T any](path string, label string, value T) error {
-	// Ensure the directory exists before writing the file
+	// TODO: Make writes crash-safe/atomic (write temp file + fsync + rename).
+	// Current direct os.WriteFile can leave truncated/corrupt JSON on abrupt shutdown.
+	// We must ensure the directory exists before writing the file
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return fmt.Errorf("failed to create directory for %s %q: %w", label, path, err)
 	}

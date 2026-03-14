@@ -34,7 +34,7 @@ func loadedRegistryWithDownloads(t *testing.T) *Registry {
 		},
 	})
 
-	reg := NewRegistry(testutil.NoopLogger{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
 	require.NoError(t, reg.fetchFromDisk())
 	return reg
 }

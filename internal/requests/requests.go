@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"net/url"
@@ -13,6 +14,7 @@ import (
 type GithubTokenRequestArgs struct {
 	URL                    string
 	GitHubToken            string
+	Context                context.Context
 	Headers                map[string]string
 	ForceAuthByToken         bool
 	ShouldAuthenticateHost func(host string) bool
@@ -53,7 +55,11 @@ func GetWithGithubToken(client *http.Client, opts GithubTokenRequestArgs) (*http
 	}
 
 	buildRequest := func(withToken bool) (*http.Request, error) {
-		req, err := http.NewRequest("GET", opts.URL, nil)
+		requestContext := opts.Context
+		if requestContext == nil {
+			requestContext = context.Background()
+		}
+		req, err := http.NewRequestWithContext(requestContext, http.MethodGet, opts.URL, nil)
 		if err != nil {
 			return nil, err
 		}
