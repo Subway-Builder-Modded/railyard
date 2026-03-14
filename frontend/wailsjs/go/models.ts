@@ -134,7 +134,7 @@ export namespace types {
 	    message: string;
 	    assetType: string;
 	    assetId: string;
-	    errorCode?: string;
+	    errorType?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new AssetUninstallResponse(source);
@@ -146,7 +146,7 @@ export namespace types {
 	        this.message = source["message"];
 	        this.assetType = source["assetType"];
 	        this.assetId = source["assetId"];
-	        this.errorCode = source["errorCode"];
+	        this.errorType = source["errorType"];
 	    }
 	}
 	
@@ -262,6 +262,110 @@ export namespace types {
 	        this.version = source["version"];
 	    }
 	}
+	export class IntegrityVersionSource {
+	    update_type: string;
+	    repo: string;
+	    tag: string;
+	    asset_name?: string;
+	    download_url?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new IntegrityVersionSource(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.update_type = source["update_type"];
+	        this.repo = source["repo"];
+	        this.tag = source["tag"];
+	        this.asset_name = source["asset_name"];
+	        this.download_url = source["download_url"];
+	    }
+	}
+	export class IntegrityVersionStatus {
+	    is_complete: boolean;
+	    errors: string[];
+	    required_checks: Record<string, boolean>;
+	    matched_files: Record<string, string>;
+	    source: IntegrityVersionSource;
+	    fingerprint: string;
+	    checked_at: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new IntegrityVersionStatus(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.is_complete = source["is_complete"];
+	        this.errors = source["errors"];
+	        this.required_checks = source["required_checks"];
+	        this.matched_files = source["matched_files"];
+	        this.source = this.convertValues(source["source"], IntegrityVersionSource);
+	        this.fingerprint = source["fingerprint"];
+	        this.checked_at = source["checked_at"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class IntegrityListing {
+	    has_complete_version: boolean;
+	    latest_semver_version?: string;
+	    latest_semver_complete?: boolean;
+	    complete_versions: string[];
+	    incomplete_versions: string[];
+	    versions: Record<string, IntegrityVersionStatus>;
+	
+	    static createFrom(source: any = {}) {
+	        return new IntegrityListing(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.has_complete_version = source["has_complete_version"];
+	        this.latest_semver_version = source["latest_semver_version"];
+	        this.latest_semver_complete = source["latest_semver_complete"];
+	        this.complete_versions = source["complete_versions"];
+	        this.incomplete_versions = source["incomplete_versions"];
+	        this.versions = this.convertValues(source["versions"], IntegrityVersionStatus, true);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
 	export class UpdateConfig {
 	    type: string;
 	    repo?: string;
@@ -374,6 +478,40 @@ export namespace types {
 	        this.gallery = source["gallery"];
 	        this.source = source["source"];
 	        this.update = this.convertValues(source["update"], UpdateConfig);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class RegistryIntegrityReport {
+	    schema_version: number;
+	    generated_at: string;
+	    listings: Record<string, IntegrityListing>;
+	
+	    static createFrom(source: any = {}) {
+	        return new RegistryIntegrityReport(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.schema_version = source["schema_version"];
+	        this.generated_at = source["generated_at"];
+	        this.listings = this.convertValues(source["listings"], IntegrityListing, true);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

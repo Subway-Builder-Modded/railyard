@@ -34,6 +34,10 @@ export function GetInstalledMods() {
   return window['go']['registry']['Registry']['GetInstalledMods']();
 }
 
+export function GetIntegrityReport(arg1) {
+  return window['go']['registry']['Registry']['GetIntegrityReport'](arg1);
+}
+
 export function GetMap(arg1) {
   return window['go']['registry']['Registry']['GetMap'](arg1);
 }

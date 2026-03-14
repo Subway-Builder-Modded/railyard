@@ -147,3 +147,40 @@ type CustomUpdateVersion struct {
 	SHA256      string `json:"sha256"`
 	Manifest    string `json:"manifest,omitempty"`
 }
+
+// RegistryIntegrityReport represents the overall status report for the registry
+type RegistryIntegrityReport struct {
+	SchemaVersion int                         `json:"schema_version"`
+	GeneratedAt   string                      `json:"generated_at"`
+	Listings      map[string]IntegrityListing `json:"listings"`
+}
+
+// IntegrityListing represents a single mod/map listing with its versions
+type IntegrityListing struct {
+	HasCompleteVersion   bool                              `json:"has_complete_version"`
+	LatestSemverVersion  *string                           `json:"latest_semver_version"`
+	LatestSemverComplete *bool                             `json:"latest_semver_complete"`
+	CompleteVersions     []string                          `json:"complete_versions"`
+	IncompleteVersions   []string                          `json:"incomplete_versions"`
+	Versions             map[string]IntegrityVersionStatus `json:"versions"`
+}
+
+// IntegrityVersionStatus represents the status of a specific version
+type IntegrityVersionStatus struct {
+	IsComplete     bool                   `json:"is_complete"`
+	Errors         []string               `json:"errors"`
+	RequiredChecks map[string]bool        `json:"required_checks"`
+	MatchedFiles   map[string]string      `json:"matched_files"`
+	Source         IntegrityVersionSource `json:"source"`
+	Fingerprint    string                 `json:"fingerprint"`
+	CheckedAt      string                 `json:"checked_at"`
+}
+
+// IntegrityVersionSource represents the source information for a version
+type IntegrityVersionSource struct {
+	UpdateType  string  `json:"update_type"`
+	Repo        string  `json:"repo"`
+	Tag         string  `json:"tag"`
+	AssetName   *string `json:"asset_name,omitempty"`
+	DownloadURL *string `json:"download_url,omitempty"`
+}

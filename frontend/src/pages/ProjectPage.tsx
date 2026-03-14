@@ -26,6 +26,8 @@ export function ProjectPage() {
   const [, params] = useRoute("/project/:type/:id");
   const mods = useRegistryStore((s) => s.mods);
   const maps = useRegistryStore((s) => s.maps);
+  const mapIntegrity = useRegistryStore((s) => s.mapIntegrity);
+  const modIntegrity = useRegistryStore((s) => s.modIntegrity);
 
   const routeType = params?.type;
   const type = routeType ? listingPathToAssetType(routeType) : undefined;
@@ -42,6 +44,15 @@ export function ProjectPage() {
   const [versionsLoading, setVersionsLoading] = useState(true);
   const [versionsError, setVersionsError] = useState<string | null>(null);
   const [gameVersion, setGameVersion] = useState<string>("");
+
+  const filterInvalidVersions = (versions: types.VersionInfo[]) => {
+    if (type === "mod" && modIntegrity && id) {
+      return versions.filter(v => modIntegrity.listings[id].complete_versions.includes(v.version));
+    }
+    if (type === "map" && mapIntegrity && id) {
+      return versions.filter(v => mapIntegrity.listings[id].complete_versions.includes(v.version));
+    }
+  }
 
   useEffect(() => {
     GetGameVersion().then((v) => setGameVersion(v || "")).catch(() => {});
@@ -82,7 +93,7 @@ export function ProjectPage() {
         }
 
         if (!cancelled) {
-          setVersions(mergedVersions);
+          setVersions(filterInvalidVersions(mergedVersions) || mergedVersions);
           setVersionsLoading(false);
         }
       })

@@ -40,6 +40,11 @@ func (r *Registry) fetchFromDisk() error {
 		return fmt.Errorf("failed to load installed maps from disk: %w", err)
 	}
 
+	modIntegrity, mapIntegrity, err := r.loadStatusReport()
+	if err != nil {
+		return fmt.Errorf("failed to load registry integrity reports from disk: %w", err)
+	}
+
 	modLastUpdated, mapLastUpdated := r.loadLastUpdated(mods, maps)
 	updateManifestLastUpdated(mods, maps, modLastUpdated, mapLastUpdated)
 
@@ -49,6 +54,8 @@ func (r *Registry) fetchFromDisk() error {
 	r.downloadCounts = downloadCounts
 	r.installedMods = installedMods
 	r.installedMaps = installedMaps
+	r.integrityMaps = mapIntegrity
+	r.integrityMods = modIntegrity
 
 	return nil
 }
@@ -111,6 +118,23 @@ func (r *Registry) loadDownloadCounts(assetTypes []types.AssetType) (map[types.A
 		countsByType[assetType] = counts
 	}
 	return countsByType, nil
+}
+
+func (r *Registry) loadStatusReport() (types.RegistryIntegrityReport, types.RegistryIntegrityReport, error) {
+	modsIntegrityPath := filepath.Join(r.repoPath, "mods", constants.INTEGRITY_JSON)
+	mapsIntegrityPath := filepath.Join(r.repoPath, "maps", constants.INTEGRITY_JSON)
+	modsIntegrity, modsErr := files.ReadJSON[types.RegistryIntegrityReport](modsIntegrityPath, "mods integrity report", files.JSONReadOptions{})
+	mapsIntegrity, mapsErr := files.ReadJSON[types.RegistryIntegrityReport](mapsIntegrityPath, "maps integrity report", files.JSONReadOptions{})
+
+	if modsErr != nil {
+		return types.RegistryIntegrityReport{}, types.RegistryIntegrityReport{}, fmt.Errorf("failed to load mods integrity report from disk: %w", modsErr)
+	}
+
+	if mapsErr != nil {
+		return types.RegistryIntegrityReport{}, types.RegistryIntegrityReport{}, fmt.Errorf("failed to load maps integrity report from disk: %w", mapsErr)
+	}
+
+	return modsIntegrity, mapsIntegrity, nil
 }
 
 func readManifestsFromDisk[T any](repoPath string, assetDir string, assetLabel string, ids []string) ([]T, error) {

@@ -18,6 +18,8 @@ export function GetInstalledMaps():Promise<Array<types.InstalledMapInfo>>;
 
 export function GetInstalledMods():Promise<Array<types.InstalledModInfo>>;
 
+export function GetIntegrityReport(arg1:types.AssetType):Promise<types.RegistryIntegrityReport>;
+
 export function GetMap(arg1:string):Promise<types.MapManifest>;
 
 export function GetMaps():Promise<Array<types.MapManifest>>;

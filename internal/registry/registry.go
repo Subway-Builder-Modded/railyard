@@ -31,6 +31,8 @@ type Registry struct {
 	downloadCounts map[types.AssetType]map[string]map[string]int
 	installedMods  []types.InstalledModInfo
 	installedMaps  []types.InstalledMapInfo
+	integrityMaps  types.RegistryIntegrityReport
+	integrityMods  types.RegistryIntegrityReport
 }
 
 // NewRegistry creates a new Registry instance with the platform-appropriate
@@ -83,6 +85,17 @@ func (r *Registry) GetMods() []types.ModManifest {
 // GetMaps returns all map manifests.
 func (r *Registry) GetMaps() []types.MapManifest {
 	return r.maps
+}
+
+func (r *Registry) GetIntegrityReport(assetType types.AssetType) (types.RegistryIntegrityReport, error) {
+	switch assetType {
+	case types.AssetTypeMod:
+		return r.integrityMods, nil
+	case types.AssetTypeMap:
+		return r.integrityMaps, nil
+	default:
+		return types.RegistryIntegrityReport{}, fmt.Errorf("invalid asset type: %s", assetType)
+	}
 }
 
 // GetMod looks up a mod manifest by ID from the loaded registry data.
