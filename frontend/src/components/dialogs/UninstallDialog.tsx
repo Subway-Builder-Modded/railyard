@@ -61,14 +61,14 @@ export function UninstallDialog({
       toast.success(
         itemCount === 1
           ? `${titleName} has been uninstalled.`
-          : `${itemCount} items have been uninstalled.`,
+          : `${itemCount} assets have been uninstalled.`,
       );
       onOpenChange(false);
     } catch {
       toast.error(
         itemCount === 1
           ? `Failed to uninstall ${titleName}.`
-          : `Failed to uninstall one or more selected items.`,
+          : `Failed to uninstall one or more selected assets.`,
       );
     } finally {
       setLoading(false);
@@ -86,7 +86,7 @@ export function UninstallDialog({
           <DialogDescription>
             {itemCount === 1
               ? `This will remove all installed files for this ${singleType === "mod" ? "mod" : "map"}. You can reinstall it later from the registry.`
-              : "This will remove all installed files for the selected items. You can reinstall them later from the registry."}
+              : "This will remove all installed files for the selected assets. You can reinstall them later from the registry."}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
