@@ -188,7 +188,7 @@ export function SettingsPage() {
         <CardHeader>
           <CardTitle>Global Settings</CardTitle>
           <CardDescription>
-            Configure global paths and optional GitHub token.
+            Configure system-wide behavior and defaults.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
