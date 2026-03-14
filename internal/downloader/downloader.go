@@ -27,6 +27,7 @@ import (
 )
 
 type ExtractProgressFunc func(itemId string, extracted int64, total int64)
+type CancelledFunc func(itemID string, assetType types.AssetType, phase string)
 
 // TODO: Consider adding this as an injectable dependency for other services
 var downloaderHTTPClient = requests.NewDownloadClient()
@@ -40,6 +41,7 @@ type Downloader struct {
 	Logger            logger.Logger
 	OnProgress        types.ProgressFunc
 	OnExtractProgress ExtractProgressFunc
+	OnCancelled       CancelledFunc
 
 	downloadMu   sync.Mutex
 	downloadCond *sync.Cond
@@ -167,11 +169,9 @@ func (d *Downloader) emitEvent(eventName string, data ...any) {
 }
 
 func (d *Downloader) emitDownloadCancelled(assetType types.AssetType, assetID, phase string) {
-	d.emitEvent(downloadCancelledEventName, map[string]any{
-		"itemId":    assetID,
-		"assetType": string(assetType),
-		"phase":     phase,
-	})
+	if d.OnCancelled != nil {
+		d.OnCancelled(assetID, assetType, phase)
+	}
 }
 
 // replaceQueuedOperation replaces an existing queued operation for the same asset with a new operation, returning a boolean to indicate success

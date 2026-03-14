@@ -3,12 +3,15 @@ import { EventsOn } from "../../../wailsjs/runtime/runtime";
 import { toast } from "sonner";
 import { Download, CheckCircle } from "lucide-react";
 import { useDownloadQueueStore } from "@/stores/download-queue-store";
-import { onDownloadCancelled } from "@/lib/download-cancel";
 
 interface DownloadProgress {
   itemId: string;
   received: number;
   total: number;
+}
+
+interface DownloadCancelled {
+  itemId?: string;
 }
 
 function formatBytes(bytes: number): string {
@@ -103,18 +106,21 @@ export function DownloadNotification() {
       }
     });
 
-    const removeToastOnCancellation = onDownloadCancelled(({ itemId }) => {
-      const existingId = toastIds.current.get(itemId);
+    const cancelDownload = EventsOn("download:cancelled", (data: DownloadCancelled) => {
+      if (!data?.itemId) {
+        return;
+      }
+      const existingId = toastIds.current.get(data.itemId);
       if (!existingId) {
         return;
       }
       // Dismiss the toast immediately on cancellation without showing an error
       toast.dismiss(existingId);
-      toastIds.current.delete(itemId);
+      toastIds.current.delete(data.itemId);
     });
 
     return () => {
-      removeToastOnCancellation();
+      cancelDownload();
       cancel();
     };
   }, []);

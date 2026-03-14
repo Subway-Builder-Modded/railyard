@@ -90,29 +90,11 @@ type cancelledEvent struct {
 	phase     string
 }
 
-func captureCancelledEvents(t *testing.T) <-chan cancelledEvent {
-	t.Helper()
-
-	original := emitRuntimeEvent
+func captureCancelledEvents(d *Downloader) <-chan cancelledEvent {
 	events := make(chan cancelledEvent, 8)
-	emitRuntimeEvent = func(_ context.Context, eventName string, optionalData ...interface{}) {
-		if eventName != downloadCancelledEventName || len(optionalData) == 0 {
-			return
-		}
-		payload, ok := optionalData[0].(map[string]any)
-		if !ok {
-			return
-		}
-		itemID, _ := payload["itemId"].(string)
-		assetType, _ := payload["assetType"].(string)
-		phase, _ := payload["phase"].(string)
-		events <- cancelledEvent{itemID: itemID, assetType: assetType, phase: phase}
+	d.OnCancelled = func(itemID string, assetType types.AssetType, phase string) {
+		events <- cancelledEvent{itemID: itemID, assetType: string(assetType), phase: phase}
 	}
-	t.Cleanup(func() {
-		emitRuntimeEvent = original
-		close(events)
-	})
-
 	return events
 }
 
@@ -333,8 +315,7 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 		Config:   cfg,
 		Logger:   logger.LoggerAtPath(""),
 	}
-	d.SetContext(context.Background())
-	cancelledEvents := captureCancelledEvents(t)
+	cancelledEvents := captureCancelledEvents(d)
 
 	blockerStarted := make(chan struct{})
 	releaseBlocker := make(chan struct{})
@@ -388,8 +369,7 @@ func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 
 func TestUninstallCancelsRunningInstall(t *testing.T) {
 	d := newTestDownloader()
-	d.SetContext(context.Background())
-	cancelledEvents := captureCancelledEvents(t)
+	cancelledEvents := captureCancelledEvents(d)
 
 	releaseInstall := make(chan struct{})
 	cancelCalled := make(chan struct{}, 1)

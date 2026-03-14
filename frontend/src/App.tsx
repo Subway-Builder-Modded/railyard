@@ -21,7 +21,6 @@ import { LibraryPage } from "@/pages/LibraryPage";
 import { ExtractNotification } from "./components/layout/ExtractNotification";
 import { IsStartupReady } from "../wailsjs/go/main/App";
 import { EventsOn } from "../wailsjs/runtime/runtime";
-import { emitDownloadCancelled } from "@/lib/download-cancel";
 
 interface DownloadCancelledEvent {
   itemId?: string;
@@ -31,7 +30,7 @@ function App() {
   useTheme();
   const [startupReady, setStartupReady] = useState(false);
   const updateInstalledLists = useInstalledStore((s) => s.updateInstalledLists);
-  const ackCancelledInstall = useInstalledStore((s) => s.ackCancelledInstall);
+  const acknowledgeCancel = useInstalledStore((s) => s.ackCancelledInstall);
 
   const initConfig = useConfigStore((s) => s.initialize);
   const configInitialized = useConfigStore((s) => s.initialized);
@@ -52,17 +51,16 @@ function App() {
   const initGame = useGameStore((s) => s.initialize);
 
   useEffect(() => {
-    const offRegistryUpdate = EventsOn("registry:update", () => {
+    const registryUpdate = EventsOn("registry:update", () => {
       updateInstalledLists();
     });
-    const offDownloadCancelled = EventsOn(
+    const downloadCancelled = EventsOn(
       "download:cancelled",
       (payload: DownloadCancelledEvent) => {
         if (!payload?.itemId) {
           return;
         }
-        ackCancelledInstall(payload.itemId);
-        emitDownloadCancelled(payload.itemId);
+        acknowledgeCancel(payload.itemId);
       },
     );
     let cancelled = false;
@@ -88,14 +86,14 @@ function App() {
     pollStartupReady();
 
     return () => {
-      offRegistryUpdate();
-      offDownloadCancelled();
+      registryUpdate();
+      downloadCancelled();
       cancelled = true;
       if (timer !== undefined) {
         window.clearTimeout(timer);
       }
     };
-  }, [updateInstalledLists, ackCancelledInstall]);
+  }, [updateInstalledLists, acknowledgeCancel]);
 
   // Phase 1: config + profile + game events
   useEffect(() => {
@@ -147,12 +145,18 @@ function App() {
     }
   }
 
-  const baseLoading = !startupReady || !configInitialized || !profileInitialized;
+  const baseLoading =
+    !startupReady || !configInitialized || !profileInitialized;
   const registryLoading =
     showRegistrySteps && (!registryInitialized || !installedInitialized);
 
   if (baseLoading || registryLoading) {
-    return <MultiStepLoader loadingStates={loadingStates} currentStep={currentStep} />;
+    return (
+      <MultiStepLoader
+        loadingStates={loadingStates}
+        currentStep={currentStep}
+      />
+    );
   }
 
   // Gate: show setup if not configured OR setup not completed
@@ -179,7 +183,7 @@ function App() {
       </Layout>
       <DownloadNotification />
       <ExtractNotification />
-      <Toaster/>
+      <Toaster />
     </TooltipProvider>
   );
 }
