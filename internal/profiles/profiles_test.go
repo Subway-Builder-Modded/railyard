@@ -1632,7 +1632,7 @@ func TestSyncAssetSubscriptionsStopsWhenSnapshotIsStale(t *testing.T) {
 		mockInstallResponse(types.AssetTypeMap, &installCalls, nil),
 		mockUninstallResponse(types.AssetTypeMap, &uninstallCalls, nil),
 	)
-	args.isStaleFn = func() bool { return true }
+	args.isStale = func() bool { return true }
 
 	operations, errs, purgeCandidates, stale := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, args)
 	require.True(t, stale)

@@ -171,7 +171,7 @@ func (s *UserProfiles) UpdateAllSubscriptionsToLatest(req types.UpdateAllSubscri
 }
 
 func (s *UserProfiles) resolveLatestUpdatesForProfile(profileID string) (types.UserProfile, map[string]types.SubscriptionUpdateItem, []types.UserProfilesError, *types.UserProfilesError) {
-	profile, profileErr := s.profileSnapshot(profileID)
+	profile, _, profileErr := s.profileSnapshot(profileID)
 	if profileErr != nil {
 		return types.UserProfile{}, map[string]types.SubscriptionUpdateItem{}, []types.UserProfilesError{}, profileErr
 	}

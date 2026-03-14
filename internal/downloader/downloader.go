@@ -165,6 +165,7 @@ func (d *Downloader) replaceQueuedOperation(target *downloadOperation, replaceme
 	return false
 }
 
+// removeQueuedOperation removes a queued operation from the queue, returning a boolean to indicate success
 func (d *Downloader) removeQueuedOperation(target *downloadOperation) bool {
 	for i, queued := range d.queue {
 		if queued != target {
@@ -176,9 +177,8 @@ func (d *Downloader) removeQueuedOperation(target *downloadOperation) bool {
 	return false
 }
 
-// cancelPendingQueuedInstallIfNotInstalled removes a queued install for the same asset when an uninstall arrives,
-// but only when nothing is currently installed for that asset. This lets cancellation return immediately.
-func (d *Downloader) cancelPendingQueuedInstallIfNotInstalled(assetType types.AssetType, assetID string, assetKey downloadQueueKey) bool {
+// cancelPendingQueuedInstall removes a queued install for the same asset when an uninstall arrives, but only when that asset is not already installed
+func (d *Downloader) cancelPendingQueuedInstall(assetType types.AssetType, assetID string, assetKey downloadQueueKey) bool {
 	if _, installed := d.getInstalledState(assetType, assetID); installed {
 		return false
 	}
@@ -428,7 +428,7 @@ func (d *Downloader) UninstallAsset(assetType types.AssetType, assetID string) t
 
 	key := d.operationKey(operationActionUninstall, assetType, assetID, "")
 	assetKey := downloadQueueKey{assetType: assetType, assetID: assetID}
-	if d.cancelPendingQueuedInstallIfNotInstalled(assetType, assetID, assetKey) {
+	if d.cancelPendingQueuedInstall(assetType, assetID, assetKey) {
 		return d.uninstallWarn(
 			assetType,
 			assetID,

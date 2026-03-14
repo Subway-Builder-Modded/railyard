@@ -37,6 +37,7 @@ func NewUserProfiles(r *registry.Registry, d *downloader.Downloader, l logger.Lo
 
 func (s *UserProfiles) setState(state types.UserProfilesState) {
 	s.state = state
+	// Counter for in-memory state versioning to detect stale snapshots
 	s.stateVersion++
 	s.loaded = true
 }
@@ -116,12 +117,7 @@ func profileFromState(state types.UserProfilesState, profileID string) (types.Us
 	return profile, nil
 }
 
-func (s *UserProfiles) profileSnapshot(profileID string) (types.UserProfile, *types.UserProfilesError) {
-	profile, _, profileErr := s.profileSnapshotWithVersion(profileID)
-	return profile, profileErr
-}
-
-func (s *UserProfiles) profileSnapshotWithVersion(profileID string) (types.UserProfile, uint64, *types.UserProfilesError) {
+func (s *UserProfiles) profileSnapshot(profileID string) (types.UserProfile, uint64, *types.UserProfilesError) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

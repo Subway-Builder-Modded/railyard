@@ -12,7 +12,7 @@ import (
 func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptionsResult {
 	s.logRequest("SyncSubscriptions", "profile_id", profileID)
 
-	profile, snapshotVersion, profileErr := s.profileSnapshotWithVersion(profileID)
+	profile, snapshotVersion, profileErr := s.profileSnapshot(profileID)
 	if profileErr != nil {
 		s.Logger.Error("Profile not found for sync", profileErr, "profile_id", profileID)
 		return newSyncSubscriptionsResult(
@@ -24,12 +24,8 @@ func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptio
 		)
 	}
 
-	isStale := func() bool {
-		return s.isSnapshotStale(snapshotVersion)
-	}
-
-	mapArgs := s.buildMapSyncArgs(profile, isStale)
-	modArgs := s.buildModSyncArgs(profile, isStale)
+	mapArgs := s.buildMapSyncArgs(profile, func() bool { return s.isSnapshotStale(snapshotVersion) })
+	modArgs := s.buildModSyncArgs(profile, func() bool { return s.isSnapshotStale(snapshotVersion) })
 
 	syncErrors := make([]types.UserProfilesError, 0)
 	operations := make([]types.SubscriptionOperation, 0)
@@ -109,7 +105,7 @@ type assetPurgeArgs struct {
 type assetSyncArgs[T any, U any] struct {
 	assetType     types.AssetType                                                 // The type of asset being synced: map or mod (or others in the future).
 	subscriptions map[string]string                                               // The desired subscription state for the profile, keyed by asset ID and valued by version.
-	isStaleFn     func() bool                                                     // Returns true when the sync snapshot is stale due to a newer profile update.
+	isStale     func() bool                                                     // Returns true when the sync snapshot is stale due to a newer profile update.
 	installedArgs installedVersionArgs[T]                                         // Non-shared installed-version resolver args.
 	availableArgs availableVersionArgs[U]                                         // Non-shared available-version resolver args.
 	install       func(assetID string, version string) types.AssetInstallResponse // The function to call to install the asset (using the downloader).
@@ -133,11 +129,11 @@ type availableVersionArgs[U any] struct {
 }
 
 // TODO: Consolidate this into a generic argument builder using types.AssetType to reduce duplication
-func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile, isStaleFn func() bool) assetSyncArgs[types.InstalledMapInfo, types.MapManifest] {
+func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile, isStale func() bool) assetSyncArgs[types.InstalledMapInfo, types.MapManifest] {
 	return assetSyncArgs[types.InstalledMapInfo, types.MapManifest]{
 		assetType:     types.AssetTypeMap,
 		subscriptions: profile.Subscriptions.Maps,
-		isStaleFn:     isStaleFn,
+		isStale:     isStale,
 		installedArgs: installedVersionArgs[types.InstalledMapInfo]{
 			getInstalledAssetsFn: s.Registry.GetInstalledMaps,
 			idFn:                 func(item types.InstalledMapInfo) string { return item.ID },
@@ -159,11 +155,11 @@ func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile, isStaleFn fun
 	}
 }
 
-func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile, isStaleFn func() bool) assetSyncArgs[types.InstalledModInfo, types.ModManifest] {
+func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile, isStale func() bool) assetSyncArgs[types.InstalledModInfo, types.ModManifest] {
 	return assetSyncArgs[types.InstalledModInfo, types.ModManifest]{
 		assetType:     types.AssetTypeMod,
 		subscriptions: profile.Subscriptions.Mods,
-		isStaleFn:     isStaleFn,
+		isStale:     isStale,
 		installedArgs: installedVersionArgs[types.InstalledModInfo]{
 			getInstalledAssetsFn: s.Registry.GetInstalledMods,
 			idFn:                 func(item types.InstalledModInfo) string { return item.ID },
@@ -191,7 +187,8 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 	operations := make([]types.SubscriptionOperation, 0)
 	assetsToPurge := make([]assetPurgeArgs, 0)
 	checkStale := func() bool {
-		return args.isStaleFn != nil && args.isStaleFn()
+		// If the snapshot is stale, we should stop processing immediately to avoid making unwanted changes based on an outdated profile state.
+		return args.isStale != nil && args.isStale()
 	}
 	installedVersion := buildVersionIndexFromItems(args.installedArgs)
 	availableVersions := buildAvailableVersionIndex(args.availableArgs, profileID, args.subscriptions, args.assetType, &errs)
