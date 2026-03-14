@@ -94,9 +94,14 @@ export function VersionsTable({
       }
       if (result.status === "warn") {
         if (isCancellationMessage(result.message)) {
-          toast.success(`Cancelled pending install for ${itemName}.`, { id: cancellationToastId });
+          toast.success(`Cancelled pending install for ${itemName}.`, {
+            id: cancellationToastId,
+          });
         } else {
-          toast.warning(result.message || `Install for ${itemName} completed with warnings.`);
+          toast.warning(
+            result.message ||
+              `Install for ${itemName} completed with warnings.`,
+          );
         }
         return;
       }
@@ -106,8 +111,13 @@ export function VersionsTable({
     } catch (err) {
       const syncError = toSubscriptionSyncErrorState(err, version);
       if (syncError) {
-        if (useInstalledStore.getState().isUninstalling(itemId) || isCancellationSyncError(syncError)) {
-          toast.success(`Cancelled pending install for ${itemName}.`, { id: cancellationToastId });
+        if (
+          useInstalledStore.getState().isUninstalling(itemId) ||
+          isCancellationSyncError(syncError)
+        ) {
+          toast.success(`Cancelled pending install for ${itemName}.`, {
+            id: cancellationToastId,
+          });
           return;
         }
         setSubscriptionSyncError(syncError);
@@ -120,10 +130,12 @@ export function VersionsTable({
     }
   };
 
-  const doCancelInstall = async () => {
+  const cancelInstall = async () => {
     try {
       await cancelPendingInstall(type, itemId);
-      toast.success(`Cancelled pending install for ${itemName}.`, { id: cancellationToastId });
+      toast.success(`Cancelled pending install for ${itemName}.`, {
+        id: cancellationToastId,
+      });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     }
@@ -265,7 +277,11 @@ export function VersionsTable({
                         <Loader2 className="h-4 w-4 animate-spin" />
                       </Button>
                     ) : installing ? (
-                      <Button variant="outline" size="sm" onClick={doCancelInstall}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={cancelInstall}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     ) : (

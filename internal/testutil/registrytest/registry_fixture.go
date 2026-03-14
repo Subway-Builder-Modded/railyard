@@ -6,6 +6,7 @@ import (
 	"testing"
 	"unsafe"
 
+	"railyard/internal/constants"
 	"railyard/internal/files"
 	"railyard/internal/paths"
 	"railyard/internal/types"
@@ -56,6 +57,27 @@ func WriteFixture(t *testing.T, fixture RepositoryFixture) {
 
 	require.NoError(t, files.WriteJSON(filepath.Join(repoPath, "mods", "downloads.json"), "mod downloads", types.DownloadsFile(fixture.ModDownloadEntries)))
 	require.NoError(t, files.WriteJSON(filepath.Join(repoPath, "maps", "downloads.json"), "map downloads", types.DownloadsFile(fixture.MapDownloadEntries)))
+	require.NoError(t, files.WriteJSON(filepath.Join(repoPath, "mods", constants.INTEGRITY_JSON), "mods integrity report", buildIntegrityReport(modIDs)))
+	require.NoError(t, files.WriteJSON(filepath.Join(repoPath, "maps", constants.INTEGRITY_JSON), "maps integrity report", buildIntegrityReport(mapIDs)))
+}
+
+func buildIntegrityReport(ids []string) types.RegistryIntegrityReport {
+	listings := make(map[string]types.IntegrityListing, len(ids))
+	for _, id := range ids {
+		listings[id] = types.IntegrityListing{
+			HasCompleteVersion:   false,
+			LatestSemverVersion:  nil,
+			LatestSemverComplete: nil,
+			CompleteVersions:     []string{},
+			IncompleteVersions:   []string{},
+			Versions:             map[string]types.IntegrityVersionStatus{},
+		}
+	}
+	return types.RegistryIntegrityReport{
+		SchemaVersion: 1,
+		GeneratedAt:   "1970-01-01T00:00:00Z",
+		Listings:      listings,
+	}
 }
 
 func SetUnexportedField(t *testing.T, target any, fieldName string, value any) {
