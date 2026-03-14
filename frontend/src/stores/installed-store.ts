@@ -2,12 +2,6 @@ import { create } from 'zustand';
 import { types } from '../../wailsjs/go/models';
 import { GetInstalledMods, GetInstalledMaps } from '../../wailsjs/go/registry/Registry';
 import { GetActiveProfile, UpdateSubscriptions } from '../../wailsjs/go/profiles/UserProfiles';
-import {
-  InstallMap as InstallMapFiles,
-  InstallMod as InstallModFiles,
-  UninstallMap as UninstallMapFiles,
-  UninstallMod as UninstallModFiles,
-} from '../../wailsjs/go/downloader/Downloader';
 import { useDownloadQueueStore } from './download-queue-store';
 import type { AssetType } from "@/lib/asset-types";
 
@@ -38,11 +32,6 @@ function resolveSubscriptionSyncMessage(
 
   return fallback;
 }
-
-type DirectInstallResponse = {
-  status: string;
-  message: string;
-};
 
 interface InstalledState {
   installedMods: types.InstalledModInfo[];
@@ -127,7 +116,6 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     id: string,
     version: string,
     assetType: AssetType,
-    installFiles: (id: string, version: string) => Promise<DirectInstallResponse>,
   ) => {
     useDownloadQueueStore.getState().enqueue();
     setOperationState("installing", id, true);
@@ -135,16 +123,6 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
 
     try {
       const response = await applySubscriptionMutation(id, version, assetType, "subscribe");
-      const directResponse = await installFiles(id, version);
-
-      if (directResponse.status === "error") {
-        try {
-          await applySubscriptionMutation(id, "", assetType, "unsubscribe");
-        } catch {}
-
-        throw new Error(directResponse.message || "Install failed");
-      }
-
       set({ ...await getInstalledLists() });
       return response;
     } catch (err) {
@@ -159,17 +137,11 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   const uninstallAsset = async (
     id: string,
     assetType: AssetType,
-    uninstallFiles: (id: string) => Promise<DirectInstallResponse>,
   ) => {
     setOperationState("uninstalling", id, true);
     set({ error: null });
 
     try {
-      const directResponse = await uninstallFiles(id);
-      if (directResponse.status === "error") {
-        throw new Error(directResponse.message || "Uninstall failed");
-      }
-
       const response = await applySubscriptionMutation(id, "", assetType, "unsubscribe");
       set({ ...await getInstalledLists() });
       return response;
@@ -210,16 +182,16 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   },
 
   installMod: (id: string, version: string) =>
-    installAsset(id, version, "mod", InstallModFiles),
+    installAsset(id, version, "mod"),
 
   installMap: (id: string, version: string) =>
-    installAsset(id, version, "map", InstallMapFiles),
+    installAsset(id, version, "map"),
 
   uninstallMod: (id: string) =>
-    uninstallAsset(id, "mod", UninstallModFiles),
+    uninstallAsset(id, "mod"),
 
   uninstallMap: (id: string) =>
-    uninstallAsset(id, "map", UninstallMapFiles),
+    uninstallAsset(id, "map"),
 
   isInstalled: (id: string) => {
     const { installedMods, installedMaps } = get();
