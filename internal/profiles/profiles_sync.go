@@ -12,7 +12,7 @@ import (
 func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptionsResult {
 	s.logRequest("SyncSubscriptions", "profile_id", profileID)
 
-	profile, profileErr := s.profileSnapshot(profileID)
+	profile, snapshotVersion, profileErr := s.profileSnapshotWithVersion(profileID)
 	if profileErr != nil {
 		s.Logger.Error("Profile not found for sync", profileErr, "profile_id", profileID)
 		return newSyncSubscriptionsResult(
@@ -24,8 +24,12 @@ func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptio
 		)
 	}
 
-	mapArgs := s.buildMapSyncArgs(profile)
-	modArgs := s.buildModSyncArgs(profile)
+	isStale := func() bool {
+		return s.isSnapshotStale(snapshotVersion)
+	}
+
+	mapArgs := s.buildMapSyncArgs(profile, isStale)
+	modArgs := s.buildModSyncArgs(profile, isStale)
 
 	syncErrors := make([]types.UserProfilesError, 0)
 	operations := make([]types.SubscriptionOperation, 0)
@@ -33,16 +37,27 @@ func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptio
 
 	// Run sync for each asset type in sequence.
 	s.Logger.Info("Syncing map subscriptions", "profile_id", profileID, "subscription_count", len(profile.Subscriptions.Maps))
-	mapOperations, mapErrors, invalidMaps := syncAssetSubscriptions(s.Logger, profileID, mapArgs)
+	mapOperations, mapErrors, invalidMaps, mapStale := syncAssetSubscriptions(s.Logger, profileID, mapArgs)
 	operations = append(operations, mapOperations...)
 	syncErrors = append(syncErrors, mapErrors...)
 	assetsToPurge = append(assetsToPurge, invalidMaps...)
 
 	s.Logger.Info("Syncing mod subscriptions", "profile_id", profileID, "subscription_count", len(profile.Subscriptions.Mods))
-	modOperations, modErrors, invalidMods := syncAssetSubscriptions(s.Logger, profileID, modArgs)
+	modOperations, modErrors, invalidMods, modStale := syncAssetSubscriptions(s.Logger, profileID, modArgs)
 	operations = append(operations, modOperations...)
 	syncErrors = append(syncErrors, modErrors...)
 	assetsToPurge = append(assetsToPurge, invalidMods...)
+
+	if mapStale || modStale {
+		s.Logger.Warn("Subscription sync cancelled due to newer profile update", "profile_id", profileID)
+		return newSyncSubscriptionsResult(
+			types.ResponseWarn,
+			"Sync cancelled by newer subscription update",
+			profileID,
+			operations,
+			[]types.UserProfilesError{},
+		)
+	}
 
 	purgeOperations, purgeErrors := s.applyPurgeOperations(profileID, assetsToPurge)
 	if len(purgeOperations) > 0 {
@@ -94,6 +109,7 @@ type assetPurgeArgs struct {
 type assetSyncArgs[T any, U any] struct {
 	assetType     types.AssetType                                                 // The type of asset being synced: map or mod (or others in the future).
 	subscriptions map[string]string                                               // The desired subscription state for the profile, keyed by asset ID and valued by version.
+	isStaleFn     func() bool                                                     // Returns true when the sync snapshot is stale due to a newer profile update.
 	installedArgs installedVersionArgs[T]                                         // Non-shared installed-version resolver args.
 	availableArgs availableVersionArgs[U]                                         // Non-shared available-version resolver args.
 	install       func(assetID string, version string) types.AssetInstallResponse // The function to call to install the asset (using the downloader).
@@ -117,10 +133,11 @@ type availableVersionArgs[U any] struct {
 }
 
 // TODO: Consolidate this into a generic argument builder using types.AssetType to reduce duplication
-func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile) assetSyncArgs[types.InstalledMapInfo, types.MapManifest] {
+func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile, isStaleFn func() bool) assetSyncArgs[types.InstalledMapInfo, types.MapManifest] {
 	return assetSyncArgs[types.InstalledMapInfo, types.MapManifest]{
 		assetType:     types.AssetTypeMap,
 		subscriptions: profile.Subscriptions.Maps,
+		isStaleFn:     isStaleFn,
 		installedArgs: installedVersionArgs[types.InstalledMapInfo]{
 			getInstalledAssetsFn: s.Registry.GetInstalledMaps,
 			idFn:                 func(item types.InstalledMapInfo) string { return item.ID },
@@ -142,10 +159,11 @@ func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile) assetSyncArgs
 	}
 }
 
-func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile) assetSyncArgs[types.InstalledModInfo, types.ModManifest] {
+func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile, isStaleFn func() bool) assetSyncArgs[types.InstalledModInfo, types.ModManifest] {
 	return assetSyncArgs[types.InstalledModInfo, types.ModManifest]{
 		assetType:     types.AssetTypeMod,
 		subscriptions: profile.Subscriptions.Mods,
+		isStaleFn:     isStaleFn,
 		installedArgs: installedVersionArgs[types.InstalledModInfo]{
 			getInstalledAssetsFn: s.Registry.GetInstalledMods,
 			idFn:                 func(item types.InstalledModInfo) string { return item.ID },
@@ -168,10 +186,13 @@ func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile) assetSyncArgs
 }
 
 // syncAssetSubscriptions is a generic type helper that performs the core logic of syncing subscriptions for a given asset type, with generic arguments corresponding to the asset's installed info type (T) and manifest type (U).
-func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, args assetSyncArgs[T, U]) ([]types.SubscriptionOperation, []types.UserProfilesError, []assetPurgeArgs) {
+func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, args assetSyncArgs[T, U]) ([]types.SubscriptionOperation, []types.UserProfilesError, []assetPurgeArgs, bool) {
 	errs := make([]types.UserProfilesError, 0)
 	operations := make([]types.SubscriptionOperation, 0)
 	assetsToPurge := make([]assetPurgeArgs, 0)
+	checkStale := func() bool {
+		return args.isStaleFn != nil && args.isStaleFn()
+	}
 	installedVersion := buildVersionIndexFromItems(args.installedArgs)
 	availableVersions := buildAvailableVersionIndex(args.availableArgs, profileID, args.subscriptions, args.assetType, &errs)
 
@@ -182,6 +203,10 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 	)
 
 	for assetID, version := range args.subscriptions {
+		if checkStale() {
+			log.Warn("Stopping sync loop due to stale subscription snapshot", "asset_type", args.assetType)
+			return operations, errs, assetsToPurge, true
+		}
 		versionText := strings.TrimSpace(version)
 		// If the desired version is already installed, skip to the next asset.
 		if current, ok := installedVersion[assetID]; ok && current == versionText {
@@ -226,7 +251,7 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 		log.Info("Installing asset", "asset_type", args.assetType, "asset_id", assetID, "version", versionText)
 		response := args.install(assetID, versionText)
 		if response.Status == types.ResponseWarn {
-			// Occurs when installation skipped due to a newer subscription update (different version) or a cancellation (from a newer uninstall request). 
+			// Occurs when installation skipped due to a newer subscription update (different version) or a cancellation (from a newer uninstall request).
 			// These should be treated as warnings, not errors, since this is an expected set of events.
 			log.Warn("Install skipped during sync", "asset_type", args.assetType, "asset_id", assetID, "version", versionText, "message", response.Message)
 			continue
@@ -259,6 +284,10 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 
 	// Check for installed assets that are no longer subscribed and attempt uninstallation.
 	for assetID, currentVersion := range installedVersion {
+		if checkStale() {
+			log.Warn("Stopping uninstall loop due to stale subscription snapshot", "asset_type", args.assetType)
+			return operations, errs, assetsToPurge, true
+		}
 		if _, ok := args.subscriptions[assetID]; ok {
 			continue
 		}
@@ -277,7 +306,7 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 		})
 	}
 
-	return operations, errs, assetsToPurge
+	return operations, errs, assetsToPurge, false
 }
 
 func (s *UserProfiles) applyPurgeOperations(profileID string, args []assetPurgeArgs) ([]types.SubscriptionOperation, []types.UserProfilesError) {

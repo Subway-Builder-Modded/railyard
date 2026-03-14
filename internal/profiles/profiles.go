@@ -14,13 +14,14 @@ import (
 )
 
 type UserProfiles struct {
-	state      types.UserProfilesState
-	Logger     logger.Logger
-	Registry   *registry.Registry
-	Config     *config.Config
-	Downloader *downloader.Downloader
-	mu         sync.Mutex
-	loaded     bool
+	state        types.UserProfilesState
+	stateVersion uint64
+	Logger       logger.Logger
+	Registry     *registry.Registry
+	Config       *config.Config
+	Downloader   *downloader.Downloader
+	mu           sync.Mutex
+	loaded       bool
 }
 
 const serviceName = "UserProfiles"
@@ -36,6 +37,7 @@ func NewUserProfiles(r *registry.Registry, d *downloader.Downloader, l logger.Lo
 
 func (s *UserProfiles) setState(state types.UserProfilesState) {
 	s.state = state
+	s.stateVersion++
 	s.loaded = true
 }
 
@@ -115,18 +117,29 @@ func profileFromState(state types.UserProfilesState, profileID string) (types.Us
 }
 
 func (s *UserProfiles) profileSnapshot(profileID string) (types.UserProfile, *types.UserProfilesError) {
+	profile, _, profileErr := s.profileSnapshotWithVersion(profileID)
+	return profile, profileErr
+}
+
+func (s *UserProfiles) profileSnapshotWithVersion(profileID string) (types.UserProfile, uint64, *types.UserProfilesError) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	// Read a snapshot of current subscriptions at invocation time.
 	profile, profileErr := profileFromState(s.state, profileID)
 	if profileErr != nil {
-		return types.UserProfile{}, profileErr
+		return types.UserProfile{}, 0, profileErr
 	}
 
 	profile.Subscriptions.Maps = utils.CloneMap(profile.Subscriptions.Maps)
 	profile.Subscriptions.Mods = utils.CloneMap(profile.Subscriptions.Mods)
-	return profile, nil
+	return profile, s.stateVersion, nil
+}
+
+func (s *UserProfiles) isSnapshotStale(snapshotVersion uint64) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.stateVersion != snapshotVersion
 }
 
 func updateSubscriptionError(profileID, assetID string, assetType types.AssetType, errorType types.UserProfilesErrorType, err error) types.UserProfilesError {

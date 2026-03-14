@@ -1369,7 +1369,7 @@ func TestSyncAssetSubscriptionsInstallDecisionsMaps(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			installCalls := 0
 			uninstallCalls := 0
-			_, errs, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(assetSyncTestFixture{
+			_, errs, _, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(assetSyncTestFixture{
 				subscriptions:     tc.subscriptions,
 				installedVersion:  tc.installedVersion,
 				availableVersions: tc.availableVersions,
@@ -1409,7 +1409,7 @@ func TestSyncAssetSubscriptionsPropagatesInstallErrors(t *testing.T) {
 
 	installCalls := 0
 	uninstallCalls := 0
-	_, errs, assetsToPurge := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
+	_, errs, assetsToPurge, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
 		fixture,
 		mockInstallResponse(types.AssetTypeMap, &installCalls, map[string]types.AssetInstallResponse{
 			"map-a": {
@@ -1445,7 +1445,7 @@ func TestSyncAssetSubscriptionsChecksumFailureProducesPurgeCandidate(t *testing.
 		},
 	}
 
-	_, errs, assetsToPurge := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
+	_, errs, assetsToPurge, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockMapAssetSyncArgs(
 		fixture,
 		mockInstallResponse(types.AssetTypeMap, nil, map[string]types.AssetInstallResponse{
 			"map-a": {
@@ -1590,7 +1590,7 @@ func TestApplyPurgeOperations(t *testing.T) {
 func TestSyncAssetSubscriptionsInstallDecisionsMods(t *testing.T) {
 	installCalls := 0
 	uninstallCalls := 0
-	_, errs, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockModAssetSyncArgs(assetSyncTestFixture{
+	_, errs, _, _ := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, mockModAssetSyncArgs(assetSyncTestFixture{
 		subscriptions: map[string]string{
 			"mod-a": "1.0.1",
 		},
@@ -1610,6 +1610,37 @@ func TestSyncAssetSubscriptionsInstallDecisionsMods(t *testing.T) {
 	require.Empty(t, errs)
 	require.Equal(t, 1, installCalls)
 	require.Equal(t, 1, uninstallCalls)
+}
+
+func TestSyncAssetSubscriptionsStopsWhenSnapshotIsStale(t *testing.T) {
+	installCalls := 0
+	uninstallCalls := 0
+	args := mockMapAssetSyncArgs(
+		assetSyncTestFixture{
+			subscriptions: map[string]string{
+				"map-a": "1.0.1",
+			},
+			installedVersion: map[string]string{
+				"map-a": "1.0.0",
+			},
+			availableVersions: map[string]map[string]struct{}{
+				"map-a": {
+					"1.0.1": {},
+				},
+			},
+		},
+		mockInstallResponse(types.AssetTypeMap, &installCalls, nil),
+		mockUninstallResponse(types.AssetTypeMap, &uninstallCalls, nil),
+	)
+	args.isStaleFn = func() bool { return true }
+
+	operations, errs, purgeCandidates, stale := syncAssetSubscriptions(testUserProfilesLogger(t), types.DefaultProfileID, args)
+	require.True(t, stale)
+	require.Empty(t, operations)
+	require.Empty(t, errs)
+	require.Empty(t, purgeCandidates)
+	require.Equal(t, 0, installCalls)
+	require.Equal(t, 0, uninstallCalls)
 }
 
 func TestUpdateUIPreferences(t *testing.T) {

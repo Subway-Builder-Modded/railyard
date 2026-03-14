@@ -165,6 +165,44 @@ func (d *Downloader) replaceQueuedOperation(target *downloadOperation, replaceme
 	return false
 }
 
+func (d *Downloader) removeQueuedOperation(target *downloadOperation) bool {
+	for i, queued := range d.queue {
+		if queued != target {
+			continue
+		}
+		d.queue = append(d.queue[:i], d.queue[i+1:]...)
+		return true
+	}
+	return false
+}
+
+// cancelPendingQueuedInstallIfNotInstalled removes a queued install for the same asset when an uninstall arrives,
+// but only when nothing is currently installed for that asset. This lets cancellation return immediately.
+func (d *Downloader) cancelPendingQueuedInstallIfNotInstalled(assetType types.AssetType, assetID string, assetKey downloadQueueKey) bool {
+	if _, installed := d.getInstalledState(assetType, assetID); installed {
+		return false
+	}
+
+	d.downloadMu.Lock()
+	defer d.downloadMu.Unlock()
+
+	pending, ok := d.pending[assetKey]
+	if !ok || pending.action != operationActionInstall {
+		return false
+	}
+	if !d.removeQueuedOperation(pending) {
+		return false
+	}
+
+	delete(d.pending, assetKey)
+	if pending.cancel != nil {
+		pending.cancel()
+	}
+	pending.completed <- pending.supersededResult
+	close(pending.completed)
+	return true
+}
+
 // enqueueOperation adds a new operation to the queue using asset-level coalescing.
 // Only one queued operation per asset is retained; later requests supersede older pending requests.
 func (d *Downloader) enqueueOperation(action operationAction, assetKey downloadQueueKey, key string, run func() operationResult, supersededResult operationResult, cancel context.CancelFunc) operationResult {
@@ -390,6 +428,16 @@ func (d *Downloader) UninstallAsset(assetType types.AssetType, assetID string) t
 
 	key := d.operationKey(operationActionUninstall, assetType, assetID, "")
 	assetKey := downloadQueueKey{assetType: assetType, assetID: assetID}
+	if d.cancelPendingQueuedInstallIfNotInstalled(assetType, assetID, assetKey) {
+		return d.uninstallWarn(
+			assetType,
+			assetID,
+			types.UninstallErrorNotInstalled,
+			"Cancelled pending install. No uninstall required.",
+			"asset_type", assetType,
+			"asset_id", assetID,
+		)
+	}
 	result := d.enqueueOperation(operationActionUninstall, assetKey, key, func() operationResult {
 		switch assetType {
 		case types.AssetTypeMap:
@@ -562,7 +610,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 	}
 
 	d.Logger.Info("Downloading mod", "mod_id", modId, "version", version, "download_url", versionInfo.DownloadURL)
-  // Pass in context to the download function so that it can be cancelled if the operation is no longer needed
+	// Pass in context to the download function so that it can be cancelled if the operation is no longer needed
 	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, modId)
 	if downloadResp.Status == types.ResponseWarn {
 		return d.installWarn(types.AssetTypeMod, modId, version, types.ConfigData{}, downloadResp.Message, "mod_id", modId, "version", version)

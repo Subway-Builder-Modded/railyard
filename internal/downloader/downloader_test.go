@@ -292,6 +292,53 @@ func TestEnqueueOperationUsesLatestRequestForPendingAsset(t *testing.T) {
 	require.Equal(t, int32(1), atomic.LoadInt32(&uninstallRunCount))
 }
 
+func TestUninstallAssetCancelsQueuedInstallImmediatelyWhenNotInstalled(t *testing.T) {
+	testutil.SetEnv(t)
+	cfg := config.NewConfig()
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+
+	blockerStarted := make(chan struct{})
+	releaseBlocker := make(chan struct{})
+	blockerResultCh := make(chan operationResult, 1)
+	go func() {
+		blockerResultCh <- enqueueOperation(d, operationActionInstall, types.AssetTypeMod, "blocker-mod", "1.0.0", func() operationResult {
+			close(blockerStarted)
+			<-releaseBlocker
+			return operationResult{genericResponse: types.GenericResponse{Status: types.ResponseSuccess, Message: "blocker complete"}}
+		})
+	}()
+	<-blockerStarted
+
+	var installRunCount int32
+	pendingInstallResultCh := make(chan operationResult, 1)
+	go func() {
+		pendingInstallResultCh <- enqueueOperation(d, operationActionInstall, types.AssetTypeMap, "map-a", "1.0.0", operationSuccess("install ran", 0, func() {
+			atomic.AddInt32(&installRunCount, 1)
+		}))
+	}()
+	waitForPendingOperation(t, d, downloadQueueKey{assetType: types.AssetTypeMap, assetID: "map-a"})
+
+	started := time.Now()
+	uninstallResp := d.UninstallAsset(types.AssetTypeMap, "map-a")
+	require.Less(t, time.Since(started), 500*time.Millisecond)
+	require.Equal(t, types.ResponseWarn, uninstallResp.Status)
+	require.Contains(t, strings.ToLower(uninstallResp.Message), "cancelled pending install")
+
+	pendingInstallResult := <-pendingInstallResultCh
+	require.Equal(t, types.ResponseSuccess, pendingInstallResult.genericResponse.Status)
+	require.Contains(t, strings.ToLower(pendingInstallResult.genericResponse.Message), "superseded")
+	require.Equal(t, int32(0), atomic.LoadInt32(&installRunCount))
+
+	close(releaseBlocker)
+	blockerResult := <-blockerResultCh
+	require.Equal(t, types.ResponseSuccess, blockerResult.genericResponse.Status)
+}
+
 func TestUninstallCancelsRunningInstall(t *testing.T) {
 	d := newTestDownloader()
 
