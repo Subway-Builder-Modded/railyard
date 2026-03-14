@@ -137,6 +137,14 @@ type SyncSubscriptionsResult struct {
 	Errors     []UserProfilesError     `json:"errors"`
 }
 
+type SubscriptionUpdatesAvailabilityResult struct {
+	GenericResponse
+	ProfileID     string              `json:"profileId"`
+	HasUpdates    bool                `json:"hasUpdates"`
+	PendingCount  int                 `json:"pendingCount"`
+	Errors        []UserProfilesError `json:"errors"`
+}
+
 // UserProfile represents a profile within the application.
 type UserProfile struct {
 	ID                string            `json:"id"`

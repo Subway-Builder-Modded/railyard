@@ -504,20 +504,6 @@ export namespace types {
 	        this.type = source["type"];
 	    }
 	}
-	export class Subscriptions {
-	    maps: Record<string, string>;
-	    mods: Record<string, string>;
-	
-	    static createFrom(source: any = {}) {
-	        return new Subscriptions(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.maps = source["maps"];
-	        this.mods = source["mods"];
-	    }
-	}
 	export class UserProfilesError {
 	    profileId: string;
 	    assetId: string;
@@ -536,6 +522,60 @@ export namespace types {
 	        this.assetType = source["assetType"];
 	        this.errorType = source["errorType"];
 	        this.message = source["message"];
+	    }
+	}
+	export class SubscriptionUpdatesAvailabilityResult {
+	    status: string;
+	    message: string;
+	    profileId: string;
+	    hasUpdates: boolean;
+	    pendingCount: number;
+	    errors: UserProfilesError[];
+	
+	    static createFrom(source: any = {}) {
+	        return new SubscriptionUpdatesAvailabilityResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.profileId = source["profileId"];
+	        this.hasUpdates = source["hasUpdates"];
+	        this.pendingCount = source["pendingCount"];
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Subscriptions {
+	    maps: Record<string, string>;
+	    mods: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new Subscriptions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.maps = source["maps"];
+	        this.mods = source["mods"];
 	    }
 	}
 	export class SyncSubscriptionsResult {

@@ -49,13 +49,21 @@ func (s *UserProfiles) UpdateSubscriptions(req types.UpdateSubscriptionsRequest)
 func (s *UserProfiles) UpdateAllSubscriptionsToLatest(profileID string) types.UpdateSubscriptionsResult {
 	s.logRequest("UpdateAllSubscriptionsToLatest", "profile_id", profileID)
 
-	s.mu.Lock()
-	profile := s.state.Profiles[profileID]
-	profile.Subscriptions.Maps = utils.CloneMap(profile.Subscriptions.Maps)
-	profile.Subscriptions.Mods = utils.CloneMap(profile.Subscriptions.Mods)
-	s.mu.Unlock()
+	profile, requiredUpdates, resultWarnings, ok := s.resolveLatestUpdatesForProfile(profileID)
+	if !ok {
+		profileErr := userProfilesError(profileID, "", "", types.ErrorProfileNotFound, fmt.Sprintf("Profile %q not found", profileID))
+		return types.UpdateSubscriptionsResult{
+			GenericResponse: types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: "Profile not found",
+			},
+			Profile:    profile,
+			Persisted:  false,
+			Operations: []types.SubscriptionOperation{},
+			Errors:     []types.UserProfilesError{profileErr},
+		}
+	}
 
-	requiredUpdates, resultWarnings := s.resolveLatestSubscriptionUpdates(profileID, profile)
 	for _, warn := range resultWarnings {
 		s.Logger.Warn(
 			"Skipped subscription while resolving latest version",
@@ -103,6 +111,67 @@ func (s *UserProfiles) UpdateAllSubscriptionsToLatest(profileID string) types.Up
 	}
 
 	return result
+}
+
+func (s *UserProfiles) HasSubscriptionUpdates(profileID string) types.SubscriptionUpdatesAvailabilityResult {
+	s.logRequest("HasSubscriptionUpdates", "profile_id", profileID)
+
+	_, requiredUpdates, warnings, ok := s.resolveLatestUpdatesForProfile(profileID)
+	if !ok {
+		profileErr := userProfilesError(profileID, "", "", types.ErrorProfileNotFound, fmt.Sprintf("Profile %q not found", profileID))
+		return types.SubscriptionUpdatesAvailabilityResult{
+			GenericResponse: types.GenericResponse{
+				Status:  types.ResponseError,
+				Message: "Profile not found",
+			},
+			ProfileID:    profileID,
+			HasUpdates:   false,
+			PendingCount: 0,
+			Errors:       []types.UserProfilesError{profileErr},
+		}
+	}
+
+	hasUpdates := len(requiredUpdates) > 0
+
+	result := types.SubscriptionUpdatesAvailabilityResult{
+		GenericResponse: types.GenericResponse{
+			Status:  types.ResponseSuccess,
+			Message: "Resolved subscription update availability",
+		},
+		ProfileID:    profileID,
+		HasUpdates:   hasUpdates,
+		PendingCount: len(requiredUpdates),
+		Errors:       warnings,
+	}
+
+	if len(warnings) > 0 {
+		result.Status = types.ResponseWarn
+		result.Message = fmt.Sprintf("Resolved update availability with %d warning(s)", len(warnings))
+	}
+
+	return result
+}
+
+func (s *UserProfiles) snapshotProfileSubscriptions(profileID string) (types.UserProfile, bool) {
+	s.mu.Lock()
+	profile, ok := s.state.Profiles[profileID]
+	if ok {
+		profile.Subscriptions.Maps = utils.CloneMap(profile.Subscriptions.Maps)
+		profile.Subscriptions.Mods = utils.CloneMap(profile.Subscriptions.Mods)
+	}
+	s.mu.Unlock()
+
+	return profile, ok
+}
+
+func (s *UserProfiles) resolveLatestUpdatesForProfile(profileID string) (types.UserProfile, map[string]types.SubscriptionUpdateItem, []types.UserProfilesError, bool) {
+	profile, ok := s.snapshotProfileSubscriptions(profileID)
+	if !ok {
+		return profile, map[string]types.SubscriptionUpdateItem{}, []types.UserProfilesError{}, false
+	}
+
+	requiredUpdates, warnings := s.resolveLatestSubscriptionUpdates(profileID, profile)
+	return profile, requiredUpdates, warnings, true
 }
 
 // ===== Registry Helpers ===== //

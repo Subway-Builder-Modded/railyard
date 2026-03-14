@@ -6,6 +6,8 @@ export function CreateProfileArchive(arg1:string):Promise<types.GenericResponse>
 
 export function GetActiveProfile():Promise<types.UserProfileResult>;
 
+export function HasSubscriptionUpdates(arg1:string):Promise<types.SubscriptionUpdatesAvailabilityResult>;
+
 export function LoadProfiles():Promise<types.UserProfileResult>;
 
 export function QuarantineUserProfiles():Promise<boolean|string>;

@@ -9,7 +9,11 @@ import {
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { type ComponentType, type Dispatch, type SetStateAction } from "react";
+import {
+  type LibraryFilterState,
+  type LibraryTypeFilter,
+} from "@/stores/library-store";
+import { type Dispatch, type SetStateAction, type ComponentType } from "react";
 import {
   formatSourceQuality,
   LEVEL_OF_DETAIL_VALUES,
@@ -17,8 +21,6 @@ import {
   SOURCE_QUALITY_VALUES,
 } from "@/lib/map-filter-values";
 import { SEARCH_FILTER_EMPTY_LABELS } from "@/lib/search";
-import { type SearchFilterState } from "@/stores/search-store";
-import type { AssetType } from "@/lib/asset-types";
 import { normalizeSortStateForType } from "@/lib/constants";
 
 const FILTER_SECTION_TITLE_CLASS =
@@ -28,38 +30,41 @@ const FILTER_SECTION_OPTION_CLASS =
 const FILTER_SECTION_CLEAR_CLASS =
   "mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors";
 
-interface SidebarFiltersProps {
-  filters: SearchFilterState;
-  onFiltersChange: Dispatch<SetStateAction<SearchFilterState>>;
-  availableTags: string[];
-  availableSpecialDemand: string[];
+interface LibrarySidebarProps {
+  filters: LibraryFilterState;
+  onFiltersChange: Dispatch<SetStateAction<LibraryFilterState>>;
   modCount: number;
   mapCount: number;
+  availableTags: string[];
+  availableSpecialDemand: string[];
 }
 
-const typeOptions = [
-  { value: "map" as const, label: "Maps", icon: MapPin },
-  { value: "mod" as const, label: "Mods", icon: Package },
+const typeOptions: Array<{
+  value: LibraryTypeFilter;
+  label: string;
+  icon: typeof MapPin;
+}> = [
+  { value: "mod", label: "Mods", icon: Package },
+  { value: "map", label: "Maps", icon: MapPin },
 ];
 
-export function SidebarFilters({
+export function LibrarySidebar({
   filters,
   onFiltersChange,
-  availableTags,
-  availableSpecialDemand,
   modCount,
   mapCount,
-}: SidebarFiltersProps) {
-  const counts: Record<AssetType, number> = {
+  availableTags,
+  availableSpecialDemand,
+}: LibrarySidebarProps) {
+  const counts: Record<LibraryTypeFilter, number> = {
     mod: modCount,
     map: mapCount,
   };
 
   return (
     <div className="space-y-5">
-      {/* Type filter */}
       <div>
-        <FilterSectionTitle title="Type" />
+        <p className={FILTER_SECTION_TITLE_CLASS}>Type</p>
         <nav className="space-y-0.5" aria-label="Content type filter">
           {typeOptions.map(({ value, label, icon: Icon }) => (
             <button
@@ -98,7 +103,7 @@ export function SidebarFilters({
         </nav>
       </div>
 
-      {filters.type !== "map" && (
+      {filters.type === "mod" && (
         <>
           <Separator />
           <ChecklistFilterSection
@@ -117,13 +122,13 @@ export function SidebarFilters({
         </>
       )}
 
-      {filters.type !== "mod" && (
+      {filters.type === "map" && (
         <>
           <Separator />
           <ChecklistFilterSection
             title="Location"
             icon={MapPin}
-            values={[...LOCATION_TAGS]}
+            values={LOCATION_TAGS}
             selected={filters.map.locations}
             onChange={(values) =>
               onFiltersChange((prev) => ({
@@ -135,9 +140,9 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Source Quality"
             icon={BadgeCheck}
-            values={[...SOURCE_QUALITY_VALUES]}
-            formatValue={formatSourceQuality}
+            values={SOURCE_QUALITY_VALUES}
             selected={filters.map.sourceQuality}
+            formatValue={formatSourceQuality}
             onChange={(values) =>
               onFiltersChange((prev) => ({
                 ...prev,
@@ -148,7 +153,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Level of Detail"
             icon={Layers3}
-            values={[...LEVEL_OF_DETAIL_VALUES]}
+            values={LEVEL_OF_DETAIL_VALUES}
             selected={filters.map.levelOfDetail}
             onChange={(values) =>
               onFiltersChange((prev) => ({
@@ -172,13 +177,14 @@ export function SidebarFilters({
           />
         </>
       )}
+
     </div>
   );
 }
 
-interface FilterSectionProperties {
+interface ChecklistFilterSectionProps {
   title: string;
-  values: string[];
+  values: readonly string[];
   selected: string[];
   icon: ComponentType<{ className?: string }>;
   onChange: (values: string[]) => void;
@@ -194,7 +200,7 @@ function ChecklistFilterSection({
   onChange,
   emptyLabel = SEARCH_FILTER_EMPTY_LABELS.generic,
   formatValue = (value) => value,
-}: FilterSectionProperties) {
+}: ChecklistFilterSectionProps) {
   const toggle = (value: string) => {
     onChange(
       selected.includes(value)
@@ -236,12 +242,12 @@ function ChecklistFilterSection({
   );
 }
 
-interface TitleProperties {
+interface FilterSectionTitleProps {
   title: string;
   icon?: ComponentType<{ className?: string }>;
 }
 
-function FilterSectionTitle({ title, icon: Icon }: TitleProperties) {
+function FilterSectionTitle({ title, icon: Icon }: FilterSectionTitleProps) {
   return (
     <p
       className={cn(

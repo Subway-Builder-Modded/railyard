@@ -5,6 +5,34 @@ import { GetActiveProfile, UpdateSubscriptions } from '../../wailsjs/go/profiles
 import { useDownloadQueueStore } from './download-queue-store';
 import type { AssetType } from "@/lib/asset-types";
 
+export class SubscriptionSyncError extends Error {
+  readonly status: string;
+  readonly profileErrors: types.UserProfilesError[];
+
+  constructor(message: string, status: string, profileErrors: types.UserProfilesError[]) {
+    super(message);
+    this.name = "SubscriptionSyncError";
+    this.status = status;
+    this.profileErrors = profileErrors;
+  }
+}
+
+function resolveSubscriptionSyncMessage(
+  result: types.UpdateSubscriptionsResult,
+  fallback: string,
+): string {
+  if (result.message?.trim()) {
+    return result.message;
+  }
+
+  const firstError = result.errors?.[0];
+  if (firstError?.message?.trim()) {
+    return firstError.message;
+  }
+
+  return fallback;
+}
+
 interface InstalledState {
   installedMods: types.InstalledModInfo[];
   installedMaps: types.InstalledMapInfo[];
@@ -26,6 +54,32 @@ interface InstalledState {
 }
 
 export const useInstalledStore = create<InstalledState>((set, get) => {
+  const getInstalledLists = async () => {
+    const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
+
+    return {
+      installedMods: mods || [],
+      installedMaps: maps || [],
+    };
+  };
+
+  const setOperationState = (
+    key: "installing" | "uninstalling",
+    id: string,
+    active: boolean,
+  ) => {
+    set((state) => {
+      const next = new Set(state[key]);
+      if (active) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+
+      return { [key]: next } as Pick<InstalledState, typeof key>;
+    });
+  };
+
   const applySubscriptionMutation = async (
     id: string,
     version: string,
@@ -48,10 +102,55 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
       forceSync: true,
     });
     const result = await UpdateSubscriptions(request);
-    if (result.status === "error") {
-      throw new Error(result.message || "Subscription update failed");
+    if (result.status !== "success") {
+      throw new SubscriptionSyncError(
+        resolveSubscriptionSyncMessage(result, "Subscription update failed"),
+        result.status,
+        result.errors ?? [],
+      );
     }
     return result;
+  };
+
+  const installAsset = async (
+    id: string,
+    version: string,
+    assetType: AssetType,
+  ) => {
+    useDownloadQueueStore.getState().enqueue();
+    setOperationState("installing", id, true);
+    set({ error: null });
+
+    try {
+      const response = await applySubscriptionMutation(id, version, assetType, "subscribe");
+      set({ ...await getInstalledLists() });
+      return response;
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err) });
+      throw err;
+    } finally {
+      setOperationState("installing", id, false);
+      useDownloadQueueStore.getState().complete();
+    }
+  };
+
+  const uninstallAsset = async (
+    id: string,
+    assetType: AssetType,
+  ) => {
+    setOperationState("uninstalling", id, true);
+    set({ error: null });
+
+    try {
+      const response = await applySubscriptionMutation(id, "", assetType, "unsubscribe");
+      set({ ...await getInstalledLists() });
+      return response;
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err) });
+      throw err;
+    } finally {
+      setOperationState("uninstalling", id, false);
+    }
   };
 
   return ({
@@ -67,8 +166,7 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     if (get().initialized) return;
     set({ loading: true, error: null });
     try {
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      set({ installedMods: mods || [], installedMaps: maps || [], initialized: true, loading: false });
+      set({ ...await getInstalledLists(), initialized: true, loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });
     }
@@ -77,86 +175,23 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   updateInstalledLists: async () => {
     set({ loading: true, error: null });
     try {
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      set({ installedMods: mods || [], installedMaps: maps || [], loading: false });
+      set({ ...await getInstalledLists(), loading: false });
     } catch (err) {
       set({ error: err instanceof Error ? err.message : String(err), loading: false });
     }
   },
 
-  installMod: async (id: string, version: string) => {
-    useDownloadQueueStore.getState().enqueue();
-    set({ installing: new Set([...get().installing, id]), error: null });
-    try {
-      const response = await applySubscriptionMutation(id, version, "mod", "subscribe");
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      const next = new Set(get().installing);
-      next.delete(id);
-      set({ installing: next, installedMods: mods || [], installedMaps: maps || [] });
-      useDownloadQueueStore.getState().complete();
-      return response;
-    } catch (err) {
-      const next = new Set(get().installing);
-      next.delete(id);
-      set({ installing: next, error: err instanceof Error ? err.message : String(err) });
-      useDownloadQueueStore.getState().complete();
-      throw err;
-    }
-  },
+  installMod: (id: string, version: string) =>
+    installAsset(id, version, "mod"),
 
-  installMap: async (id: string, version: string) => {
-    useDownloadQueueStore.getState().enqueue();
-    set({ installing: new Set([...get().installing, id]), error: null });
-    try {
-      const response = await applySubscriptionMutation(id, version, "map", "subscribe");
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      const next = new Set(get().installing);
-      next.delete(id);
-      set({ installing: next, installedMods: mods || [], installedMaps: maps || [] });
-      useDownloadQueueStore.getState().complete();
-      return response;
-    } catch (err) {
-      const next = new Set(get().installing);
-      next.delete(id);
-      set({ installing: next, error: err instanceof Error ? err.message : String(err) });
-      useDownloadQueueStore.getState().complete();
-      throw err;
-    }
-  },
+  installMap: (id: string, version: string) =>
+    installAsset(id, version, "map"),
 
-  uninstallMod: async (id: string) => {
-    set({ uninstalling: new Set([...get().uninstalling, id]), error: null });
-    try {
-      const response = await applySubscriptionMutation(id, "", "mod", "unsubscribe");
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      const next = new Set(get().uninstalling);
-      next.delete(id);
-      set({ uninstalling: next, installedMods: mods || [], installedMaps: maps || [] });
-      return response;
-    } catch (err) {
-      const next = new Set(get().uninstalling);
-      next.delete(id);
-      set({ uninstalling: next, error: err instanceof Error ? err.message : String(err) });
-      throw err;
-    }
-  },
+  uninstallMod: (id: string) =>
+    uninstallAsset(id, "mod"),
 
-  uninstallMap: async (id: string) => {
-    set({ uninstalling: new Set([...get().uninstalling, id]), error: null });
-    try {
-      const response = await applySubscriptionMutation(id, "", "map", "unsubscribe");
-      const [mods, maps] = await Promise.all([GetInstalledMods(), GetInstalledMaps()]);
-      const next = new Set(get().uninstalling);
-      next.delete(id);
-      set({ uninstalling: next, installedMods: mods || [], installedMaps: maps || [] });
-      return response;
-    } catch (err) {
-      const next = new Set(get().uninstalling);
-      next.delete(id);
-      set({ uninstalling: next, error: err instanceof Error ? err.message : String(err) });
-      throw err;
-    }
-  },
+  uninstallMap: (id: string) =>
+    uninstallAsset(id, "map"),
 
   isInstalled: (id: string) => {
     const { installedMods, installedMaps } = get();

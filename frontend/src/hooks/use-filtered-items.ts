@@ -29,7 +29,18 @@ type SearchableItem = {
   searchText: string;
 };
 
-function buildSearchText(item: TaggedItem): string {
+export interface TaggedItemFilterState {
+  query: string;
+  type: "mod" | "map";
+  sort: SortState;
+  randomSeed: number;
+  mod: {
+    tags: string[];
+  };
+  map: SearchFilterState["map"];
+}
+
+export function buildSearchText(item: TaggedItem): string {
   const base = item.item;
   const values: string[] = [base.name ?? "", base.author ?? "", base.description ?? ""];
 
@@ -50,19 +61,19 @@ function buildSearchText(item: TaggedItem): string {
   return values.filter(Boolean).join(" ");
 }
 
-function matchesSingleValueFilter(value: string | undefined, selected: string[]): boolean {
+export function matchesSingleValueFilter(value: string | undefined, selected: string[]): boolean {
   if (selected.length === 0) return true;
   if (!value) return false;
   return selected.includes(value);
 }
 
-function matchesZeroOrManyValuesFilter(values: string[] | undefined, selected: string[]): boolean {
+export function matchesZeroOrManyValuesFilter(values: string[] | undefined, selected: string[]): boolean {
   if (selected.length === 0) return true;
   if (!values || values.length === 0) return false;
   return selected.some((tag) => values.includes(tag));
 }
 
-function matchesMapAttributeFilters(item: TaggedItem, filters: SearchFilterState["map"]): boolean {
+export function matchesMapAttributeFilters(item: TaggedItem, filters: SearchFilterState["map"]): boolean {
   if (item.type !== "map") return true;
 
   const map = item.item as types.MapManifest;
@@ -74,11 +85,11 @@ function matchesMapAttributeFilters(item: TaggedItem, filters: SearchFilterState
   );
 }
 
-function compareByDirection(a: number, b: number, direction: SortDirection): number {
+export function compareByDirection(a: number, b: number, direction: SortDirection): number {
   return direction === "asc" ? a - b : b - a;
 }
 
-function getTotalDownloads(
+export function getTotalDownloads(
   item: TaggedItem,
   modDownloadTotals: Record<string, number>,
   mapDownloadTotals: Record<string, number>
@@ -88,7 +99,7 @@ function getTotalDownloads(
     : mapDownloadTotals[item.item.id] ?? 0;
 }
 
-function getLastUpdated(item: TaggedItem): number {
+export function getLastUpdated(item: TaggedItem): number {
   const timestamp = item.item.last_updated;
   return typeof timestamp === "number" && Number.isFinite(timestamp)
     ? timestamp
@@ -96,7 +107,7 @@ function getLastUpdated(item: TaggedItem): number {
 }
 
 // Helper to determine comparation logic based on sort field and direction
-function compareItems(
+export function compareItems(
   a: TaggedItem,
   b: TaggedItem,
   sort: SortState,
@@ -110,6 +121,11 @@ function compareItems(
     switch (field) {
       case "name":
         return compareText(a.item.name ?? "", b.item.name ?? "", sort.direction);
+      case "country": {
+        const countryA = a.type === "map" ? ((a.item as types.MapManifest).country ?? "") : "";
+        const countryB = b.type === "map" ? ((b.item as types.MapManifest).country ?? "") : "";
+        return compareText(countryA, countryB, sort.direction);
+      }
       case "author":
         return compareText(a.item.author ?? "", b.item.author ?? "", sort.direction);
       case "population": {
@@ -136,7 +152,7 @@ function compareItems(
 }
 
 // Seeded hash function to provide consistent "random" sorting. Stable across renders, but different across sessions
-function seededHash(value: string, seed: number): number {
+export function seededHash(value: string, seed: number): number {
   const FNV_OFFSET_BASIS_32 = 0x811c9dc5;
   const FNV_PRIME_32 = 0x01000193;
 
@@ -148,7 +164,7 @@ function seededHash(value: string, seed: number): number {
   return hash;
 }
 
-function sortItemsBySeed(items: TaggedItem[], seed: number): TaggedItem[] {
+export function sortItemsBySeed(items: TaggedItem[], seed: number): TaggedItem[] {
   return [...items].sort((a, b) => {
     const hashA = seededHash(`${a.type}:${a.item.id}`, seed);
     const hashB = seededHash(`${b.type}:${b.item.id}`, seed);
@@ -157,6 +173,48 @@ function sortItemsBySeed(items: TaggedItem[], seed: number): TaggedItem[] {
     }
     return a.item.id.localeCompare(b.item.id);
   });
+}
+
+export function filterAndSortTaggedItems<T extends TaggedItem>(
+  items: T[],
+  filters: TaggedItemFilterState,
+  modDownloadTotals: Record<string, number>,
+  mapDownloadTotals: Record<string, number>
+): T[] {
+  let result = items.filter((i) => i.type === filters.type);
+
+  if (filters.mod.tags.length > 0) {
+    result = result.filter((i) =>
+      i.type === "mod" ? matchesZeroOrManyValuesFilter(i.item.tags, filters.mod.tags) : true
+    );
+  }
+
+  result = result.filter((i) => matchesMapAttributeFilters(i, filters.map));
+  const query = filters.query.trim();
+  if (query) {
+    const searchable: SearchableItem[] = result.map((entry) => ({
+      entry,
+      searchText: buildSearchText(entry),
+    }));
+
+    const fuse = new Fuse(searchable, FUSE_SEARCH_OPTIONS);
+
+    result = fuse.search(query).map(({ item }) => item.entry as T);
+  }
+
+  if (filters.sort.field === "random") {
+    return sortItemsBySeed(result, filters.randomSeed) as T[];
+  }
+
+  return [...result].sort((a, b) =>
+    compareItems(
+      a,
+      b,
+      filters.sort,
+      modDownloadTotals,
+      mapDownloadTotals
+    )
+  );
 }
 
 export function useFilteredItems({
@@ -198,39 +256,11 @@ export function useFilteredItems({
   }, [mods, maps]);
 
   const filtered = useMemo(() => {
-    let result = allItems.filter((i) => i.type === filters.type);
-
-    if (filters.mod.tags.length > 0) {
-      result = result.filter((i) =>
-        i.type === "mod" ? matchesZeroOrManyValuesFilter(i.item.tags, filters.mod.tags) : true
-      );
-    }
-
-    result = result.filter((i) => matchesMapAttributeFilters(i, filters.map));
-    const query = filters.query.trim();
-    if (query) {
-      const searchable: SearchableItem[] = result.map((entry) => ({
-        entry,
-        searchText: buildSearchText(entry),
-      }));
-
-      const fuse = new Fuse(searchable, FUSE_SEARCH_OPTIONS);
-
-      result = fuse.search(query).map(({ item }) => item.entry);
-    }
-
-    if (filters.sort.field === "random") {
-      return sortItemsBySeed(result, filters.randomSeed);
-    }
-
-    return [...result].sort((a, b) =>
-      compareItems(
-        a,
-        b,
-        filters.sort,
-        modDownloadTotals,
-        mapDownloadTotals
-      )
+    return filterAndSortTaggedItems(
+      allItems,
+      filters,
+      modDownloadTotals,
+      mapDownloadTotals
     );
   }, [allItems, filters, mapDownloadTotals, modDownloadTotals]);
 
