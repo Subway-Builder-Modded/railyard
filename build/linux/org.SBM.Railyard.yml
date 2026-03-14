@@ -27,8 +27,6 @@ modules:
         GOROOT: /usr/lib/sdk/golang
         GOFLAGS: "-mod=vendor"
     build-commands:
-      - mkdir frontend/dist
-      - go install
       - cd frontend && npm run build
       - go build -mod=vendor -tags "desktop,production,webkit2_41" -ldflags "-s -w" -o /app/bin/railyard .
       - install ./build/linux/railyard.desktop /app/share/applications/railyard.desktop
