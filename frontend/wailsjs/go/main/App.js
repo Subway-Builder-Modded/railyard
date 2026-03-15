@@ -10,6 +10,14 @@ export function GetGameVersion() {
   return window['go']['main']['App']['GetGameVersion']();
 }
 
+export function GetPlatform() {
+  return window['go']['main']['App']['GetPlatform']();
+}
+
+export function InstallLinuxSandbox() {
+  return window['go']['main']['App']['InstallLinuxSandbox']();
+}
+
 export function IsGameRunning() {
   return window['go']['main']['App']['IsGameRunning']();
 }
@@ -28,6 +36,10 @@ export function ManuallyCheckForUpdates() {
 
 export function OpenInFileExplorer(arg1) {
   return window['go']['main']['App']['OpenInFileExplorer'](arg1);
+}
+
+export function SandboxIsInstalled() {
+  return window['go']['main']['App']['SandboxIsInstalled']();
 }
 
 export function StopGame() {

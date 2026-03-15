@@ -6,6 +6,10 @@ export function GetCurrentVersion():Promise<string>;
 
 export function GetGameVersion():Promise<string>;
 
+export function GetPlatform():Promise<string>;
+
+export function InstallLinuxSandbox():Promise<void>;
+
 export function IsGameRunning():Promise<boolean>;
 
 export function IsStartupReady():Promise<boolean>;
@@ -15,5 +19,7 @@ export function LaunchGame():Promise<void>;
 export function ManuallyCheckForUpdates():Promise<void>;
 
 export function OpenInFileExplorer(arg1:string):Promise<types.GenericResponse>;
+
+export function SandboxIsInstalled():Promise<boolean>;
 
 export function StopGame():Promise<void>;

@@ -328,7 +328,12 @@ func (a *App) LaunchGame() error {
 	} else if runtime.GOOS == "linux" {
 		// Prefer host launch via Flatpak
 		if _, lookPathErr := exec.LookPath("flatpak-spawn"); lookPathErr == nil {
-			cmd = exec.Command("flatpak-spawn", "--host", exePath, "--no-sandbox")
+			if a.Config.Cfg.ChromeSandboxPath != "" {
+				// Ensure sandbox is used if available to avoid permission issues in Flatpak environments
+				cmd = exec.Command("flatpak-spawn", "--host", "--no-sandbox", "--env=CHROME_DEVEL_SANDBOX="+a.Config.Cfg.ChromeSandboxPath, exePath)
+			} else {
+				cmd = exec.Command("flatpak-spawn", "--host", exePath, "--no-sandbox")
+			}
 		} else {
 			// Fall back to direct launch if flatpak-spawn is not available
 			a.Logger.Warn("flatpak-spawn not available; falling back to direct executable launch", "error", lookPathErr)
@@ -427,6 +432,52 @@ func (a *App) ManuallyCheckForUpdates() {
 
 func (a *App) GetCurrentVersion() string {
 	return strings.ToValidUTF8(constants.RAILYARD_VERSION, "")
+}
+
+func (a *App) InstallLinuxSandbox() error {
+	if runtime.GOOS != "linux" {
+		return fmt.Errorf("sandbox installation is only supported on Linux")
+	}
+
+	if a.Config.Cfg.ExecutablePath == "" {
+		return fmt.Errorf("game executable path is not configured")
+	}
+
+	cmd := exec.Command("flatpak-spawn", "--directory", "/tmp", "--host", a.Config.Cfg.ExecutablePath, "--appimage-extract", "chrome-sandbox")
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to extract chrome-sandbox: %w", err)
+	}
+
+	sandboxPath := path.Join("/tmp", "squashfs-root", "chrome-sandbox")
+	if _, err := os.Stat(sandboxPath); os.IsNotExist(err) {
+		return fmt.Errorf("extracted chrome-sandbox not found at expected path: %s", sandboxPath)
+	}
+
+	destPath := path.Join("/usr", "local", "bin", "chrome-sb-sandbox")
+	cmd = exec.Command("pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to install chrome-sandbox with pkexec: %w", err)
+	}
+	a.Config.Cfg.ChromeSandboxPath = destPath
+	return nil
+}
+
+func (a *App) SandboxIsInstalled() bool {
+	if runtime.GOOS != "linux" {
+		return false
+	}
+	if a.Config.Cfg.ChromeSandboxPath == "" {
+		return false
+	}
+	if _, err := os.Stat(a.Config.Cfg.ChromeSandboxPath); !os.IsNotExist(err) {
+		return true
+	}
+	return false
+}
+
+func (a *App) GetPlatform() string {
+	return runtime.GOOS
 }
 
 func (a *App) startPMTilesServer() (int, error) {

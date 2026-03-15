@@ -4,8 +4,9 @@
   Gamepad2,
   Github,
   RefreshCw,
+  Shield
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +37,7 @@ import {
 import { useConfigStore } from '@/stores/config-store';
 import { useProfileStore } from '@/stores/profile-store';
 
-import { ManuallyCheckForUpdates } from '../../wailsjs/go/main/App';
+import { GetPlatform, ManuallyCheckForUpdates, InstallLinuxSandbox, SandboxIsInstalled } from '../../wailsjs/go/main/App';
 
 const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
 const THEME_OPTIONS = ['dark', 'light', 'system'] as const;
@@ -57,6 +58,27 @@ export function SettingsPage() {
   const profile = useProfileStore((s) => s.profile);
   const resetProfile = useProfileStore((s) => s.resetProfile);
   const updateUIPreferences = useProfileStore((s) => s.updateUIPreferences);
+
+  const [platform, setPlatform] = useState<string>('unknown');
+  useMemo(() => {
+    GetPlatform().then(setPlatform);
+  }, []);
+
+  const [sandboxInstalled, setSandboxInstalled] = useState(false);
+  useMemo(() => {
+    if (platform !== 'linux') return;
+    SandboxIsInstalled().then(setSandboxInstalled);
+  }, [platform]);
+
+  const handleInstallSandbox = async () => {
+    try {
+      await InstallLinuxSandbox();
+      setSandboxInstalled(true);
+      toast.success('Linux sandbox installed successfully.');
+    } catch {
+      toast.error('Failed to install Linux sandbox.');
+    }
+  };
 
   const [confirmAction, setConfirmAction] = useState<
     'config' | 'profile' | null
@@ -289,6 +311,33 @@ export function SettingsPage() {
               </Button>
             </div>
           </div>
+
+          {platform == "linux" && (
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <Shield className="h-5 w-5 shrink-0 text-muted-foreground" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Linux Sandbox (Optional)</p>
+                  <p className="text-xs text-muted-foreground">
+                    Install the sandbox to potentially improve compatibility and security on Linux.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge variant={sandboxInstalled ? 'default' : 'outline'}>
+                  {sandboxInstalled ? 'Installed' : 'Not Installed'}
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleInstallSandbox}
+                  disabled={sandboxInstalled}
+                >
+                  Install
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

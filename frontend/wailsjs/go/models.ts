@@ -6,6 +6,7 @@ export namespace types {
 	    githubToken?: string;
 	    checkForUpdatesOnLaunch: boolean;
 	    setupCompleted: boolean;
+	    chromeSandboxPath?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new AppConfig(source);
@@ -18,6 +19,7 @@ export namespace types {
 	        this.githubToken = source["githubToken"];
 	        this.checkForUpdatesOnLaunch = source["checkForUpdatesOnLaunch"];
 	        this.setupCompleted = source["setupCompleted"];
+	        this.chromeSandboxPath = source["chromeSandboxPath"];
 	    }
 	}
 	export class AssetDownloadCountsResponse {
@@ -733,6 +735,7 @@ export namespace types {
 	export class UIPreferences {
 	    theme: string;
 	    defaultPerPage: number;
+	    searchViewMode: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new UIPreferences(source);
@@ -742,6 +745,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.theme = source["theme"];
 	        this.defaultPerPage = source["defaultPerPage"];
+	        this.searchViewMode = source["searchViewMode"];
 	    }
 	}
 	export class UpdateAllSubscriptionsToLatestRequest {

@@ -15,6 +15,7 @@ type AppConfig struct {
 	GithubToken             string `json:"githubToken,omitempty"`
 	CheckForUpdatesOnLaunch bool   `json:"checkForUpdatesOnLaunch"`
 	SetupCompleted          bool   `json:"setupCompleted"`
+	ChromeSandboxPath       string `json:"chromeSandboxPath,omitempty"`
 	// Other fields to be appended here
 }
 
