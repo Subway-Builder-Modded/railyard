@@ -75,8 +75,8 @@ export function SettingsPage() {
       await InstallLinuxSandbox();
       setSandboxInstalled(true);
       toast.success('Linux sandbox installed successfully.');
-    } catch {
-      toast.error('Failed to install Linux sandbox.');
+    } catch (e) {
+      toast.error('Failed to install Linux sandbox: ' + e);
     }
   };
 
@@ -90,7 +90,7 @@ export function SettingsPage() {
     try {
       await ManuallyCheckForUpdates();
       toast.success('No updates found, or installation was cancelled.');
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to check for updates.');
     }
   };

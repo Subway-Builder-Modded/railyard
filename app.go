@@ -436,7 +436,7 @@ func (a *App) GetCurrentVersion() string {
 
 func (a *App) InstallLinuxSandbox() error {
 	if runtime.GOOS != "linux" {
-		return fmt.Errorf("sandbox installation is only supported on Linux")
+		panic("InstalLinuxSandbox shouldn't be possible to call on a non-linux platform")
 	}
 
 	if a.Config.Cfg.ExecutablePath == "" {
