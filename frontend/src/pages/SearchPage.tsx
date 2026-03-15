@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { SearchBar } from '@/components/search/SearchBar';
 import { SidebarFilters } from '@/components/search/SidebarFilters';
 import { SortSelect } from '@/components/search/SortSelect';
+import { ViewModeToggle } from '@/components/search/ViewModeToggle';
 import { CardSkeletonGrid } from '@/components/shared/CardSkeletonGrid';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ErrorBanner } from '@/components/shared/ErrorBanner';
@@ -12,11 +13,20 @@ import { Pagination } from '@/components/shared/Pagination';
 import { useFilteredItems } from '@/hooks/use-filtered-items';
 import type { AssetType } from '@/lib/asset-types';
 import { buildAssetListingCounts } from '@/lib/listing-counts';
+import { buildSpecialDemandValues } from '@/lib/map-filter-values';
+import { cn } from '@/lib/utils';
 import { useInstalledStore } from '@/stores/installed-store';
+import { useProfileStore } from '@/stores/profile-store';
 import { useRegistryStore } from '@/stores/registry-store';
 import { createRandomSeed } from '@/stores/search-store';
+import { useSearchStore } from '@/stores/search-store';
 
 export function SearchPage() {
+  const viewMode = useSearchStore((s) => s.viewMode);
+  const setViewMode = useSearchStore((s) => s.setViewMode);
+  const initializeViewMode = useSearchStore((s) => s.initializeViewMode);
+  const defaultSearchViewMode = useProfileStore((s) => s.searchViewMode)();
+
   const {
     mods,
     maps,
@@ -54,15 +64,21 @@ export function SearchPage() {
     return items;
   }, [mods, maps, installedMods, installedMaps]);
 
+  const installedVersionByItemKey = useMemo(() => {
+    return new Map(
+      installedItems.map((entry) => [
+        `${entry.type}-${entry.item.id}`,
+        entry.installedVersion,
+      ]),
+    );
+  }, [installedItems]);
+
   const allTags = useMemo(() => {
     const modTags = mods.flatMap((m) => m.tags ?? []);
     return [...new Set(modTags)].sort();
   }, [mods]);
 
-  const specialDemandTags = useMemo(() => {
-    const dynamicTags = maps.flatMap((m) => m.special_demand ?? []);
-    return [...new Set(dynamicTags)].sort();
-  }, [maps]);
+  const availableSpecialDemand = useMemo(() => buildSpecialDemandValues(maps), [maps]);
 
   const {
     modTagCounts,
@@ -75,6 +91,10 @@ export function SearchPage() {
   useEffect(() => {
     ensureDownloadTotals();
   }, [ensureDownloadTotals]);
+
+  useEffect(() => {
+    initializeViewMode(defaultSearchViewMode);
+  }, [defaultSearchViewMode, initializeViewMode]);
 
   const {
     items,
@@ -94,6 +114,13 @@ export function SearchPage() {
 
   const modCount = mods.length;
   const mapCount = maps.length;
+
+  const resultsLayoutClassName = useMemo(() => {
+    if (viewMode === 'list') return 'space-y-4';
+    if (viewMode === 'compact')
+      return 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3';
+    return 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4';
+  }, [viewMode]);
 
   return (
     <div className="space-y-5">
@@ -126,7 +153,7 @@ export function SearchPage() {
             onFiltersChange={setFilters}
             onTypeChange={setType}
             availableTags={allTags}
-            availableSpecialDemand={specialDemandTags}
+            availableSpecialDemand={availableSpecialDemand}
             modTagCounts={modTagCounts}
             mapLocationCounts={mapLocationCounts}
             mapSourceQualityCounts={mapSourceQualityCounts}
@@ -158,20 +185,23 @@ export function SearchPage() {
                 </>
               )}
             </p>
-            <SortSelect
-              value={filters.sort}
-              onChange={(value) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  sort: value,
-                  randomSeed:
-                    value.field === 'random'
-                      ? createRandomSeed()
-                      : prev.randomSeed,
-                }))
-              }
-              tab={filters.type}
-            />
+            <div className="flex items-center gap-2">
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              <SortSelect
+                value={filters.sort}
+                onChange={(value) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    sort: value,
+                    randomSeed:
+                      value.field === 'random'
+                        ? createRandomSeed()
+                        : prev.randomSeed,
+                  }))
+                }
+                tab={filters.type}
+              />
+            </div>
           </div>
 
           {/* Cards / empty / loading */}
@@ -189,16 +219,16 @@ export function SearchPage() {
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className={cn(resultsLayoutClassName)}>
                 {items.map(({ type: itemType, item }) => (
                   <ItemCard
                     key={`${itemType}-${item.id}`}
                     type={itemType}
                     item={item}
-                    installedVersion={
-                      installedItems.find((i) => i.item === item)
-                        ?.installedVersion
-                    }
+                    viewMode={viewMode}
+                    installedVersion={installedVersionByItemKey.get(
+                      `${itemType}-${item.id}`,
+                    )}
                     totalDownloads={
                       itemType === 'mod'
                         ? (modDownloadTotals[item.id] ?? 0)

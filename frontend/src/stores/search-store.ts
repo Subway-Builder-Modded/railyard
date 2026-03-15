@@ -11,6 +11,7 @@ import {
   switchFilter,
   syncFilter,
 } from '@/stores/asset-type-filter-state';
+import type { SearchViewMode } from '@/lib/search-view-mode';
 
 export { createRandomSeed };
 
@@ -29,10 +30,21 @@ export interface SearchFilterStoreState {
   setPage: (page: number) => void;
 }
 
-export const useSearchStore = create<SearchFilterStoreState>((set) => ({
+interface SearchViewModeStoreState {
+  viewMode: SearchViewMode;
+  viewModeInitialized: boolean;
+  setViewMode: (viewMode: SearchViewMode) => void;
+  initializeViewMode: (viewMode: SearchViewMode) => void;
+}
+
+export const useSearchStore = create<
+  SearchFilterStoreState & SearchViewModeStoreState
+>((set, get) => ({
   filters: cloneFilterState(defaultSearchFilters),
   page: 1,
   scopedByType: createFilterByAssetType(defaultSearchFilters, 1),
+  viewMode: 'full',
+  viewModeInitialized: false,
   setFilters: (updater) =>
     set((state) => {
       const nextFilters =
@@ -57,4 +69,10 @@ export const useSearchStore = create<SearchFilterStoreState>((set) => ({
         page,
       ),
     })),
+  setViewMode: (viewMode) =>
+    set({ viewMode, viewModeInitialized: true }),
+  initializeViewMode: (viewMode) => {
+    if (get().viewModeInitialized) return;
+    set({ viewMode, viewModeInitialized: true });
+  },
 }));

@@ -34,6 +34,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  isSearchViewMode,
+  normalizeSearchViewMode,
+} from '@/lib/search-view-mode';
 import { useConfigStore } from '@/stores/config-store';
 import { useProfileStore } from '@/stores/profile-store';
 
@@ -115,10 +119,7 @@ export function SettingsPage() {
       return;
 
     try {
-      await updateUIPreferences(
-        theme,
-        profile.uiPreferences?.defaultPerPage ?? 12,
-      );
+      await updateUIPreferences({ theme });
       toast.success('Theme updated.');
     } catch {
       toast.error('Failed to update theme.');
@@ -135,10 +136,37 @@ export function SettingsPage() {
       return;
 
     try {
-      await updateUIPreferences(profile.uiPreferences?.theme ?? 'dark', parsed);
+      await updateUIPreferences({ defaultPerPage: parsed });
       toast.success('Default cards per page updated.');
     } catch {
       toast.error('Failed to update default cards per page.');
+    }
+  };
+
+  const handleDefaultSearchViewModeChange = async (value: string) => {
+    if (!profile) {
+      console.warn(
+        '[settings] Cannot update default browse view mode: profile is not loaded.',
+      );
+      return;
+    }
+
+    if (!isSearchViewMode(value)) {
+      console.warn(
+        `[settings] Ignoring invalid browse view mode value: ${String(value)}`,
+      );
+      return;
+    }
+
+    try {
+      await updateUIPreferences({ searchViewMode: value });
+      toast.success('Default browse view mode updated.');
+    } catch (error) {
+      console.warn(
+        '[settings] Failed to persist default browse view mode preference.',
+        error,
+      );
+      toast.error('Failed to update default browse view mode.');
     }
   };
 
@@ -379,6 +407,26 @@ export function SettingsPage() {
                 <SelectItem value="12">12</SelectItem>
                 <SelectItem value="24">24</SelectItem>
                 <SelectItem value="48">48</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium">Default Browse View</label>
+            <Select
+              value={normalizeSearchViewMode(
+                (profile?.uiPreferences as { searchViewMode?: unknown } | undefined)
+                  ?.searchViewMode,
+              )}
+              onValueChange={handleDefaultSearchViewModeChange}
+            >
+              <SelectTrigger className="w-35">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full">Full</SelectItem>
+                <SelectItem value="compact">Compact</SelectItem>
+                <SelectItem value="list">List</SelectItem>
               </SelectContent>
             </Select>
           </div>

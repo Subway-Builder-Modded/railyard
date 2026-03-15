@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 
 import type { AssetType } from '@/lib/asset-types';
+import {
+  type SearchViewMode,
+  normalizeSearchViewMode,
+} from '@/lib/search-view-mode';
 
 import { types } from '../../wailsjs/go/models';
 import {
@@ -9,6 +13,36 @@ import {
   UpdateSubscriptions,
   UpdateUIPreferences,
 } from '../../wailsjs/go/profiles/UserProfiles';
+
+interface UIPreferencesPayload {
+  theme: string;
+  defaultPerPage: number;
+  searchViewMode: SearchViewMode;
+}
+
+const DEFAULT_UI_PREFERENCES: UIPreferencesPayload = {
+  theme: 'dark',
+  defaultPerPage: 12,
+  searchViewMode: 'full',
+};
+
+function resolveUIPreferences(
+  profile: types.UserProfile | null,
+): UIPreferencesPayload {
+  const uiPreferences = profile?.uiPreferences as
+    | (types.UIPreferences & { searchViewMode?: unknown })
+    | undefined;
+
+  return {
+    theme: uiPreferences?.theme ?? DEFAULT_UI_PREFERENCES.theme,
+    defaultPerPage:
+      uiPreferences?.defaultPerPage ?? DEFAULT_UI_PREFERENCES.defaultPerPage,
+    searchViewMode: normalizeSearchViewMode(
+      uiPreferences?.searchViewMode,
+      DEFAULT_UI_PREFERENCES.searchViewMode,
+    ),
+  };
+}
 
 interface ProfileState {
   profile: types.UserProfile | null;
@@ -20,7 +54,10 @@ interface ProfileState {
   isSubscribed: (type: AssetType, id: string) => boolean;
   theme: () => string;
   defaultPerPage: () => number;
-  updateUIPreferences: (theme: string, defaultPerPage: number) => Promise<void>;
+  searchViewMode: () => SearchViewMode;
+  updateUIPreferences: (
+    updates: Partial<UIPreferencesPayload>,
+  ) => Promise<void>;
   updateSubscription: (
     type: AssetType,
     id: string,
@@ -58,12 +95,18 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     return subs ? id in subs : false;
   },
 
-  theme: () => get().profile?.uiPreferences?.theme ?? 'dark',
-  defaultPerPage: () => get().profile?.uiPreferences?.defaultPerPage ?? 12,
+  theme: () => resolveUIPreferences(get().profile).theme,
+  defaultPerPage: () => resolveUIPreferences(get().profile).defaultPerPage,
+  searchViewMode: () => resolveUIPreferences(get().profile).searchViewMode,
 
-  updateUIPreferences: async (theme, defaultPerPage) => {
+  updateUIPreferences: async (updates) => {
+    const nextPreferences: UIPreferencesPayload = {
+      ...resolveUIPreferences(get().profile),
+      ...updates,
+    };
+
     const result = await UpdateUIPreferences(
-      new types.UIPreferences({ theme, defaultPerPage }),
+      nextPreferences as unknown as types.UIPreferences,
     );
     if (result.status !== 'success') {
       throw new Error(result.message || 'Failed to update UI preferences');

@@ -12,6 +12,7 @@ import { Pagination } from '@/components/shared/Pagination';
 import { Button } from '@/components/ui/button';
 import { useFilteredInstalledItems } from '@/hooks/use-filtered-installed-items';
 import { buildAssetListingCounts } from '@/lib/listing-counts';
+import { buildSpecialDemandValues } from '@/lib/map-filter-values';
 import { useInstalledStore } from '@/stores/installed-store';
 import { useRegistryStore } from '@/stores/registry-store';
 
@@ -117,12 +118,10 @@ export function LibraryPage() {
     return Array.from(tags).sort();
   }, [installedModItems]);
 
-  const availableSpecialDemand = useMemo(() => {
-    const tags = new Set(
-      installedMapItems.flatMap((item) => item.special_demand ?? []),
-    );
-    return Array.from(tags).sort();
-  }, [installedMapItems]);
+  const availableSpecialDemand = useMemo(
+    () => buildSpecialDemandValues(installedMapItems),
+    [installedMapItems],
+  );
 
   const {
     modTagCounts,
