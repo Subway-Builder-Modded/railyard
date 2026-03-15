@@ -76,7 +76,7 @@ export function SettingsPage() {
       setSandboxInstalled(true);
       toast.success('Linux sandbox installed successfully.');
     } catch (e) {
-      toast.error('Failed to install Linux sandbox: ' + e);
+      toast.error('Failed to install Linux sandbox. Check the logs for details.');
     }
   };
 

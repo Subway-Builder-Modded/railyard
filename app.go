@@ -435,28 +435,33 @@ func (a *App) GetCurrentVersion() string {
 }
 
 func (a *App) InstallLinuxSandbox() error {
+	a.Logger.Info("Installing Linux sandbox")
 	if runtime.GOOS != "linux" {
 		panic("InstalLinuxSandbox shouldn't be possible to call on a non-linux platform")
 	}
 
 	if a.Config.Cfg.ExecutablePath == "" {
+		a.Logger.Warn("Game executable path is not configured, stopping.")
 		return fmt.Errorf("game executable path is not configured")
 	}
 
 	cmd := exec.Command("flatpak-spawn", "--directory", "/tmp", "--host", a.Config.Cfg.ExecutablePath, "--appimage-extract", "chrome-sandbox")
 	err := cmd.Run()
 	if err != nil {
+		a.Logger.Error("Failed to extract chrome-sandbox using flatpak-spawn", err)
 		return fmt.Errorf("failed to extract chrome-sandbox: %w", err)
 	}
 
 	sandboxPath := path.Join("/tmp", "squashfs-root", "chrome-sandbox")
 	if _, err := os.Stat(sandboxPath); os.IsNotExist(err) {
+		a.Logger.Error("Extracted chrome-sandbox not found at expected path", err)
 		return fmt.Errorf("extracted chrome-sandbox not found at expected path: %s", sandboxPath)
 	}
 
 	destPath := path.Join("/usr", "local", "bin", "chrome-sb-sandbox")
-	cmd = exec.Command("pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
+	cmd = exec.Command("flatpak-spawn", "--host", "pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
 	if err := cmd.Run(); err != nil {
+		a.Logger.Error("Failed to install chrome-sandbox with pkexec", err)
 		return fmt.Errorf("failed to install chrome-sandbox with pkexec: %w", err)
 	}
 	a.Config.Cfg.ChromeSandboxPath = destPath
