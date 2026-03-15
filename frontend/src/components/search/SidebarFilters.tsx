@@ -11,7 +11,6 @@ import { type ComponentType, type Dispatch, type SetStateAction } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import type { AssetType } from '@/lib/asset-types';
-import { normalizeSortStateForType } from '@/lib/constants';
 import { filterVisibleListingValues } from '@/lib/listing-counts';
 import {
   formatSourceQuality,
@@ -33,6 +32,7 @@ const FILTER_SECTION_CLEAR_CLASS =
 interface SidebarFiltersProps {
   filters: SearchFilterState;
   onFiltersChange: Dispatch<SetStateAction<SearchFilterState>>;
+  onTypeChange: (type: AssetType) => void;
   availableTags: string[];
   availableSpecialDemand: string[];
   modTagCounts: Record<string, number>;
@@ -52,6 +52,7 @@ const typeOptions = [
 export function SidebarFilters({
   filters,
   onFiltersChange,
+  onTypeChange,
   availableTags,
   availableSpecialDemand,
   modTagCounts,
@@ -76,13 +77,7 @@ export function SidebarFilters({
           {typeOptions.map(({ value, label, icon: Icon }) => (
             <button
               key={value}
-              onClick={() =>
-                onFiltersChange((prev) => ({
-                  ...prev,
-                  type: value,
-                  sort: normalizeSortStateForType(prev.sort, value),
-                }))
-              }
+              onClick={() => onTypeChange(value)}
               className={cn(
                 'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm transition-colors',
                 filters.type === value

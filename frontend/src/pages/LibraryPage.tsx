@@ -86,6 +86,7 @@ export function LibraryPage() {
     totalResults,
     filters,
     setFilters,
+    setType,
     setPage,
   } = useFilteredInstalledItems({
     items: installedItems,
@@ -210,6 +211,7 @@ export function LibraryPage() {
               <LibrarySidebar
                 filters={filters}
                 onFiltersChange={setFilters}
+                onTypeChange={setType}
                 modCount={modCount}
                 mapCount={mapCount}
                 availableTags={availableTags}

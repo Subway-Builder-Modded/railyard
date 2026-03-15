@@ -6,6 +6,12 @@ import {
   type PerPage,
   type SortState,
 } from '@/lib/constants';
+import {
+  createTypeScopedByAssetType,
+  switchTypeScopedState,
+  syncCurrentTypeScopedState,
+  type TypeScopedByAssetType,
+} from '@/stores/type-scoped-filter-state';
 
 export type TypeFilter = AssetType;
 
@@ -33,7 +39,9 @@ type SearchFilterUpdater =
 interface SearchState {
   filters: SearchFilterState;
   page: number;
+  scopedByType: TypeScopedByAssetType;
   setFilters: (updater: SearchFilterUpdater) => void;
+  setType: (type: TypeFilter) => void;
   setPage: (page: number) => void;
 }
 
@@ -58,12 +66,37 @@ const defaultSearchFilters: SearchFilterState = {
   },
 };
 
+const defaultSearchScopedByType = createTypeScopedByAssetType(
+  defaultSearchFilters,
+  1,
+);
+
 export const useSearchStore = create<SearchState>((set) => ({
   filters: defaultSearchFilters,
   page: 1,
+  scopedByType: defaultSearchScopedByType,
   setFilters: (updater) =>
+    set((state) => {
+      const nextFilters =
+        typeof updater === 'function' ? updater(state.filters) : updater;
+      return {
+        filters: nextFilters,
+        scopedByType: syncCurrentTypeScopedState(
+          state.scopedByType,
+          nextFilters,
+          state.page,
+        ),
+      };
+    }),
+  setType: (type) =>
+    set((state) => switchTypeScopedState(state.filters, state.page, state.scopedByType, type)),
+  setPage: (page) =>
     set((state) => ({
-      filters: typeof updater === 'function' ? updater(state.filters) : updater,
+      page,
+      scopedByType: syncCurrentTypeScopedState(
+        state.scopedByType,
+        state.filters,
+        page,
+      ),
     })),
-  setPage: (page) => set({ page }),
 }));
