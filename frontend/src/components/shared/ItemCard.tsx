@@ -25,6 +25,7 @@ interface ItemCardPresentation {
   badges: string[];
   mapCityCode: string;
   mapCountry: string;
+  mapPopulation?: number;
   CountryFlag: ReturnType<typeof getCountryFlagIcon> | null;
   showDownloads: boolean;
 }
@@ -57,6 +58,7 @@ function buildItemCardPresentation(
     badges: isMap ? mapBadges : (item.tags ?? []),
     mapCityCode,
     mapCountry,
+    mapPopulation: isMap ? item.population : undefined,
     CountryFlag: isMap ? getCountryFlagIcon(mapCountry) : null,
     showDownloads: typeof totalDownloads === 'number',
   };
@@ -225,7 +227,7 @@ export function ItemCard({
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mt-auto">
                 <ItemStats
                   isMap={presentation.isMap}
-                  population={presentation.isMap ? item.population : undefined}
+                  population={presentation.mapPopulation}
                   showDownloads={presentation.showDownloads}
                   totalDownloads={totalDownloads}
                 />
@@ -300,7 +302,7 @@ export function ItemCard({
             <div className="flex items-end justify-between gap-2 mt-auto">
               <ItemStats
                 isMap={presentation.isMap}
-                population={presentation.isMap ? item.population : undefined}
+                population={presentation.mapPopulation}
                 showDownloads={presentation.showDownloads}
                 totalDownloads={totalDownloads}
               />
@@ -379,7 +381,7 @@ export function ItemCard({
           <div className="flex items-end justify-between gap-2 mt-auto">
             <ItemStats
               isMap={presentation.isMap}
-              population={presentation.isMap ? item.population : undefined}
+              population={presentation.mapPopulation}
               showDownloads={presentation.showDownloads}
               totalDownloads={totalDownloads}
             />

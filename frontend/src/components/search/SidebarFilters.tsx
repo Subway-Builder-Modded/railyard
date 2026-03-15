@@ -14,9 +14,6 @@ import type { AssetType } from '@/lib/asset-types';
 import { filterVisibleListingValues } from '@/lib/listing-counts';
 import {
   formatSourceQuality,
-  LEVEL_OF_DETAIL_VALUES,
-  LOCATION_TAGS,
-  SOURCE_QUALITY_VALUES,
 } from '@/lib/map-filter-values';
 import { SEARCH_FILTER_EMPTY_LABELS } from '@/lib/search';
 import { cn } from '@/lib/utils';
@@ -34,6 +31,9 @@ interface SidebarFiltersProps {
   onFiltersChange: Dispatch<SetStateAction<SearchFilterState>>;
   onTypeChange: (type: AssetType) => void;
   availableTags: string[];
+  availableLocations: string[];
+  availableSourceQuality: string[];
+  availableLevelOfDetail: string[];
   availableSpecialDemand: string[];
   modTagCounts: Record<string, number>;
   mapLocationCounts: Record<string, number>;
@@ -54,6 +54,9 @@ export function SidebarFilters({
   onFiltersChange,
   onTypeChange,
   availableTags,
+  availableLocations,
+  availableSourceQuality,
+  availableLevelOfDetail,
   availableSpecialDemand,
   modTagCounts,
   mapLocationCounts,
@@ -131,7 +134,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Location"
             icon={MapPin}
-            values={[...LOCATION_TAGS]}
+            values={availableLocations}
             counts={mapLocationCounts}
             selected={filters.map.locations}
             onChange={(values) =>
@@ -144,7 +147,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Source Quality"
             icon={BadgeCheck}
-            values={[...SOURCE_QUALITY_VALUES]}
+            values={availableSourceQuality}
             counts={mapSourceQualityCounts}
             formatValue={formatSourceQuality}
             selected={filters.map.sourceQuality}
@@ -158,7 +161,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Level of Detail"
             icon={Layers3}
-            values={[...LEVEL_OF_DETAIL_VALUES]}
+            values={availableLevelOfDetail}
             counts={mapLevelOfDetailCounts}
             selected={filters.map.levelOfDetail}
             onChange={(values) =>

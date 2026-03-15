@@ -1,26 +1,11 @@
-export const LOCATION_TAGS = [
-  'caribbean',
-  'central-america',
-  'central-asia',
-  'east-africa',
-  'east-asia',
-  'europe',
-  'middle-east',
-  'north-africa',
-  'north-america',
-  'oceania',
-  'south-america',
-  'south-asia',
-  'southeast-asia',
-  'southern-africa',
-  'west-africa',
-] as const;
+import type { types } from '../../wailsjs/go/models';
 
-export const SOURCE_QUALITY_VALUES = [
-  'low-quality',
-  'medium-quality',
-  'high-quality',
-] as const;
+export interface MapFilterValues {
+  locations: string[];
+  sourceQuality: string[];
+  levelOfDetail: string[];
+  specialDemand: string[];
+}
 
 const SOURCE_QUALITY_LABELS: Record<string, string> = {
   'low-quality': 'low-data-quality',
@@ -32,8 +17,23 @@ export function formatSourceQuality(value: string): string {
   return SOURCE_QUALITY_LABELS[value] ?? value;
 }
 
-export const LEVEL_OF_DETAIL_VALUES = [
-  'low-detail',
-  'medium-detail',
-  'high-detail',
-] as const;
+function buildUniqueSortedValues(values: Array<string | null | undefined>) {
+  return [...new Set(values.filter((value): value is string => Boolean(value)))].sort();
+}
+
+export function buildMapFilterValues(
+  maps: readonly types.MapManifest[],
+): MapFilterValues {
+  return {
+    locations: buildUniqueSortedValues(maps.map((map) => map.location)),
+    sourceQuality: buildUniqueSortedValues(
+      maps.map((map) => map.source_quality),
+    ),
+    levelOfDetail: buildUniqueSortedValues(
+      maps.map((map) => map.level_of_detail),
+    ),
+    specialDemand: buildUniqueSortedValues(
+      maps.flatMap((map) => map.special_demand ?? []),
+    ),
+  };
+}
