@@ -6,11 +6,13 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 
 	"railyard/internal/constants"
 	"railyard/internal/files"
+	"railyard/internal/paths"
 	"railyard/internal/types"
 	"railyard/internal/utils"
 )
@@ -23,7 +25,7 @@ func extractMod(d *Downloader, filePath string, modId string, version string) ty
 	}
 	defer reader.Close()
 
-	destFolder := path.Join(d.getModPath(), modId)
+	destFolder := paths.JoinLocalPath(d.getModPath(), modId)
 
 	requiredFiles := map[string]types.FileFoundStruct{
 		"manifest":        {Found: false, FileObject: nil, Required: true},
@@ -79,7 +81,7 @@ func extractMod(d *Downloader, filePath string, modId string, version string) ty
 	// First pass: create directories to avoid extract errors
 	for _, file := range reader.File {
 		if file.FileInfo().IsDir() {
-			destPath := path.Join(destFolder, file.Name)
+			destPath := paths.JoinLocalPath(destFolder, file.Name)
 			if err := os.MkdirAll(destPath, os.ModePerm); err != nil {
 				return d.installError(types.AssetTypeMod, modId, version, types.ConfigData{}, types.InstallErrorFilesystem, "Failed to create directory during extraction", err, "directory_path", destPath, "mod_id", modId)
 			}
@@ -100,10 +102,10 @@ func extractMod(d *Downloader, filePath string, modId string, version string) ty
 			go func(file *zip.File) {
 				defer wg.Done()
 
-				destPath := path.Join(destFolder, file.Name)
+				destPath := paths.JoinLocalPath(destFolder, file.Name)
 
 				// Ensure parent directory exists
-				parentDir := path.Dir(destPath)
+				parentDir := filepath.Dir(destPath)
 				if err := os.MkdirAll(parentDir, os.ModePerm); err != nil {
 					errChan <- err
 					return
@@ -225,7 +227,7 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 	}
 
 	// Create necessary directories first
-	destFolder := path.Join(d.getMapDataPath(), configData.Code)
+	destFolder := paths.JoinLocalPath(d.getMapDataPath(), configData.Code)
 	if err := os.MkdirAll(destFolder, os.ModePerm); err != nil {
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create destination folder", err, "destination", destFolder)
 	}
@@ -264,21 +266,21 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 
 			switch key {
 			case "tiles":
-				extractFileMap(path.Join(d.mapTilePath, configData.Code+".pmtiles"), srcFile, errChan, false)
+				extractFileMap(paths.JoinLocalPath(d.mapTilePath, configData.Code+".pmtiles"), srcFile, errChan, false)
 				if d.OnExtractProgress != nil {
 					extractCount++
 					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
 				}
 
 			case "thumbnail":
-				extractFileMap(path.Join(d.getMapThumbnailPath(), configData.Code+".svg"), srcFile, errChan, false)
+				extractFileMap(paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+".svg"), srcFile, errChan, false)
 				if d.OnExtractProgress != nil {
 					extractCount++
 					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
 				}
 
 			default:
-				extractFileMap(path.Join(destFolder, path.Base(fileStruct.FileObject.Name)+".gz"), srcFile, errChan, true)
+				extractFileMap(paths.JoinLocalPath(destFolder, path.Base(fileStruct.FileObject.Name)+".gz"), srcFile, errChan, true)
 				if d.OnExtractProgress != nil {
 					extractCount++
 					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
@@ -307,7 +309,7 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 			return d.installWarn(types.AssetTypeMap, mapId, version, configData, "Failed to generate thumbnail, but map was extracted successfully. You can try generating the thumbnail later from the map details page.", "file_path", filePath, "map_code", configData.Code)
 		}
 
-		thumbnailPath := path.Join(d.getMapThumbnailPath(), configData.Code+".svg")
+		thumbnailPath := paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+".svg")
 		if err := files.WriteFilesAtomically([]files.AtomicFileWrite{
 			{
 				Path:  thumbnailPath,

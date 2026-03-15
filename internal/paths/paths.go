@@ -92,6 +92,25 @@ func LockFilePath() string {
 	return filepath.Join(AppDataRoot(), LockFile)
 }
 
+// NormalizeLocalPath normalizes a local filesystem path for the current OS.
+// It trims whitespace and replaces both backslashes and forward slashes with os.PathSeparator
+func NormalizeLocalPath(input string) string {
+	trimmed := strings.TrimSpace(input)
+	if trimmed == "" {
+		return ""
+	}
+	// Normalize backslashes to forward slashes first, then convert to
+	// the OS separator, then clean.
+	unified := strings.ReplaceAll(trimmed, `\`, "/")
+	return filepath.Clean(filepath.FromSlash(unified))
+}
+
+// JoinLocalPath joins path segments and normalizes separators for the current OS.
+func JoinLocalPath(base string, parts ...string) string {
+	all := append([]string{base}, parts...)
+	return NormalizeLocalPath(filepath.Join(all...))
+}
+
 // GetQuarantinePath returns the "quarantined" path for a target file using the current unix timestamp.
 // This can be used to move invalid/corrupted files away from their expected location while still leaving them accessible for debugging
 // Example: "user_profiles.json" -> "user_profiles.invalid.<unix>.json".
