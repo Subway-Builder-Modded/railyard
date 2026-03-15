@@ -110,17 +110,28 @@ function ItemStats({
   return (
     <div className={cn('flex flex-col gap-1 text-xs text-muted-foreground shrink-0', className)}>
       {isMap && (population ?? 0) > 0 && (
-        <div className="flex items-center gap-1">
-          <Users className="h-3 w-3" aria-hidden="true" />
-          <span>{population!.toLocaleString()}</span>
-        </div>
+        <StatMetric icon={Users} value={population!} />
       )}
       {showDownloads && (
-        <div className="flex items-center gap-1">
-          <Download className="h-3 w-3" aria-hidden="true" />
-          <span>{totalDownloads!.toLocaleString()}</span>
-        </div>
+        <StatMetric icon={Download} value={totalDownloads!} />
       )}
+    </div>
+  );
+}
+
+function StatMetric({
+  icon: Icon,
+  value,
+  className,
+}: {
+  icon: typeof Users | typeof Download;
+  value: number;
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex items-center gap-1 text-xs text-muted-foreground', className)}>
+      <Icon className="h-3 w-3" aria-hidden="true" />
+      <span>{value.toLocaleString()}</span>
     </div>
   );
 }
@@ -252,6 +263,10 @@ export function ItemCard({
   }
 
   if (viewMode === 'compact') {
+    const hasMapPopulation =
+      presentation.isMap && (presentation.mapPopulation ?? 0) > 0;
+    const hasDownloads = presentation.showDownloads;
+
     return (
       <Link
         href={`/project/${assetTypeToListingPath(type)}/${item.id}`}
@@ -313,14 +328,24 @@ export function ItemCard({
               {item.description}
             </p>
 
-            <div className="flex items-end justify-between gap-2 mt-auto">
-              <ItemStats
-                isMap={presentation.isMap}
-                population={presentation.mapPopulation}
-                showDownloads={presentation.showDownloads}
-                totalDownloads={totalDownloads}
-              />
-            </div>
+            {(hasDownloads || hasMapPopulation) && (
+              <div className="flex items-end justify-between gap-2 mt-auto min-h-4">
+                <div className="min-w-0">
+                  {hasDownloads && (
+                    <StatMetric icon={Download} value={totalDownloads ?? 0} />
+                  )}
+                </div>
+                <div className="min-w-0 text-right">
+                  {hasMapPopulation && (
+                    <StatMetric
+                      icon={Users}
+                      value={presentation.mapPopulation ?? 0}
+                      className="justify-end"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </article>
       </Link>

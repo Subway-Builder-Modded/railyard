@@ -122,12 +122,28 @@ export function SettingsPage() {
   };
 
   const handleDefaultSearchViewModeChange = async (value: string) => {
-    if (!profile || !isSearchViewMode(value)) return;
+    if (!profile) {
+      console.warn(
+        '[settings] Cannot update default browse view mode: profile is not loaded.',
+      );
+      return;
+    }
+
+    if (!isSearchViewMode(value)) {
+      console.warn(
+        `[settings] Ignoring invalid browse view mode value: ${String(value)}`,
+      );
+      return;
+    }
 
     try {
       await updateUIPreferences({ searchViewMode: value });
       toast.success('Default browse view mode updated.');
-    } catch {
+    } catch (error) {
+      console.warn(
+        '[settings] Failed to persist default browse view mode preference.',
+        error,
+      );
       toast.error('Failed to update default browse view mode.');
     }
   };
