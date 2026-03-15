@@ -32,6 +32,10 @@ import (
 	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
+func panik(message string) {
+	panic(message)
+}
+
 // App struct
 type App struct {
 	Registry   *registry.Registry
@@ -330,7 +334,7 @@ func (a *App) LaunchGame() error {
 		if _, lookPathErr := exec.LookPath("flatpak-spawn"); lookPathErr == nil {
 			if a.Config.Cfg.ChromeSandboxPath != "" {
 				// Ensure sandbox is used if available to avoid permission issues in Flatpak environments
-				cmd = exec.Command("flatpak-spawn", "--host", "--no-sandbox", "--env=CHROME_DEVEL_SANDBOX="+a.Config.Cfg.ChromeSandboxPath, exePath)
+				cmd = exec.Command("flatpak-spawn", "--env=CHROME_DEVEL_SANDBOX="+a.Config.Cfg.ChromeSandboxPath, "--host", exePath)
 			} else {
 				cmd = exec.Command("flatpak-spawn", "--host", exePath, "--no-sandbox")
 			}
@@ -445,7 +449,8 @@ func (a *App) InstallLinuxSandbox() error {
 		return fmt.Errorf("game executable path is not configured")
 	}
 
-	cmd := exec.Command("flatpak-spawn", "--directory", "/tmp", "--host", a.Config.Cfg.ExecutablePath, "--appimage-extract", "chrome-sandbox")
+	cmd := exec.Command(a.Config.Cfg.ExecutablePath, "--appimage-extract", "chrome-sandbox")
+	cmd.Dir = "/tmp"
 	err := cmd.Run()
 	if err != nil {
 		a.Logger.Error("Failed to extract chrome-sandbox using flatpak-spawn", err)
