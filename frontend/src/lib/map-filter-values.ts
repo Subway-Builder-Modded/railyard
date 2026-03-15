@@ -37,3 +37,9 @@ export const LEVEL_OF_DETAIL_VALUES = [
   'medium-detail',
   'high-detail',
 ] as const;
+
+export function buildSpecialDemandValues(
+  maps: ReadonlyArray<{ special_demand?: string[] | null }>,
+): string[] {
+  return [...new Set(maps.flatMap((m) => m.special_demand ?? []))].sort();
+}

@@ -1,0 +1,1 @@
+export type SearchViewMode = 'full' | 'compact' | 'list';

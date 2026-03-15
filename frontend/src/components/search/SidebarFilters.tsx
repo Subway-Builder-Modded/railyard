@@ -13,10 +13,10 @@ import { Separator } from '@/components/ui/separator';
 import type { AssetType } from '@/lib/asset-types';
 import { filterVisibleListingValues } from '@/lib/listing-counts';
 import {
-  formatSourceQuality,
   LEVEL_OF_DETAIL_VALUES,
   LOCATION_TAGS,
   SOURCE_QUALITY_VALUES,
+  formatSourceQuality,
 } from '@/lib/map-filter-values';
 import { SEARCH_FILTER_EMPTY_LABELS } from '@/lib/search';
 import { cn } from '@/lib/utils';
@@ -131,7 +131,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Location"
             icon={MapPin}
-            values={[...LOCATION_TAGS]}
+            values={LOCATION_TAGS}
             counts={mapLocationCounts}
             selected={filters.map.locations}
             onChange={(values) =>
@@ -144,7 +144,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Source Quality"
             icon={BadgeCheck}
-            values={[...SOURCE_QUALITY_VALUES]}
+            values={SOURCE_QUALITY_VALUES}
             counts={mapSourceQualityCounts}
             formatValue={formatSourceQuality}
             selected={filters.map.sourceQuality}
@@ -158,7 +158,7 @@ export function SidebarFilters({
           <ChecklistFilterSection
             title="Level of Detail"
             icon={Layers3}
-            values={[...LEVEL_OF_DETAIL_VALUES]}
+            values={LEVEL_OF_DETAIL_VALUES}
             counts={mapLevelOfDetailCounts}
             selected={filters.map.levelOfDetail}
             onChange={(values) =>
