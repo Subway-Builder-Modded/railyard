@@ -24,14 +24,22 @@ func TestAreValidUIPreferences(t *testing.T) {
 	require.True(t, areValidUIPreferences(UIPreferences{
 		Theme:          ThemeDark,
 		DefaultPerPage: PageSize12,
+		SearchViewMode: SearchViewModeFull,
 	}))
 	require.False(t, areValidUIPreferences(UIPreferences{
 		Theme:          ThemeMode("custom"),
 		DefaultPerPage: PageSize12,
+		SearchViewMode: SearchViewModeCompact,
 	}))
 	require.False(t, areValidUIPreferences(UIPreferences{
 		Theme:          ThemeDark,
 		DefaultPerPage: PageSize(999),
+		SearchViewMode: SearchViewModeList,
+	}))
+	require.False(t, areValidUIPreferences(UIPreferences{
+		Theme:          ThemeLight,
+		DefaultPerPage: PageSize24,
+		SearchViewMode: SearchViewMode("unknown"),
 	}))
 }
 
