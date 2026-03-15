@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"slices"
 	"strings"
 	"sync"
@@ -99,8 +98,8 @@ func isValidOperationAction(action operationAction) bool {
 // NewDownloader creates a new Downloader instance with necessary paths and references.
 func NewDownloader(cfg *config.Config, reg *registry.Registry, l logger.Logger) *Downloader {
 	d := &Downloader{
-		mapTilePath: path.Join(paths.AppDataRoot(), "tiles"),
-		tempPath:    path.Join(paths.AppDataRoot(), "temp"),
+		mapTilePath: paths.JoinLocalPath(paths.AppDataRoot(), "tiles"),
+		tempPath:    paths.JoinLocalPath(paths.AppDataRoot(), "temp"),
 		Registry:    reg,
 		Config:      cfg,
 		Logger:      l,
@@ -275,7 +274,7 @@ func (d *Downloader) operationKey(action operationAction, assetType types.AssetT
 
 // getModPath returns the filesystem path for installed mods.
 func (d *Downloader) getModPath() string {
-	return path.Join(d.Config.Cfg.MetroMakerDataPath, "mods")
+	return paths.JoinLocalPath(d.Config.Cfg.MetroMakerDataPath, "mods")
 }
 
 func (d *Downloader) logStatus(status types.Status, message string, attrs ...any) types.GenericResponse {
@@ -362,17 +361,17 @@ func (d *Downloader) uninstallError(assetType types.AssetType, assetID string, e
 
 // getMapDataPath returns the filesystem path for installed map data.
 func (d *Downloader) getMapDataPath() string {
-	return path.Join(d.Config.Cfg.MetroMakerDataPath, "cities", "data")
+	return paths.JoinLocalPath(d.Config.Cfg.MetroMakerDataPath, "cities", "data")
 }
 
 // getMapTilePath returns the filesystem path for installed map tiles.
 func (d *Downloader) getMapTilePath() string {
-	return path.Join(paths.AppDataRoot(), "tiles")
+	return paths.JoinLocalPath(paths.AppDataRoot(), "tiles")
 }
 
 // getMapThumbnailPath returns the filesystem path for installed map thumbnails.
 func (d *Downloader) getMapThumbnailPath() string {
-	return path.Join(d.Config.Cfg.MetroMakerDataPath, "public", "data", "city-maps")
+	return paths.JoinLocalPath(d.Config.Cfg.MetroMakerDataPath, "public", "data", "city-maps")
 }
 
 type installedState struct {
@@ -474,7 +473,7 @@ func (d *Downloader) uninstallModNow(modId string) types.AssetUninstallResponse 
 			"asset_id", modId,
 		)
 	}
-	modPath := path.Join(d.getModPath(), modId)
+	modPath := paths.JoinLocalPath(d.getModPath(), modId)
 	if err := os.RemoveAll(modPath); err != nil {
 		return d.uninstallError(types.AssetTypeMod, modId, types.UninstallErrorFilesystem, "Failed to remove mod files", err, "mod_id", modId)
 	}
@@ -499,15 +498,15 @@ func (d *Downloader) uninstallMapNow(mapId string) types.AssetUninstallResponse 
 	}
 	mapConfig := installedMap.mapConfig
 
-	mapDataPath := path.Join(d.getMapDataPath(), mapConfig.Code)
+	mapDataPath := paths.JoinLocalPath(d.getMapDataPath(), mapConfig.Code)
 	if err := os.RemoveAll(mapDataPath); err != nil {
 		return d.uninstallError(types.AssetTypeMap, mapId, types.UninstallErrorFilesystem, "Failed to remove map data files", err, "map_id", mapId)
 	}
-	tilePath := path.Join(d.getMapTilePath(), mapConfig.Code+".pmtiles")
+	tilePath := paths.JoinLocalPath(d.getMapTilePath(), mapConfig.Code+".pmtiles")
 	if err := os.Remove(tilePath); err != nil {
 		return d.uninstallError(types.AssetTypeMap, mapId, types.UninstallErrorFilesystem, "Failed to remove map tile files", err, "map_id", mapId)
 	}
-	os.Remove(path.Join(d.getMapThumbnailPath(), mapConfig.Code+".svg")) // Doesn't matter if this fails, thumbnail is optional and may not exist
+	os.Remove(paths.JoinLocalPath(d.getMapThumbnailPath(), mapConfig.Code+".svg")) // Doesn't matter if this fails, thumbnail is optional and may not exist
 	d.Registry.RemoveInstalledMap(mapId)
 	if err := d.Registry.WriteInstalledToDisk(); err != nil {
 		d.Logger.Warn("Failed to persist installed state after uninstalling map", "error", err)
@@ -825,7 +824,7 @@ func (d *Downloader) getVanillaMapCodes() []string {
 		log.Printf("Warning: Invalid Config: %v", cfgResult.Validation)
 		return []string{}
 	}
-	reader, err := os.Open(path.Join(cfgResult.Config.MetroMakerDataPath, "cities", "latest-cities.yml"))
+	reader, err := os.Open(paths.JoinLocalPath(cfgResult.Config.MetroMakerDataPath, "cities", "latest-cities.yml"))
 	if err != nil {
 		log.Printf("Warning: failed to open latest-cities.yml: %v", err)
 		return []string{}
