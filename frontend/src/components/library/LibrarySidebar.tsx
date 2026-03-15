@@ -10,7 +10,7 @@ import { type ComponentType,type Dispatch, type SetStateAction } from 'react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { normalizeSortStateForType } from '@/lib/constants';
+import type { AssetType } from '@/lib/asset-types';
 import { filterVisibleListingValues } from '@/lib/listing-counts';
 import {
   formatSourceQuality,
@@ -20,10 +20,7 @@ import {
 } from '@/lib/map-filter-values';
 import { SEARCH_FILTER_EMPTY_LABELS } from '@/lib/search';
 import { cn } from '@/lib/utils';
-import {
-  type LibraryFilterState,
-  type LibraryTypeFilter,
-} from '@/stores/library-store';
+import type { SearchFilterState } from '@/stores/search-store';
 
 const FILTER_SECTION_TITLE_CLASS =
   'text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 px-1';
@@ -33,8 +30,9 @@ const FILTER_SECTION_CLEAR_CLASS =
   'mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors';
 
 interface LibrarySidebarProps {
-  filters: LibraryFilterState;
-  onFiltersChange: Dispatch<SetStateAction<LibraryFilterState>>;
+  filters: SearchFilterState;
+  onFiltersChange: Dispatch<SetStateAction<SearchFilterState>>;
+  onTypeChange: (type: AssetType) => void;
   modCount: number;
   mapCount: number;
   availableTags: string[];
@@ -47,7 +45,7 @@ interface LibrarySidebarProps {
 }
 
 const typeOptions: Array<{
-  value: LibraryTypeFilter;
+  value: AssetType;
   label: string;
   icon: typeof MapPin;
 }> = [
@@ -58,6 +56,7 @@ const typeOptions: Array<{
 export function LibrarySidebar({
   filters,
   onFiltersChange,
+  onTypeChange,
   modCount,
   mapCount,
   availableTags,
@@ -68,7 +67,7 @@ export function LibrarySidebar({
   mapLevelOfDetailCounts,
   mapSpecialDemandCounts,
 }: LibrarySidebarProps) {
-  const counts: Record<LibraryTypeFilter, number> = {
+  const counts: Record<AssetType, number> = {
     mod: modCount,
     map: mapCount,
   };
@@ -81,13 +80,7 @@ export function LibrarySidebar({
           {typeOptions.map(({ value, label, icon: Icon }) => (
             <button
               key={value}
-              onClick={() =>
-                onFiltersChange((prev) => ({
-                  ...prev,
-                  type: value,
-                  sort: normalizeSortStateForType(prev.sort, value),
-                }))
-              }
+              onClick={() => onTypeChange(value)}
               className={cn(
                 'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm transition-colors',
                 filters.type === value

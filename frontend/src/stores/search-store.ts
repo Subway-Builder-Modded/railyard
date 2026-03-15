@@ -2,68 +2,59 @@ import { create } from 'zustand';
 
 import type { AssetType } from '@/lib/asset-types';
 import {
-  DEFAULT_SORT_STATE,
-  type PerPage,
-  type SortState,
-} from '@/lib/constants';
+  type AssetQueryFilterState,
+  cloneFilterState,
+  createFilterByAssetType,
+  createRandomSeed,
+  defaultSearchFilters,
+  type FilterByAssetType,
+  switchFilter,
+  syncFilter,
+} from '@/stores/asset-type-filter-state';
 
-export type TypeFilter = AssetType;
+export { createRandomSeed };
 
-export interface SearchFilterState {
-  query: string;
-  type: TypeFilter;
-  sort: SortState;
-  randomSeed: number;
-  perPage: PerPage;
-  mod: {
-    tags: string[];
-  };
-  map: {
-    locations: string[];
-    sourceQuality: string[];
-    levelOfDetail: string[];
-    specialDemand: string[];
-  };
-}
+export type SearchFilterState = AssetQueryFilterState;
 
-type SearchFilterUpdater =
+export type SearchFilterUpdater =
   | SearchFilterState
   | ((prev: SearchFilterState) => SearchFilterState);
 
-interface SearchState {
+export interface SearchFilterStoreState {
   filters: SearchFilterState;
   page: number;
+  scopedByType: FilterByAssetType;
   setFilters: (updater: SearchFilterUpdater) => void;
+  setType: (type: AssetType) => void;
   setPage: (page: number) => void;
 }
 
-export function createRandomSeed(): number {
-  return Math.floor(Math.random() * 2_147_483_647);
-}
-
-const defaultSearchFilters: SearchFilterState = {
-  query: '',
-  type: 'map',
-  sort: DEFAULT_SORT_STATE,
-  randomSeed: createRandomSeed(),
-  perPage: 12,
-  mod: {
-    tags: [],
-  },
-  map: {
-    locations: [],
-    sourceQuality: [],
-    levelOfDetail: [],
-    specialDemand: [],
-  },
-};
-
-export const useSearchStore = create<SearchState>((set) => ({
-  filters: defaultSearchFilters,
+export const useSearchStore = create<SearchFilterStoreState>((set) => ({
+  filters: cloneFilterState(defaultSearchFilters),
   page: 1,
+  scopedByType: createFilterByAssetType(defaultSearchFilters, 1),
   setFilters: (updater) =>
+    set((state) => {
+      const nextFilters =
+        typeof updater === 'function' ? updater(state.filters) : updater;
+      return {
+        filters: nextFilters,
+        scopedByType: syncFilter(
+          state.scopedByType,
+          nextFilters,
+          state.page,
+        ),
+      };
+    }),
+  setType: (type) =>
+    set((state) => switchFilter(state.filters, state.page, state.scopedByType, type)),
+  setPage: (page) =>
     set((state) => ({
-      filters: typeof updater === 'function' ? updater(state.filters) : updater,
+      page,
+      scopedByType: syncFilter(
+        state.scopedByType,
+        state.filters,
+        page,
+      ),
     })),
-  setPage: (page) => set({ page }),
 }));

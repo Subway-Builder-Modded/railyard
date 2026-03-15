@@ -36,6 +36,7 @@ export function useFilteredInstalledItems({
   const defaultPerPage = useProfileStore((s) => s.defaultPerPage)() as PerPage;
   const filters = useLibraryStore((s) => s.filters);
   const setFilters = useLibraryStore((s) => s.setFilters);
+  const setType = useLibraryStore((s) => s.setType);
   const page = useLibraryStore((s) => s.page);
   const setPage = useLibraryStore((s) => s.setPage);
 
@@ -48,9 +49,15 @@ export function useFilteredInstalledItems({
   }, [defaultPerPage, setFilters]);
 
   const didMount = useRef(false);
+  const previousTypeRef = useRef(filters.type);
   useEffect(() => {
     if (!didMount.current) {
       didMount.current = true;
+      previousTypeRef.current = filters.type;
+      return;
+    }
+    if (previousTypeRef.current !== filters.type) {
+      previousTypeRef.current = filters.type;
       return;
     }
     setPage(1);
@@ -81,6 +88,7 @@ export function useFilteredInstalledItems({
     totalResults,
     filters,
     setFilters,
+    setType,
     setPage,
   };
 }

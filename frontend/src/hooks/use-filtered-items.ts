@@ -17,7 +17,7 @@ export type TaggedItem =
   | { type: 'mod'; item: types.ModManifest }
   | { type: 'map'; item: types.MapManifest };
 
-export type { SearchFilterState,TypeFilter } from '@/stores/search-store';
+export type { SearchFilterState } from '@/stores/search-store';
 
 interface UseFilteredItemsParams {
   mods: types.ModManifest[];
@@ -272,6 +272,7 @@ export function useFilteredItems({
   const defaultPerPage = useProfileStore((s) => s.defaultPerPage)() as PerPage;
   const filters = useSearchStore((s) => s.filters);
   const setFilters = useSearchStore((s) => s.setFilters);
+  const setType = useSearchStore((s) => s.setType);
   const page = useSearchStore((s) => s.page);
   const setPage = useSearchStore((s) => s.setPage);
 
@@ -287,9 +288,15 @@ export function useFilteredItems({
   }, [defaultPerPage, setFilters]);
 
   const didMount = useRef(false);
+  const previousTypeRef = useRef(filters.type);
   useEffect(() => {
     if (!didMount.current) {
       didMount.current = true;
+      previousTypeRef.current = filters.type;
+      return;
+    }
+    if (previousTypeRef.current !== filters.type) {
+      previousTypeRef.current = filters.type;
       return;
     }
     setPage(1);
@@ -331,6 +338,7 @@ export function useFilteredItems({
     totalResults,
     filters,
     setFilters,
+    setType,
     setPage,
   };
 }
