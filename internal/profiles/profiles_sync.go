@@ -51,6 +51,7 @@ func (s *UserProfiles) SyncSubscriptions(profileID string) types.SyncSubscriptio
 			"",
 			"",
 			types.ErrorSyncSuperseded,
+			"",
 			"Sync superseded by newer subscription update",
 		)
 		return newSyncSubscriptionsResult(
@@ -231,7 +232,7 @@ func syncAssetSubscriptions[T any, U any](log logger.Logger, profileID string, a
 				"desired_version", versionText,
 				"available_versions", availableKeys,
 			)
-			errs = append(errs, userProfilesError(profileID, assetID, args.assetType, types.ErrorLookupFailed, fmt.Sprintf("Subscribe %s %q failed: version %q is not available", args.assetType, assetID, versionText)))
+			errs = append(errs, userProfilesError(profileID, assetID, args.assetType, types.ErrorLookupFailed, "", fmt.Sprintf("Subscribe %s %q failed: version %q is not available", args.assetType, assetID, versionText)))
 			continue
 		}
 
