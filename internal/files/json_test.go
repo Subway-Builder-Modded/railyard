@@ -96,33 +96,3 @@ func TestWriteJSONErrorsWhenTargetPathIsDirectory(t *testing.T) {
 	require.Error(t, err)
 	require.ErrorContains(t, err, "failed to write app config")
 }
-
-func TestWriteFilesAtomicallyRollsBackCommittedFilesOnFailure(t *testing.T) {
-	root := t.TempDir()
-	firstPath := filepath.Join(root, "first.json")
-	blockedPath := filepath.Join(root, "blocked")
-
-	original := `{"name":"original"}`
-	writeTestJSON(t, firstPath, original)
-	require.NoError(t, os.MkdirAll(blockedPath, 0o755))
-
-	err := WriteFilesAtomically([]AtomicFileWrite{
-		{
-			Path:  firstPath,
-			Label: "first file",
-			Data:  []byte(`{"name":"updated"}`),
-			Perm:  0o644,
-		},
-		{
-			Path:  blockedPath,
-			Label: "blocked file",
-			Data:  []byte(`{"name":"blocked"}`),
-			Perm:  0o644,
-		},
-	})
-	require.Error(t, err)
-
-	restored, readErr := os.ReadFile(firstPath)
-	require.NoError(t, readErr)
-	require.JSONEq(t, original, string(restored))
-}

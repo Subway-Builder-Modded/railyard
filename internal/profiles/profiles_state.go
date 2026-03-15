@@ -169,9 +169,6 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 
 	// Update the profile with new preferences
 	profile := nextState.Profiles[s.state.ActiveProfileID]
-	if uiPrefs.SearchViewMode == "" {
-		uiPrefs.SearchViewMode = profile.UIPreferences.SearchViewMode
-	}
 	profile.UIPreferences = uiPrefs
 	nextState.Profiles[s.state.ActiveProfileID] = profile
 

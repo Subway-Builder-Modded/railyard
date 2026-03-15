@@ -31,14 +31,14 @@ type SearchViewMode string
 
 const (
 	SearchViewModeList    SearchViewMode = "list"
-	SearchViewModeFull    SearchViewMode = "full" // full-size cards with tags
+	SearchViewModeFull    SearchViewMode = "full"    // full-size cards with tags
 	SearchViewModeCompact SearchViewMode = "compact" // smaller-size cards without tags
 )
 
 // UIPreferences represents user preferences related to application UI/UX.
 type UIPreferences struct {
-	Theme          ThemeMode `json:"theme"`
-	DefaultPerPage PageSize  `json:"defaultPerPage"`
+	Theme          ThemeMode      `json:"theme"`
+	DefaultPerPage PageSize       `json:"defaultPerPage"`
 	SearchViewMode SearchViewMode `json:"searchViewMode"`
 }
 
@@ -265,7 +265,16 @@ func isValidSearchViewMode(value SearchViewMode) bool {
 	}
 }
 
+func normalizeUIPreferences(prefs UIPreferences) UIPreferences {
+	// bootstrap newly added fields with defaults if missing to avoid issues with older versions of profiles state
+	if prefs.SearchViewMode == "" {
+		prefs.SearchViewMode = SearchViewModeFull
+	}
+	return prefs
+}
+
 func areValidUIPreferences(prefs UIPreferences) bool {
+	prefs = normalizeUIPreferences(prefs)
 	return isValidTheme(prefs.Theme) && isValidPageSize(prefs.DefaultPerPage) && isValidSearchViewMode(prefs.SearchViewMode)
 }
 
@@ -300,6 +309,7 @@ func ValidateState(s UserProfilesState) (UserProfilesState, error) {
 		}
 
 		// Preferences must be valid.
+		p.UIPreferences = normalizeUIPreferences(p.UIPreferences)
 		if !areValidUIPreferences(p.UIPreferences) {
 			return UserProfilesState{}, fmt.Errorf("%w: profiles[%q] has invalid UI preferences", ErrMalformedProfile, key)
 		}
@@ -315,6 +325,8 @@ func ValidateState(s UserProfilesState) (UserProfilesState, error) {
 		if p.Favorites.Authors == nil || p.Favorites.Maps == nil || p.Favorites.Mods == nil {
 			return UserProfilesState{}, fmt.Errorf("%w: profiles[%q] favorites authors/maps/mods must be present", ErrMalformedProfile, key)
 		}
+
+		s.Profiles[key] = p
 	}
 
 	return s, nil
