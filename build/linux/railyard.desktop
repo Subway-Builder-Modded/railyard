@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Railyard
-Exec=railyard
+Exec=railyard %u
 Icon=org.SBM.Railyard
 Type=Application
 Categories=Utility;Game;
+MimeType=x-scheme-handler/railyard;

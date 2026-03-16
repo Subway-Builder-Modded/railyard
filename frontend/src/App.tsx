@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Switch } from 'wouter';
+import { Route, Switch, useLocation } from 'wouter';
 
 import { DownloadNotification } from '@/components/layout/DownloadNotification';
 import { Layout } from '@/components/layout/Layout';
@@ -20,7 +20,7 @@ import { useInstalledStore } from '@/stores/installed-store';
 import { useProfileStore } from '@/stores/profile-store';
 import { useRegistryStore } from '@/stores/registry-store';
 
-import { IsStartupReady } from '../wailsjs/go/main/App';
+import { ConsumePendingDeepLink, IsStartupReady } from '../wailsjs/go/main/App';
 import { EventsOn } from '../wailsjs/runtime/runtime';
 import { ExtractNotification } from './components/layout/ExtractNotification';
 
@@ -28,9 +28,18 @@ interface DownloadCancelledEvent {
   itemId?: string;
 }
 
+interface DeepLinkEvent {
+  type?: string;
+  id?: string;
+}
+
 function App() {
   useTheme();
+  const [, setLocation] = useLocation();
   const [startupReady, setStartupReady] = useState(false);
+  const [pendingDeepLinkRoute, setPendingDeepLinkRoute] = useState<
+    string | null
+  >(null);
   const updateInstalledLists = useInstalledStore((s) => s.updateInstalledLists);
   const acknowledgeCancel = useInstalledStore(
     (s) => s.acknowledgeCancelledInstall,
@@ -67,6 +76,14 @@ function App() {
         acknowledgeCancel(payload.itemId);
       },
     );
+    const deepLinkOpened = EventsOn('deeplink:open', (payload: DeepLinkEvent) => {
+      const routeType = payload?.type;
+      const routeID = payload?.id;
+      if (!routeType || !routeID) {
+        return;
+      }
+      setPendingDeepLinkRoute(`/project/${routeType}/${encodeURIComponent(routeID)}`);
+    });
     let cancelled = false;
     let timer: number | undefined;
 
@@ -92,6 +109,7 @@ function App() {
     return () => {
       registryUpdate();
       downloadCancelled();
+      deepLinkOpened();
       cancelled = true;
       if (timer !== undefined) {
         window.clearTimeout(timer);
@@ -153,6 +171,40 @@ function App() {
     !startupReady || !configInitialized || !profileInitialized;
   const registryLoading =
     showRegistrySteps && (!registryInitialized || !installedInitialized);
+
+  useEffect(() => {
+    if (!startupReady) return;
+
+    ConsumePendingDeepLink()
+      .then((target) => {
+        const routeType = target?.type;
+        const routeID = target?.id;
+        if (!routeType || !routeID) {
+          return;
+        }
+        setPendingDeepLinkRoute(`/project/${routeType}/${encodeURIComponent(routeID)}`);
+      })
+      .catch(() => {});
+  }, [startupReady]);
+
+  useEffect(() => {
+    if (baseLoading || registryLoading || !isConfigured || !setupCompleted) {
+      return;
+    }
+    if (!pendingDeepLinkRoute) {
+      return;
+    }
+
+    setLocation(pendingDeepLinkRoute);
+    setPendingDeepLinkRoute(null);
+  }, [
+    baseLoading,
+    registryLoading,
+    isConfigured,
+    pendingDeepLinkRoute,
+    setLocation,
+    setupCompleted,
+  ]);
 
   if (baseLoading || registryLoading) {
     return (

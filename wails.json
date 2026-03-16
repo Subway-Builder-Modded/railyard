@@ -15,6 +15,13 @@
     "productName": "Railyard",
     "productVersion": "0.1.0",
     "copyright": "Copyright (c) 2026 cal.engineer",
-    "comments": "A mod manager for Subway Builder"
+    "comments": "A mod manager for Subway Builder",
+    "protocols": [
+      {
+        "scheme": "railyard",
+        "description": "Open links in Railyard",
+        "role": "Viewer"
+      }
+    ]
   }
 }

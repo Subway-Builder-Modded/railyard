@@ -1,3 +1,22 @@
+export namespace deeplink {
+	
+	export class Target {
+	    Type: string;
+	    ID: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Target(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Type = source["Type"];
+	        this.ID = source["ID"];
+	    }
+	}
+
+}
+
 export namespace types {
 	
 	export class AppConfig {
