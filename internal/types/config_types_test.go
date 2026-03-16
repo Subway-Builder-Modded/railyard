@@ -3,6 +3,7 @@ package types
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -51,4 +52,23 @@ func TestValidateConfigPaths(t *testing.T) {
 	require.True(t, result.IsConfigured)
 	require.True(t, result.MetroMakerDataPathValid)
 	require.True(t, result.ExecutablePathValid)
+}
+
+func TestAppConfigFolderPathGetters(t *testing.T) {
+	metroMakerDir := t.TempDir()
+	exeName := "subway-builder"
+	if runtime.GOOS == "windows" {
+		exeName = "subway-builder.exe"
+	}
+	exePath := filepath.Join(metroMakerDir, exeName)
+	require.NoError(t, os.WriteFile(exePath, []byte(""), 0o755))
+
+	cfg := AppConfig{
+		MetroMakerDataPath: metroMakerDir,
+		ExecutablePath:     exePath,
+	}
+
+	require.Equal(t, filepath.Join(metroMakerDir, "mods"), cfg.GetModFolderPath())
+	require.Equal(t, filepath.Join(metroMakerDir, "public", "data", "city-maps"), cfg.GetThumbnailFolderPath())
+	require.Equal(t, filepath.Join(metroMakerDir, "cities", "data"), cfg.GetMapsFolderPath())
 }

@@ -4,7 +4,7 @@
   Gamepad2,
   Github,
   RefreshCw,
-  Shield
+  Shield,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -41,7 +41,12 @@ import {
 import { useConfigStore } from '@/stores/config-store';
 import { useProfileStore } from '@/stores/profile-store';
 
-import { GetPlatform, ManuallyCheckForUpdates, InstallLinuxSandbox, SandboxIsInstalled } from '../../wailsjs/go/main/App';
+import {
+  GetPlatform,
+  InstallLinuxSandbox,
+  ManuallyCheckForUpdates,
+  SandboxIsInstalled,
+} from '../../wailsjs/go/main/App';
 
 const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
 const THEME_OPTIONS = ['dark', 'light', 'system'] as const;
@@ -51,6 +56,7 @@ export function SettingsPage() {
     config,
     validation,
     hasGithubToken,
+    githubTokenValid,
     openDataFolderDialog,
     openExecutableDialog,
     saveConfig,
@@ -62,6 +68,19 @@ export function SettingsPage() {
   const profile = useProfileStore((s) => s.profile);
   const resetProfile = useProfileStore((s) => s.resetProfile);
   const updateUIPreferences = useProfileStore((s) => s.updateUIPreferences);
+
+  const handleCheckToken = async () => {
+    let req = await fetch('https://api.github.com/rate_limit', {
+      headers: {
+        Authorization: `token ${githubTokenDraft.trim()}`,
+      },
+    });
+    if (req.status === 200) {
+      toast.success("GitHub token is valid!")
+    } else {
+      toast.error("GitHub token is invalid. Please check and try again.")
+    }
+  }
 
   const [platform, setPlatform] = useState<string>('unknown');
   useMemo(() => {
@@ -80,7 +99,9 @@ export function SettingsPage() {
       setSandboxInstalled(true);
       toast.success('Linux sandbox installed successfully.');
     } catch (e) {
-      toast.error('Failed to install Linux sandbox. Check the logs for details.');
+      toast.error(
+        'Failed to install Linux sandbox. Check the logs for details.',
+      );
     }
   };
 
@@ -328,7 +349,7 @@ export function SettingsPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge variant={hasGithubToken ? 'default' : 'outline'}>
-                {hasGithubToken ? 'Set' : 'Unset'}
+                {hasGithubToken ? githubTokenValid ? "Set, Valid" : "Set, Invalid" : 'Unset'}
               </Badge>
               <Button
                 variant="outline"
@@ -340,14 +361,17 @@ export function SettingsPage() {
             </div>
           </div>
 
-          {platform == "linux" && (
+          {platform == 'linux' && (
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <Shield className="h-5 w-5 shrink-0 text-muted-foreground" />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium">Linux Sandbox (Optional)</p>
+                  <p className="text-sm font-medium">
+                    Linux Sandbox (Optional)
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    Install the sandbox to potentially improve compatibility and security on Linux.
+                    Install the sandbox to potentially improve compatibility and
+                    security on Linux.
                   </p>
                 </div>
               </div>
@@ -415,8 +439,11 @@ export function SettingsPage() {
             <label className="text-sm font-medium">Default Browse View</label>
             <Select
               value={normalizeSearchViewMode(
-                (profile?.uiPreferences as { searchViewMode?: unknown } | undefined)
-                  ?.searchViewMode,
+                (
+                  profile?.uiPreferences as
+                    | { searchViewMode?: unknown }
+                    | undefined
+                )?.searchViewMode,
               )}
               onValueChange={handleDefaultSearchViewModeChange}
             >
@@ -483,6 +510,12 @@ export function SettingsPage() {
               disabled={!hasGithubToken}
             >
               Clear
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleCheckToken}
+            >
+              Check
             </Button>
             <Button
               onClick={handleSaveGithubToken}

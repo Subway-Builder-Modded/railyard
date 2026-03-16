@@ -13,6 +13,8 @@ export function GetConfig():Promise<types.ResolveConfigResult>;
 
 export function GetGithubToken():Promise<string>;
 
+export function IsGithubTokenValid():Promise<boolean>;
+
 export function OpenExecutableDialog(arg1:types.SetConfigPathOptions):Promise<types.SetConfigPathResult>;
 
 export function OpenMetroMakerDataFolderDialog(arg1:types.SetConfigPathOptions):Promise<types.SetConfigPathResult>;

@@ -53,3 +53,30 @@ func TestCloneMapReturnsCopyForNonNil(t *testing.T) {
 	output["a"] = 2
 	require.Equal(t, 1, input["a"])
 }
+
+func TestOrEmptyNestedMapReturnsEmptyMapForNil(t *testing.T) {
+	var input map[string]map[string]int
+	output := OrEmptyNestedMap(input)
+
+	require.NotNil(t, output)
+	require.Empty(t, output)
+}
+
+func TestOrEmptyNestedMapReturnsOriginalMapWhenNonNil(t *testing.T) {
+	input := map[string]map[string]int{"a": {"b": 1}}
+	output := OrEmptyNestedMap(input)
+
+	require.Equal(t, input, output)
+}
+
+func TestCloneNestedMapReturnsDeepCopy(t *testing.T) {
+	input := map[string]map[string]int{
+		"a": {"x": 1},
+	}
+	output := CloneNestedMap(input)
+
+	require.Equal(t, input, output)
+
+	output["a"]["x"] = 2
+	require.Equal(t, 1, input["a"]["x"])
+}
