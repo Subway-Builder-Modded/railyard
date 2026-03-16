@@ -56,6 +56,7 @@ export function SettingsPage() {
     config,
     validation,
     hasGithubToken,
+    githubTokenValid,
     openDataFolderDialog,
     openExecutableDialog,
     saveConfig,
@@ -67,6 +68,19 @@ export function SettingsPage() {
   const profile = useProfileStore((s) => s.profile);
   const resetProfile = useProfileStore((s) => s.resetProfile);
   const updateUIPreferences = useProfileStore((s) => s.updateUIPreferences);
+
+  const handleCheckToken = async () => {
+    let req = await fetch('https://api.github.com/rate_limit', {
+      headers: {
+        Authorization: `token ${githubTokenDraft.trim()}`,
+      },
+    });
+    if (req.status === 200) {
+      toast.success("GitHub token is valid!")
+    } else {
+      toast.error("GitHub token is invalid. Please check and try again.")
+    }
+  }
 
   const [platform, setPlatform] = useState<string>('unknown');
   useMemo(() => {
@@ -335,7 +349,7 @@ export function SettingsPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge variant={hasGithubToken ? 'default' : 'outline'}>
-                {hasGithubToken ? 'Set' : 'Unset'}
+                {hasGithubToken ? githubTokenValid ? "Set, Valid" : "Set, Invalid" : 'Unset'}
               </Badge>
               <Button
                 variant="outline"
@@ -496,6 +510,12 @@ export function SettingsPage() {
               disabled={!hasGithubToken}
             >
               Clear
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleCheckToken}
+            >
+              Check
             </Button>
             <Button
               onClick={handleSaveGithubToken}

@@ -22,6 +22,10 @@ export function GetGithubToken() {
   return window['go']['config']['Config']['GetGithubToken']();
 }
 
+export function IsGithubTokenValid() {
+  return window['go']['config']['Config']['IsGithubTokenValid']();
+}
+
 export function OpenExecutableDialog(arg1) {
   return window['go']['config']['Config']['OpenExecutableDialog'](arg1);
 }

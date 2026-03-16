@@ -5,6 +5,7 @@ import {
   ClearGithubToken,
   CompleteSetup,
   GetConfig,
+  IsGithubTokenValid,
   OpenExecutableDialog,
   OpenMetroMakerDataFolderDialog,
   SaveConfig,
@@ -20,6 +21,7 @@ interface ConfigState {
   loading: boolean;
   error: string | null;
   initialized: boolean;
+  githubTokenValid: boolean;
 
   isConfigured: () => boolean;
   initialize: () => Promise<void>;
@@ -46,6 +48,7 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
   loading: false,
   error: null,
   initialized: false,
+  githubTokenValid: false,
 
   isConfigured: () => get().validation?.isConfigured ?? false,
 
@@ -54,12 +57,14 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const result = await GetConfig();
+      const tokenValid = result.hasGithubToken ? await IsGithubTokenValid() : false;
       set({
         config: result.config,
         validation: result.validation,
         hasGithubToken: result.hasGithubToken,
         initialized: true,
         loading: false,
+        githubTokenValid: tokenValid,
       });
     } catch (err) {
       set({
@@ -133,6 +138,7 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
         validation: result.validation,
         hasGithubToken: result.hasGithubToken,
         loading: false,
+        githubTokenValid: false,
       });
     } catch (err) {
       set({
@@ -146,10 +152,12 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
     set({ error: null });
     try {
       const result = await UpdateGithubToken(token.trim());
+      const valid = result.hasGithubToken ? await IsGithubTokenValid() : false;
       set({
         config: result.config,
         validation: result.validation,
         hasGithubToken: result.hasGithubToken,
+        githubTokenValid: valid,
       });
       return result;
     } catch (err) {
@@ -166,6 +174,7 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
         config: result.config,
         validation: result.validation,
         hasGithubToken: result.hasGithubToken,
+        githubTokenValid: false,
       });
       return result;
     } catch (err) {

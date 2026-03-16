@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -169,6 +170,28 @@ func (s *Config) GetGithubToken() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.Cfg.GithubToken
+}
+
+func (s *Config) IsGithubTokenValid() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.Cfg.GithubToken == "" {
+		return false
+	}
+
+	req, err := http.NewRequest("GET", "https://api.github.com/rate_limit", nil)
+	req.Header.Add("Authorization", "token "+s.Cfg.GithubToken)
+	if err != nil {
+		return false
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK
 }
 
 /* ===== Dialog Functions ===== */

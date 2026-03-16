@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useConfigStore } from '@/stores/config-store';
+import { toast } from 'sonner';
 
 export function SetupScreen() {
   const [step, setStep] = useState(1);
@@ -36,6 +37,19 @@ export function SetupScreen() {
     updateGithubToken,
     completeSetup,
   } = useConfigStore();
+
+  const handleCheckToken = async () => {
+    let req = await fetch('https://api.github.com/rate_limit', {
+      headers: {
+        Authorization: `token ${githubToken.trim()}`,
+      },
+    });
+    if (req.status === 200) {
+      toast.success("GitHub token is valid!")
+    } else {
+      toast.error("GitHub token is invalid. Please check and try again.")
+    }
+  }
 
   const handleDataFolder = async (autoDetect: boolean) => {
     try {
@@ -266,6 +280,10 @@ export function SetupScreen() {
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
                 </Button>
+                <Button variant="outline" onClick={handleCheckToken} disabled={githubToken.trim() === ''}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Check Token
+                </Button>
                 <Button onClick={() => setStep(4)}>
                   Next
                   <ChevronRight className="ml-2 h-4 w-4" />
@@ -275,9 +293,6 @@ export function SetupScreen() {
           ) : (
             <>
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Check for updates on launch
-                </p>
                 <div className="flex items-center gap-4 w-full justify-center">
                   <Button
                     variant={checkForUpdates === true ? 'default' : 'outline'}

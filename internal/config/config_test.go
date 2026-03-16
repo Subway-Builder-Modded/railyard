@@ -1,10 +1,13 @@
 package config
 
 import (
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"railyard/internal/testutil"
 	"railyard/internal/types"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -171,6 +174,66 @@ func TestUpdateAndClearGithubToken(t *testing.T) {
 	require.False(t, cleared.HasGithubToken)
 	require.Empty(t, cleared.Config.GithubToken)
 	require.Empty(t, h.cfg.GetGithubToken())
+}
+
+func mockGithubTokenValidationResponse(t *testing.T, apiKey string) func() (bool, error) {
+	return func() (bool, error) {
+		httpserver := http.NewServeMux()
+		httpserver.HandleFunc("/rate_limit", func(w http.ResponseWriter, r *http.Request) {
+			authHeader := r.Header.Get("Authorization")
+			expectedAuth := "token " + apiKey
+			if authHeader != expectedAuth {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, err := w.Write([]byte(`{"limit": "none"}`))
+			require.NoError(t, err)
+		})
+
+		openPort, err := net.Listen("tcp", ":0")
+		require.NoError(t, err)
+		require.NoError(t, openPort.Close())
+		port := openPort.Addr().(*net.TCPAddr).Port
+
+		testServer := http.Server{
+			Addr:    ":" + strconv.Itoa(port),
+			Handler: httpserver,
+		}
+		go testServer.ListenAndServe()
+
+		request, err := http.NewRequest("GET", "http://localhost:"+strconv.Itoa(port)+"/rate_limit", nil)
+		request.Header.Add("Authorization", "token "+apiKey)
+
+		req, err := http.DefaultClient.Do(request)
+
+		require.NoError(t, err)
+		defer req.Body.Close()
+		defer testServer.Close()
+		return req.StatusCode == http.StatusOK, nil
+	}
+}
+
+func TestGithubTokenIsValid(t *testing.T) {
+	h := setup(t, types.AppConfig{})
+
+	// Invalid token (empty)
+	require.False(t, h.cfg.IsGithubTokenValid())
+
+	// Invalid token (whitespace)
+	_, err := h.cfg.UpdateGithubToken("   ")
+	require.NoError(t, err)
+	require.False(t, h.cfg.IsGithubTokenValid())
+
+	// Token set, but invalid
+	_, err = h.cfg.UpdateGithubToken("invalid_token")
+	require.NoError(t, err)
+	require.False(t, h.cfg.IsGithubTokenValid())
+
+	// Valid token
+	res, err := mockGithubTokenValidationResponse(t, "github_pat_example")()
+	require.NoError(t, err)
+	require.True(t, res)
 }
 
 func TestSetConfigOverwritesRuntime(t *testing.T) {
