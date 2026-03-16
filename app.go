@@ -53,10 +53,11 @@ type App struct {
 }
 
 func (a *App) OpenInFileExplorer(targetPath string) types.GenericResponse {
-	cleanedPath := filepath.Clean(strings.TrimSpace(targetPath))
-	if cleanedPath == "" {
+	trimmedPath := strings.TrimSpace(targetPath)
+	if trimmedPath == "" {
 		return types.ErrorResponse("invalid path")
 	}
+	cleanedPath := filepath.Clean(trimmedPath)
 
 	info, err := os.Stat(cleanedPath)
 	if err != nil {

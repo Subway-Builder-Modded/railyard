@@ -2,10 +2,11 @@ package types
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"railyard/internal/paths"
 )
 
 // AppConfig is persisted at ConfigPath() and is used for global configuration
@@ -60,7 +61,7 @@ func (c AppConfig) AreConfigPathsConfigured() bool {
 func (c AppConfig) GetModFolderPath() string {
 	pathsValid, _ := c.ValidateConfigPaths()
 	if pathsValid {
-		return path.Join(c.MetroMakerDataPath, "mods")
+		return paths.JoinLocalPath(c.MetroMakerDataPath, "mods")
 	}
 	return ""
 }
@@ -69,7 +70,7 @@ func (c AppConfig) GetModFolderPath() string {
 func (c AppConfig) GetThumbnailFolderPath() string {
 	pathsValid, _ := c.ValidateConfigPaths()
 	if pathsValid {
-		return path.Join(c.MetroMakerDataPath, "public", "data", "city-maps")
+		return paths.JoinLocalPath(c.MetroMakerDataPath, "public", "data", "city-maps")
 	}
 	return ""
 }
@@ -78,7 +79,7 @@ func (c AppConfig) GetThumbnailFolderPath() string {
 func (c AppConfig) GetMapsFolderPath() string {
 	pathsValid, _ := c.ValidateConfigPaths()
 	if pathsValid {
-		return path.Join(c.MetroMakerDataPath, "cities", "data")
+		return paths.JoinLocalPath(c.MetroMakerDataPath, "cities", "data")
 	}
 	return ""
 }

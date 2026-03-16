@@ -5,11 +5,13 @@ import { useRegistryStore } from './registry-store';
 const {
   mockGetMods,
   mockGetMaps,
+  mockGetIntegrityReport,
   mockRefresh,
   mockGetDownloadCountsByAssetType,
 } = vi.hoisted(() => ({
   mockGetMods: vi.fn(),
   mockGetMaps: vi.fn(),
+  mockGetIntegrityReport: vi.fn(),
   mockRefresh: vi.fn(),
   mockGetDownloadCountsByAssetType: vi.fn(),
 }));
@@ -17,6 +19,7 @@ const {
 vi.mock('../../wailsjs/go/registry/Registry', () => ({
   GetMods: mockGetMods,
   GetMaps: mockGetMaps,
+  GetIntegrityReport: mockGetIntegrityReport,
   Refresh: mockRefresh,
   GetDownloadCountsByAssetType: mockGetDownloadCountsByAssetType,
 }));
@@ -121,6 +124,9 @@ describe('useRegistryStore download totals', () => {
     mockRefresh.mockResolvedValue(undefined);
     mockGetMods.mockResolvedValue([]);
     mockGetMaps.mockResolvedValue([]);
+    mockGetIntegrityReport
+      .mockResolvedValueOnce({ listings: {} })
+      .mockResolvedValueOnce({ listings: {} });
     mockGetDownloadCountsByAssetType
       .mockResolvedValueOnce({
         status: 'success',
@@ -141,6 +147,9 @@ describe('useRegistryStore download totals', () => {
     expect(mockRefresh).toHaveBeenCalledTimes(1);
     expect(mockGetMods).toHaveBeenCalledTimes(1);
     expect(mockGetMaps).toHaveBeenCalledTimes(1);
+    expect(mockGetIntegrityReport).toHaveBeenCalledTimes(2);
+    expect(mockGetIntegrityReport).toHaveBeenNthCalledWith(1, 'map');
+    expect(mockGetIntegrityReport).toHaveBeenNthCalledWith(2, 'mod');
     expect(state.modDownloadTotals).toEqual({ mod_c: 9 });
     expect(state.mapDownloadTotals).toEqual({ map_c: 10 });
     expect(state.downloadTotalsLoaded).toBe(true);

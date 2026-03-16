@@ -38,6 +38,22 @@ wails dev
 wails build
 ```
 
+## Quality Checks
+
+```bash
+# Run full pre-push checks manually (backend + frontend)
+pwsh -File ./scripts/pre-push-check.ps1
+
+# Optional: enforce checks automatically before every git push
+git config core.hooksPath .githooks
+```
+
+The pre-push check includes:
+- `gofmt` validation for all tracked Go files
+- `go test ./...`
+- `go test` coverage gate (`scripts/check-go-coverage.ps1`, default minimum: `45%`)
+- frontend `pnpm run lint`, `pnpm run format:check`, and `pnpm run test`
+
 ## How It Works
 
 1. **Registry** — Railyard clones a Git-based registry of available maps and mods.

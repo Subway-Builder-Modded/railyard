@@ -5,3 +5,7 @@ frontend/dist
 .pnpm-store/
 railyard.claude/tmp/
 tmp/
+.tmp/
+coverage
+coverage_func.txt
+$coverFile
