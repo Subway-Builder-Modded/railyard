@@ -114,37 +114,79 @@ function ThemePreview({ colors }: ThemePreviewProps) {
   return (
     <div
       className="relative w-full rounded-sm overflow-hidden"
-      style={{ aspectRatio: '16 / 10', background: colors.bg, border: `1px solid ${colors.border}` }}
+      style={{
+        aspectRatio: '16 / 10',
+        background: colors.bg,
+        border: `1px solid ${colors.border}`,
+      }}
     >
       {/* Top bar */}
       <div
         className="absolute top-0 left-0 right-0 flex items-center gap-1 px-2"
-        style={{ height: '15%', background: colors.bar, borderBottom: `1px solid ${colors.border}` }}
+        style={{
+          height: '15%',
+          background: colors.bar,
+          borderBottom: `1px solid ${colors.border}`,
+        }}
       >
-        <div className="rounded-full" style={{ width: 5, height: 5, background: '#f47067' }} />
-        <div className="rounded-full" style={{ width: 5, height: 5, background: '#f1a33c' }} />
-        <div className="rounded-full" style={{ width: 5, height: 5, background: '#58be40' }} />
+        <div
+          className="rounded-full"
+          style={{ width: 5, height: 5, background: '#f47067' }}
+        />
+        <div
+          className="rounded-full"
+          style={{ width: 5, height: 5, background: '#f1a33c' }}
+        />
+        <div
+          className="rounded-full"
+          style={{ width: 5, height: 5, background: '#58be40' }}
+        />
         <div
           className="ml-2 rounded-sm flex-1"
           style={{ height: 6, background: colors.muted, maxWidth: '40%' }}
         />
         <div className="ml-auto flex items-center gap-1">
-          <div className="rounded-[2px]" style={{ width: 6, height: 6, background: '#2da44e' }} />
-          <div className="rounded-[2px]" style={{ width: 6, height: 6, background: '#f85149' }} />
+          <div
+            className="rounded-[2px]"
+            style={{ width: 6, height: 6, background: '#2da44e' }}
+          />
+          <div
+            className="rounded-[2px]"
+            style={{ width: 6, height: 6, background: '#f85149' }}
+          />
         </div>
       </div>
 
       {/* Body */}
-      <div className="absolute bottom-0 left-0 right-0 flex" style={{ top: '15%' }}>
+      <div
+        className="absolute bottom-0 left-0 right-0 flex"
+        style={{ top: '15%' }}
+      >
         {/* Sidebar strip */}
         <div
           className="flex flex-col gap-1 p-1.5"
-          style={{ width: '30%', background: colors.sidebar, borderRight: `1px solid ${colors.border}` }}
+          style={{
+            width: '30%',
+            background: colors.sidebar,
+            borderRight: `1px solid ${colors.border}`,
+          }}
         >
-          <div className="rounded-sm" style={{ height: 5, background: colors.primary, width: '70%' }} />
-          <div className="rounded-sm" style={{ height: 5, background: colors.muted, width: '90%' }} />
-          <div className="rounded-sm" style={{ height: 5, background: colors.muted, width: '60%' }} />
-          <div className="rounded-sm" style={{ height: 5, background: colors.muted, width: '80%' }} />
+          <div
+            className="rounded-sm"
+            style={{ height: 5, background: colors.primary, width: '70%' }}
+          />
+          <div
+            className="rounded-sm"
+            style={{ height: 5, background: colors.muted, width: '90%' }}
+          />
+          <div
+            className="rounded-sm"
+            style={{ height: 5, background: colors.muted, width: '60%' }}
+          />
+          <div
+            className="rounded-sm"
+            style={{ height: 5, background: colors.muted, width: '80%' }}
+          />
         </div>
 
         {/* Main content */}
@@ -153,14 +195,35 @@ function ThemePreview({ colors }: ThemePreviewProps) {
             className="rounded-sm"
             style={{ height: 4, width: '42%', background: '#2da44e' }}
           />
-          <div className="rounded-sm" style={{ height: 7, background: colors.muted, width: '65%' }} />
           <div
             className="rounded-sm"
-            style={{ height: 20, background: colors.card, border: `1px solid ${colors.border}` }}
+            style={{ height: 7, background: colors.muted, width: '65%' }}
+          />
+          <div
+            className="rounded-sm"
+            style={{
+              height: 20,
+              background: colors.card,
+              border: `1px solid ${colors.border}`,
+            }}
           />
           <div className="flex gap-1.5">
-            <div className="rounded-sm flex-1" style={{ height: 12, background: colors.card, border: `1px solid ${colors.border}` }} />
-            <div className="rounded-sm flex-1" style={{ height: 12, background: colors.card, border: `1px solid ${colors.border}` }} />
+            <div
+              className="rounded-sm flex-1"
+              style={{
+                height: 12,
+                background: colors.card,
+                border: `1px solid ${colors.border}`,
+              }}
+            />
+            <div
+              className="rounded-sm flex-1"
+              style={{
+                height: 12,
+                background: colors.card,
+                border: `1px solid ${colors.border}`,
+              }}
+            />
           </div>
         </div>
       </div>
@@ -209,7 +272,9 @@ export function ThemePicker({ value, onChange, disabled }: ThemePickerProps) {
                   <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                 )}
               </div>
-              <span className="text-xs font-medium leading-none">{option.label}</span>
+              <span className="text-xs font-medium leading-none">
+                {option.label}
+              </span>
             </div>
           </button>
         );

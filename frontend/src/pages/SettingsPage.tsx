@@ -10,9 +10,9 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { ThemePicker, type ThemeValue } from '@/components/shared/ThemePicker';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThemePicker, type ThemeValue } from '@/components/shared/ThemePicker';
 import {
   Card,
   CardContent,
@@ -53,16 +53,22 @@ import {
 const PAGE_SIZE_OPTIONS = [12, 24, 48] as const;
 
 const VALID_THEMES = new Set<ThemeValue>([
-  'dark', 'dark_low', 'dark_high', 'light', 'light_low', 'light_high', 'system',
+  'dark',
+  'dark_low',
+  'dark_high',
+  'light',
+  'light_low',
+  'light_high',
+  'system',
 ]);
 
 const THEME_LABELS: Record<ThemeValue, string> = {
   dark: 'Dark',
-  'dark_low': 'Dark (Soft)',
-  'dark_high': 'Dark (Contrast)',
+  dark_low: 'Dark (Soft)',
+  dark_high: 'Dark (Contrast)',
   light: 'Light',
-  'light_low': 'Light (Soft)',
-  'light_high': 'Light (Contrast)',
+  light_low: 'Light (Soft)',
+  light_high: 'Light (Contrast)',
   system: 'System',
 };
 
@@ -92,11 +98,11 @@ export function SettingsPage() {
       },
     });
     if (req.status === 200) {
-      toast.success("GitHub token is valid!")
+      toast.success('GitHub token is valid!');
     } else {
-      toast.error("GitHub token is invalid. Please check and try again.")
+      toast.error('GitHub token is invalid. Please check and try again.');
     }
-  }
+  };
 
   const [platform, setPlatform] = useState<string>('unknown');
   useMemo(() => {
@@ -361,7 +367,11 @@ export function SettingsPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge variant={hasGithubToken ? 'default' : 'outline'}>
-                {hasGithubToken ? githubTokenValid ? "Set, Valid" : "Set, Invalid" : 'Unset'}
+                {hasGithubToken
+                  ? githubTokenValid
+                    ? 'Set, Valid'
+                    : 'Set, Invalid'
+                  : 'Unset'}
               </Badge>
               <Button
                 variant="outline"
@@ -425,8 +435,9 @@ export function SettingsPage() {
               >
                 {
                   THEME_LABELS[
-                    ((profile?.uiPreferences?.theme as ThemeValue | undefined) ??
-                      'dark') as ThemeValue
+                    ((profile?.uiPreferences?.theme as
+                      | ThemeValue
+                      | undefined) ?? 'dark') as ThemeValue
                   ]
                 }
                 <ChevronDown
@@ -438,9 +449,12 @@ export function SettingsPage() {
             {showThemePreviews && (
               <ThemePicker
                 value={
-                  ((profile?.uiPreferences?.theme as ThemeValue | undefined) ?? 'dark') === 'system'
+                  ((profile?.uiPreferences?.theme as ThemeValue | undefined) ??
+                    'dark') === 'system'
                     ? 'dark'
-                    : ((profile?.uiPreferences?.theme as ThemeValue | undefined) ?? 'dark')
+                    : ((profile?.uiPreferences?.theme as
+                        | ThemeValue
+                        | undefined) ?? 'dark')
                 }
                 onChange={handleThemeChange}
               />
@@ -540,10 +554,7 @@ export function SettingsPage() {
             >
               Clear
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleCheckToken}
-            >
+            <Button variant="outline" onClick={handleCheckToken}>
               Check
             </Button>
             <Button

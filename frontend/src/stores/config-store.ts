@@ -57,7 +57,9 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const result = await GetConfig();
-      const tokenValid = result.hasGithubToken ? await IsGithubTokenValid() : false;
+      const tokenValid = result.hasGithubToken
+        ? await IsGithubTokenValid()
+        : false;
       set({
         config: result.config,
         validation: result.validation,

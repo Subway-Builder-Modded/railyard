@@ -5,13 +5,13 @@ import { useProfileStore } from '@/stores/profile-store';
 const DARK_THEMES = new Set(['dark', 'dark_low', 'dark_high']);
 
 const VARIANT_CLASS_MAP: Record<string, string | null> = {
-  'dark': null,
-  'dark_low': 'theme-dark_low',
-  'dark_high': 'theme-dark_high',
-  'light': null,
-  'light_low': 'theme-light_low',
-  'light_high': 'theme-light_high',
-  'system': null,
+  dark: null,
+  dark_low: 'theme-dark_low',
+  dark_high: 'theme-dark_high',
+  light: null,
+  light_low: 'theme-light_low',
+  light_high: 'theme-light_high',
+  system: null,
 };
 
 const ALL_VARIANT_CLASSES = [

@@ -9,6 +9,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useConfigStore } from '@/stores/config-store';
-import { toast } from 'sonner';
 
 export function SetupScreen() {
   const [step, setStep] = useState(1);
@@ -45,11 +45,11 @@ export function SetupScreen() {
       },
     });
     if (req.status === 200) {
-      toast.success("GitHub token is valid!")
+      toast.success('GitHub token is valid!');
     } else {
-      toast.error("GitHub token is invalid. Please check and try again.")
+      toast.error('GitHub token is invalid. Please check and try again.');
     }
-  }
+  };
 
   const handleDataFolder = async (autoDetect: boolean) => {
     try {
@@ -280,7 +280,11 @@ export function SetupScreen() {
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
                 </Button>
-                <Button variant="outline" onClick={handleCheckToken} disabled={githubToken.trim() === ''}>
+                <Button
+                  variant="outline"
+                  onClick={handleCheckToken}
+                  disabled={githubToken.trim() === ''}
+                >
                   <CheckCircle className="mr-2 h-4 w-4" />
                   Check Token
                 </Button>
