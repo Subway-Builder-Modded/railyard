@@ -26,6 +26,26 @@ document.addEventListener(
 );
 
 document.addEventListener(
+  'touchmove',
+  (e) => {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  },
+  { passive: false, capture: true },
+);
+
+const preventGestureZoom = (e: Event) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
+document.addEventListener('gesturestart', preventGestureZoom as EventListener, true);
+document.addEventListener('gesturechange', preventGestureZoom as EventListener, true);
+document.addEventListener('gestureend', preventGestureZoom as EventListener, true);
+
+document.addEventListener(
   'contextmenu',
   (e) => {
     e.preventDefault();
