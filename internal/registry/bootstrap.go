@@ -145,4 +145,3 @@ func (r *Registry) hasAssetMarker(assetType types.AssetType, assetID string, ins
 	r.logger.Warn("Skipping subscribed asset during installed-state bootstrap: missing marker", attrs...)
 	return false
 }
-
