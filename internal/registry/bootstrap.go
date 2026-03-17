@@ -18,21 +18,6 @@ func (r *Registry) BootstrapInstalledStateFromProfile(profile types.UserProfile)
 		"profile_id", profile.ID,
 		"subscriptions", profile.Subscriptions,
 	)
-
-	hasSubscriptions := len(profile.Subscriptions.Mods) > 0 || len(profile.Subscriptions.Maps) > 0
-
-	metroMakerDataPath := r.config.Cfg.MetroMakerDataPath
-
-	if !hasSubscriptions || metroMakerDataPath == "" {
-		r.logger.Info(
-			"Skipping installed asset state bootstrap: no subscriptions or invalid config paths",
-			"profile_id", profile.ID,
-			"has_subscriptions", hasSubscriptions,
-			"metro_maker_data_path_set", metroMakerDataPath != "",
-		)
-		return nil
-	}
-
 	nextInstalledMods := r.bootstrapInstalledMods(profile.Subscriptions, r.config.Cfg.GetModsFolderPath())
 	nextInstalledMaps := r.bootstrapInstalledMaps(profile.Subscriptions, r.config.Cfg.GetMapsFolderPath())
 

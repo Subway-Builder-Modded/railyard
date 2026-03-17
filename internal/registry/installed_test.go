@@ -94,7 +94,7 @@ func TestBootstrapInstalledStateFromProfileSkipsModOnVersionMismatch(t *testing.
 	})
 
 	cfg := config.NewConfig()
-	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	testutil.SetValidConfigPaths(t, cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())
 
@@ -125,7 +125,7 @@ func TestBootstrapInstalledStateFromProfileSkipsMissingRequiredData(t *testing.T
 	})
 
 	cfg := config.NewConfig()
-	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	testutil.SetValidConfigPaths(t, cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())
 
@@ -152,7 +152,7 @@ func TestBootstrapInstalledStateFromProfileSuccessOnEmptyState(t *testing.T) {
 	})
 
 	cfg := config.NewConfig()
-	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	testutil.SetValidConfigPaths(t, cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())
 
