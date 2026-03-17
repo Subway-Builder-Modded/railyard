@@ -8,7 +8,11 @@ COVER_FILE="$COVER_DIR/coverage.out"
 # Minimum acceptable total coverage percentage.
 # Override with: GO_COVER_MIN=50 ./scripts/check-go-coverage.sh
 MIN_COVERAGE="${GO_COVER_MIN:-45}"
-GO_COVER_PACKAGES="${GO_COVER_PACKAGES:-./...}"
+GO_COVER_PACKAGES="${GO_COVER_PACKAGES:-}"
+
+if [ -z "$GO_COVER_PACKAGES" ]; then
+  GO_COVER_PACKAGES="$(go list ./... | grep -Ev '/internal/testutil($|/)')"
+fi
 
 mkdir -p "$COVER_DIR"
 

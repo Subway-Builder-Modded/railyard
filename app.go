@@ -250,24 +250,10 @@ func runNonBlockingStartupRoutines(a *App, activeProfile types.UserProfile) {
 }
 
 func (a *App) bootstrapInstalledState(activeProfile types.UserProfile) {
-	summary, err := a.Registry.BootstrapInstalledStateFromProfile(activeProfile)
+	err := a.Registry.BootstrapInstalledStateFromProfile(activeProfile)
 	if err != nil {
 		a.Logger.Warn("Failed to bootstrap installed asset state on startup", "error", err, "profile_id", activeProfile.ID)
-		return
 	}
-
-	a.Logger.Info(
-		"Bootstrapped installed asset state on startup",
-		"profile_id", activeProfile.ID,
-		"desired_mods", summary.DesiredMods,
-		"desired_maps", summary.DesiredMaps,
-		"rebuilt_mods", summary.RebuiltMods,
-		"rebuilt_maps", summary.RebuiltMaps,
-		"skipped_mods_missing_marker", summary.SkippedModsMissingMarker,
-		"skipped_maps_missing_marker", summary.SkippedMapsMissingMarker,
-		"skipped_maps_missing_manifest", summary.SkippedMapsMissingManifest,
-		"skipped_maps_missing_code", summary.SkippedMapsMissingCode,
-	)
 }
 
 // GetGameVersion attempts to detect the installed Subway Builder version.
@@ -670,7 +656,7 @@ func (a *App) addSaltsOnFirstRun() error {
 		for _, mod := range a.Registry.GetInstalledMods() {
 			id := mod.ID
 
-			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModFolderPath(), id, constants.AssetMarkerFileName)); err != nil {
+			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModFolderPath(), id, constants.RailyardAssetMarker)); err != nil {
 				a.Logger.Warn("Failed to add salt file for mod", "mod_id", id, "error", err)
 				return err
 			}
@@ -678,7 +664,7 @@ func (a *App) addSaltsOnFirstRun() error {
 
 		for _, m := range a.Registry.GetInstalledMaps() {
 			code := m.MapConfig.Code
-			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetMapsFolderPath(), code, constants.AssetMarkerFileName)); err != nil {
+			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetMapsFolderPath(), code, constants.RailyardAssetMarker)); err != nil {
 				a.Logger.Warn("Failed to add salt file for map", "map_code", code, "error", err)
 				return err
 			}

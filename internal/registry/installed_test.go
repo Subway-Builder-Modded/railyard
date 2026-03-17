@@ -103,22 +103,18 @@ func TestBootstrapInstalledStateFromProfileRebuildsFromMarkers(t *testing.T) {
 
 	modPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "mods", "mod-a")
 	require.NoError(t, os.MkdirAll(modPath, 0o755))
-	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.RailyardAssetMarker), []byte(""), 0o644))
 
 	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
 	require.NoError(t, os.MkdirAll(mapPath, 0o755))
-	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
 
 	profile := types.DefaultProfile()
 	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
 	profile.Subscriptions.Maps["map-a"] = "2.0.0"
 
-	summary, err := reg.BootstrapInstalledStateFromProfile(profile)
+	err := reg.BootstrapInstalledStateFromProfile(profile)
 	require.NoError(t, err)
-	require.Equal(t, 1, summary.DesiredMods)
-	require.Equal(t, 1, summary.DesiredMaps)
-	require.Equal(t, 1, summary.RebuiltMods)
-	require.Equal(t, 1, summary.RebuiltMaps)
 
 	require.Equal(t, []types.InstalledModInfo{
 		{ID: "mod-a", Version: "1.0.0"},
@@ -165,12 +161,8 @@ func TestBootstrapInstalledStateFromProfileSkipsMissingMarkerManifestAndCode(t *
 	profile.Subscriptions.Maps["map-empty"] = "1.0.0"   // Missing city code
 	profile.Subscriptions.Maps["map-missing"] = "1.0.0" // Missing manifest
 
-	summary, err := reg.BootstrapInstalledStateFromProfile(profile)
+	err := reg.BootstrapInstalledStateFromProfile(profile)
 	require.NoError(t, err)
-	require.Equal(t, 1, summary.SkippedModsMissingMarker)
-	require.Equal(t, 1, summary.SkippedMapsMissingMarker)
-	require.Equal(t, 1, summary.SkippedMapsMissingCode)
-	require.Equal(t, 1, summary.SkippedMapsMissingManifest)
 	require.Empty(t, reg.GetInstalledMods())
 	require.Empty(t, reg.GetInstalledMaps())
 }
@@ -197,16 +189,16 @@ func TestBootstrapInstalledStateRepairsCorruptedInstalledStateFiles(t *testing.T
 
 	modPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "mods", "mod-a")
 	require.NoError(t, os.MkdirAll(modPath, 0o755))
-	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.RailyardAssetMarker), []byte(""), 0o644))
 	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
 	require.NoError(t, os.MkdirAll(mapPath, 0o755))
-	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
 
 	profile := types.DefaultProfile()
 	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
 	profile.Subscriptions.Maps["map-a"] = "2.0.0"
 
-	_, err := reg.BootstrapInstalledStateFromProfile(profile)
+	err := reg.BootstrapInstalledStateFromProfile(profile)
 	require.NoError(t, err)
 
 	_, modErr := files.ReadJSON[[]types.InstalledModInfo](paths.InstalledModsPath(), "installed mods file", files.JSONReadOptions{})
