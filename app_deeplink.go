@@ -1,0 +1,116 @@
+package main
+
+import (
+	"sync"
+
+	"railyard/internal/deeplink"
+
+	"github.com/wailsapp/wails/v2/pkg/options"
+	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
+)
+
+type deepLinkQueue struct {
+	mu      sync.Mutex
+	pending []deeplink.Target
+}
+
+func (q *deepLinkQueue) enqueue(target deeplink.Target) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	q.pending = append(q.pending, target)
+}
+
+func (q *deepLinkQueue) drain() []deeplink.Target {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	queued := append([]deeplink.Target(nil), q.pending...)
+	q.pending = nil
+	return queued
+}
+
+func (q *deepLinkQueue) consume() (deeplink.Target, bool) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
+	if len(q.pending) == 0 {
+		return deeplink.Target{}, false
+	}
+
+	target := q.pending[0]
+	q.pending = q.pending[1:]
+	return target, true
+}
+
+func (a *App) onURLOpen(rawURL string) {
+	a.HandleDeepLinkURL(rawURL)
+}
+
+// onSecondInstanceLaunch runs in the primary instance after Wails aborts a
+// duplicate launch attempt. It forwards any deep-link args from the rejected
+// process into the already-running app.
+func (a *App) onSecondInstanceLaunch(data options.SecondInstanceData) {
+	if target, ok := deeplink.ParseArgs(data.Args); ok {
+		a.HandleDeepLinkTarget(target)
+	}
+}
+
+func (a *App) HandleDeepLinkURL(rawURL string) {
+	target, ok := deeplink.ParseURL(rawURL)
+	if !ok {
+		return
+	}
+	a.HandleDeepLinkTarget(target)
+}
+
+func (a *App) HandleDeepLinkTarget(target deeplink.Target) {
+	if !target.Valid() {
+		return
+	}
+
+	a.deepLinks.enqueue(target)
+	if a.ctx != nil && a.IsStartupReady() {
+		a.emitPendingDeepLinks()
+	}
+}
+
+func (a *App) emitPendingDeepLinks() {
+	queued := a.deepLinks.drain()
+	if a.ctx == nil || len(queued) == 0 {
+		return
+	}
+
+	a.bringToFront()
+
+	for _, target := range queued {
+		wailsruntime.EventsEmit(a.ctx, "deeplink:open", map[string]string{
+			"type": target.Type,
+			"id":   target.ID,
+		})
+	}
+}
+
+func (a *App) ConsumePendingDeepLink() map[string]string {
+	target, ok := a.deepLinks.consume()
+	if !ok {
+		return nil
+	}
+
+	a.bringToFront()
+
+	return map[string]string{
+		"type": target.Type,
+		"id":   target.ID,
+	}
+}
+
+func (a *App) bringToFront() {
+	if a.ctx == nil {
+		return
+	}
+
+	wailsruntime.WindowUnminimise(a.ctx)
+	wailsruntime.WindowShow(a.ctx)
+	wailsruntime.WindowSetAlwaysOnTop(a.ctx, true)
+	wailsruntime.WindowSetAlwaysOnTop(a.ctx, false)
+}

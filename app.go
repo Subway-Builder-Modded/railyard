@@ -19,7 +19,6 @@ import (
 
 	"railyard/internal/config"
 	"railyard/internal/constants"
-	"railyard/internal/deeplink"
 	"railyard/internal/downloader"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
@@ -30,7 +29,6 @@ import (
 	"railyard/internal/utils"
 
 	"github.com/protomaps/go-pmtiles/pmtiles"
-	"github.com/wailsapp/wails/v2/pkg/options"
 	wailsruntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -53,8 +51,7 @@ type App struct {
 	startupMu     sync.RWMutex
 	startupReady  bool
 
-	deepLinkMu   sync.Mutex
-	pendingLinks []deeplink.Target
+	deepLinks deepLinkQueue
 }
 
 func (a *App) OpenInFileExplorer(targetPath string) types.GenericResponse {
@@ -183,89 +180,6 @@ func (a *App) IsStartupReady() bool {
 	a.startupMu.RLock()
 	defer a.startupMu.RUnlock()
 	return a.startupReady
-}
-
-func (a *App) onURLOpen(rawURL string) {
-	a.HandleDeepLinkURL(rawURL)
-}
-
-func (a *App) onSecondInstanceLaunch(data options.SecondInstanceData) {
-	if target, ok := deeplink.ParseArgs(data.Args); ok {
-		a.HandleDeepLinkTarget(target)
-	}
-}
-
-func (a *App) HandleDeepLinkURL(rawURL string) {
-	target, ok := deeplink.ParseURL(rawURL)
-	if !ok {
-		return
-	}
-	a.HandleDeepLinkTarget(target)
-}
-
-func (a *App) HandleDeepLinkTarget(target deeplink.Target) {
-	if !target.Valid() {
-		return
-	}
-
-	a.deepLinkMu.Lock()
-	a.pendingLinks = append(a.pendingLinks, target)
-	emitNow := a.ctx != nil && a.IsStartupReady()
-	a.deepLinkMu.Unlock()
-
-	if emitNow {
-		a.emitPendingDeepLinks()
-	}
-}
-
-func (a *App) emitPendingDeepLinks() {
-	a.deepLinkMu.Lock()
-	queued := append([]deeplink.Target(nil), a.pendingLinks...)
-	a.pendingLinks = nil
-	a.deepLinkMu.Unlock()
-
-	if a.ctx == nil || len(queued) == 0 {
-		return
-	}
-
-	a.bringToFront()
-
-	for _, target := range queued {
-		wailsruntime.EventsEmit(a.ctx, "deeplink:open", map[string]string{
-			"type": target.Type,
-			"id":   target.ID,
-		})
-	}
-}
-
-func (a *App) ConsumePendingDeepLink() map[string]string {
-	a.deepLinkMu.Lock()
-	defer a.deepLinkMu.Unlock()
-
-	if len(a.pendingLinks) == 0 {
-		return nil
-	}
-
-	target := a.pendingLinks[0]
-	a.pendingLinks = a.pendingLinks[1:]
-
-	a.bringToFront()
-
-	return map[string]string{
-		"type": target.Type,
-		"id":   target.ID,
-	}
-}
-
-func (a *App) bringToFront() {
-	if a.ctx == nil {
-		return
-	}
-
-	wailsruntime.WindowShow(a.ctx)
-	wailsruntime.WindowUnminimise(a.ctx)
-	wailsruntime.WindowSetAlwaysOnTop(a.ctx, true)
-	wailsruntime.WindowSetAlwaysOnTop(a.ctx, false)
 }
 
 // shutdown is called when the app shuts down.
