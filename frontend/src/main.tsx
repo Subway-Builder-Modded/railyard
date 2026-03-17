@@ -25,6 +25,37 @@ document.addEventListener(
   { passive: false },
 );
 
+document.addEventListener(
+  'contextmenu',
+  (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  true,
+);
+
+document.addEventListener(
+  'mousedown',
+  (e) => {
+    if (e.button === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  },
+  true,
+);
+
+document.addEventListener(
+  'auxclick',
+  (e) => {
+    if (e.button === 2) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  },
+  true,
+);
+
 const container = document.getElementById('root');
 
 const root = createRoot(container!);
