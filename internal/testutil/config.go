@@ -6,16 +6,16 @@ import (
 	"runtime"
 	"testing"
 
-	"railyard/internal/config"
+	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
 )
 
 // SetValidConfigPaths sets MetroMakerDataPath and ExecutablePath to valid temp paths for tests.
-func SetValidConfigPaths(t *testing.T, cfg *config.Config) {
+func SetValidConfigPaths(t *testing.T, cfg *types.AppConfig) {
 	t.Helper()
 
-	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	cfg.MetroMakerDataPath = t.TempDir()
 
 	exeName := "subway-builder"
 	if runtime.GOOS == "windows" {
@@ -23,5 +23,5 @@ func SetValidConfigPaths(t *testing.T, cfg *config.Config) {
 	}
 	exePath := filepath.Join(t.TempDir(), exeName)
 	require.NoError(t, os.WriteFile(exePath, []byte("bin"), 0o755))
-	cfg.Cfg.ExecutablePath = exePath
+	cfg.ExecutablePath = exePath
 }

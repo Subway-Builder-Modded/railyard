@@ -657,7 +657,7 @@ func (a *App) addSaltsOnFirstRun() error {
 		for _, mod := range a.Registry.GetInstalledMods() {
 			id := mod.ID
 
-			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModFolderPath(), id, constants.RailyardAssetMarker)); err != nil {
+			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModsFolderPath(), id, constants.RailyardAssetMarker)); err != nil {
 				a.Logger.Warn("Failed to add salt file for mod", "mod_id", id, "error", err)
 				return err
 			}
