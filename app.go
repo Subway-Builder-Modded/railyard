@@ -329,7 +329,7 @@ func (a *App) LaunchGame() error {
 		return err
 	}
 
-	exePath := cfg.Config.ExecutablePath
+	exePath := strings.TrimPrefix(cfg.Config.ExecutablePath, "/run/host") // Fix the paths when calling outside of sandbox
 	a.Logger.Info("Launching game", "path", exePath)
 
 	var cmd *exec.Cmd
@@ -478,7 +478,11 @@ func (a *App) InstallLinuxSandbox() error {
 	}
 
 	destPath := path.Join("/usr", "local", "bin", "chrome-sb-sandbox")
-	cmd = exec.Command("flatpak-spawn", "--host", "pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
+	if _, lookPathErr := exec.LookPath("flatpak-spawn"); lookPathErr == nil {
+		cmd = exec.Command("flatpak-spawn", "--host", "pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
+	} else {
+		cmd = exec.Command("pkexec", "install", "-o", "root", "-g", "root", "-m", "4755", sandboxPath, destPath)
+	}
 	if err := cmd.Run(); err != nil {
 		a.Logger.Error("Failed to install chrome-sandbox with pkexec", err)
 		return fmt.Errorf("failed to install chrome-sandbox with pkexec: %w", err)
