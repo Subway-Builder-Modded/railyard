@@ -2,12 +2,15 @@ package registry
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"railyard/internal/config"
+	"railyard/internal/constants"
 	"railyard/internal/files"
 	"railyard/internal/paths"
 	"railyard/internal/testutil"
+	"railyard/internal/testutil/registrytest"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
@@ -59,4 +62,155 @@ func TestWriteInstalledToDiskRollsBackWhenOnePathFails(t *testing.T) {
 	persistedMods, readErr := files.ReadJSON[[]types.InstalledModInfo](paths.InstalledModsPath(), "installed mods file", files.JSONReadOptions{})
 	require.NoError(t, readErr)
 	require.Equal(t, originalMods, persistedMods)
+}
+
+func TestFetchFromDiskRecoversFromCorruptedInstalledState(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Mods: []types.ModManifest{
+			{ID: "mod-a"},
+		},
+		Maps: []types.MapManifest{
+			{ID: "map-a", CityCode: "AAA"},
+		},
+	})
+
+	require.NoError(t, os.MkdirAll(filepath.Dir(paths.InstalledModsPath()), 0o755))
+	require.NoError(t, os.WriteFile(paths.InstalledModsPath(), []byte("{invalid"), 0o644))
+	require.NoError(t, os.WriteFile(paths.InstalledMapsPath(), []byte("{invalid"), 0o644))
+
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	require.NoError(t, reg.fetchFromDisk())
+	require.Empty(t, reg.GetInstalledMods())
+	require.Empty(t, reg.GetInstalledMaps())
+}
+
+func TestBootstrapInstalledStateFromProfileRebuildsFromMarkers(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Mods: []types.ModManifest{
+			{ID: "mod-a"},
+		},
+		Maps: []types.MapManifest{
+			{ID: "map-a", CityCode: "AAA"},
+		},
+	})
+
+	cfg := config.NewConfig()
+	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	modPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "mods", "mod-a")
+	require.NoError(t, os.MkdirAll(modPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+
+	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
+	profile.Subscriptions.Maps["map-a"] = "2.0.0"
+
+	summary, err := reg.BootstrapInstalledStateFromProfile(profile)
+	require.NoError(t, err)
+	require.Equal(t, 1, summary.DesiredMods)
+	require.Equal(t, 1, summary.DesiredMaps)
+	require.Equal(t, 1, summary.RebuiltMods)
+	require.Equal(t, 1, summary.RebuiltMaps)
+
+	require.Equal(t, []types.InstalledModInfo{
+		{ID: "mod-a", Version: "1.0.0"},
+	}, reg.GetInstalledMods())
+	require.Equal(t, []types.InstalledMapInfo{
+		{
+			ID:      "map-a",
+			Version: "2.0.0",
+			MapConfig: types.ConfigData{
+				Code: "AAA",
+			},
+		},
+	}, reg.GetInstalledMaps())
+
+	modsOnDisk, err := files.ReadJSON[[]types.InstalledModInfo](paths.InstalledModsPath(), "installed mods file", files.JSONReadOptions{})
+	require.NoError(t, err)
+	require.Equal(t, reg.GetInstalledMods(), modsOnDisk)
+
+	mapsOnDisk, err := files.ReadJSON[[]types.InstalledMapInfo](paths.InstalledMapsPath(), "installed maps file", files.JSONReadOptions{})
+	require.NoError(t, err)
+	require.Equal(t, reg.GetInstalledMaps(), mapsOnDisk)
+}
+
+func TestBootstrapInstalledStateFromProfileSkipsMissingMarkerManifestAndCode(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Mods: []types.ModManifest{
+			{ID: "mod-a"},
+		},
+		Maps: []types.MapManifest{
+			{ID: "map-a", CityCode: "AAA"},
+			{ID: "map-empty", CityCode: ""},
+		},
+	})
+
+	cfg := config.NewConfig()
+	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
+	profile.Subscriptions.Maps["map-a"] = "1.0.0"       // Missing marker
+	profile.Subscriptions.Maps["map-empty"] = "1.0.0"   // Missing city code
+	profile.Subscriptions.Maps["map-missing"] = "1.0.0" // Missing manifest
+
+	summary, err := reg.BootstrapInstalledStateFromProfile(profile)
+	require.NoError(t, err)
+	require.Equal(t, 1, summary.SkippedModsMissingMarker)
+	require.Equal(t, 1, summary.SkippedMapsMissingMarker)
+	require.Equal(t, 1, summary.SkippedMapsMissingCode)
+	require.Equal(t, 1, summary.SkippedMapsMissingManifest)
+	require.Empty(t, reg.GetInstalledMods())
+	require.Empty(t, reg.GetInstalledMaps())
+}
+
+func TestBootstrapInstalledStateRepairsCorruptedInstalledStateFiles(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Mods: []types.ModManifest{
+			{ID: "mod-a"},
+		},
+		Maps: []types.MapManifest{
+			{ID: "map-a", CityCode: "AAA"},
+		},
+	})
+
+	cfg := config.NewConfig()
+	cfg.Cfg.MetroMakerDataPath = t.TempDir()
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	require.NoError(t, os.MkdirAll(filepath.Dir(paths.InstalledModsPath()), 0o755))
+	require.NoError(t, os.WriteFile(paths.InstalledModsPath(), []byte("{invalid"), 0o644))
+	require.NoError(t, os.WriteFile(paths.InstalledMapsPath(), []byte("{invalid"), 0o644))
+
+	modPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "mods", "mod-a")
+	require.NoError(t, os.MkdirAll(modPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.AssetMarkerFileName), []byte(""), 0o644))
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
+	profile.Subscriptions.Maps["map-a"] = "2.0.0"
+
+	_, err := reg.BootstrapInstalledStateFromProfile(profile)
+	require.NoError(t, err)
+
+	_, modErr := files.ReadJSON[[]types.InstalledModInfo](paths.InstalledModsPath(), "installed mods file", files.JSONReadOptions{})
+	require.NoError(t, modErr)
+	_, mapErr := files.ReadJSON[[]types.InstalledMapInfo](paths.InstalledMapsPath(), "installed maps file", files.JSONReadOptions{})
+	require.NoError(t, mapErr)
 }

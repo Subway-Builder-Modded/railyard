@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"railyard/internal/config"
+	"railyard/internal/constants"
 	"railyard/internal/downloader"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
@@ -106,13 +107,13 @@ func materializeInstalledAssets(
 	for _, mod := range mods {
 		modPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "mods", mod.ID)
 		require.NoError(t, os.MkdirAll(modPath, 0o755))
-		require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, ".railyard_asset"), []byte(""), 0o644))
+		require.NoError(t, os.WriteFile(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName), []byte(""), 0o644))
 	}
 
 	for _, m := range maps {
 		mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", m.MapConfig.Code)
 		require.NoError(t, os.MkdirAll(mapPath, 0o755))
-		require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, ".railyard_asset"), []byte(""), 0o644))
+		require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.AssetMarkerFileName), []byte(""), 0o644))
 
 		tilePath := paths.JoinLocalPath(paths.AppDataRoot(), "tiles", m.MapConfig.Code+".pmtiles")
 		require.NoError(t, os.MkdirAll(filepath.Dir(tilePath), 0o755))

@@ -15,6 +15,7 @@ import (
 	"sync"
 
 	"railyard/internal/config"
+	"railyard/internal/constants"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
 	"railyard/internal/registry"
@@ -474,7 +475,7 @@ func (d *Downloader) uninstallModNow(modId string) types.AssetUninstallResponse 
 		)
 	}
 	modPath := paths.JoinLocalPath(d.getModPath(), modId)
-	if _, err := os.Stat(paths.JoinLocalPath(modPath, ".railyard_asset")); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(paths.JoinLocalPath(modPath, constants.AssetMarkerFileName)); errors.Is(err, os.ErrNotExist) {
 		return d.uninstallWarn(
 			types.AssetTypeMod,
 			modId,
@@ -508,7 +509,7 @@ func (d *Downloader) uninstallMapNow(mapId string) types.AssetUninstallResponse 
 	}
 	mapConfig := installedMap.mapConfig
 
-	if _, err := os.Stat(paths.JoinLocalPath(d.getMapDataPath(), mapConfig.Code, ".railyard_asset")); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(paths.JoinLocalPath(d.getMapDataPath(), mapConfig.Code, constants.AssetMarkerFileName)); errors.Is(err, os.ErrNotExist) {
 		return d.uninstallWarn(
 			types.AssetTypeMap,
 			mapId,

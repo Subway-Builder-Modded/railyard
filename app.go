@@ -153,15 +153,12 @@ func (a *App) startup(ctx context.Context) {
 
 	if err := a.Registry.Initialize(); err != nil {
 		a.Logger.Warn("Failed to ensure local registry repository", "error", err)
+	} else {
+		a.bootstrapInstalledState(activeProfile)
 	}
-
 	if err := a.addSaltsOnFirstRun(); err != nil {
 		a.Logger.Warn("Failed to add salts to existing assets on first run", "error", err)
 	}
-
-	// TODO: Bootstrap installed asset state on startup by scanning managed install directories.
-	// Use per-asset integrity SHA checks and a dedicated marker file (.railyard) so startup can safely reconstruct installed_maps/installed_mods when persisted state is missing/corrupt or after an unclean shutdown.
-	// Use profile state as a backup source of truth as it is more likely to be persisted successfully due to frequent writes after subscription changes (while installs/uninstalls generally lag behind user actions due to the downloader queue)
 	if a.Config.Cfg.CheckForUpdatesOnLaunch {
 		updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
 	}
@@ -250,6 +247,27 @@ func runNonBlockingStartupRoutines(a *App, activeProfile types.UserProfile) {
 	case types.ResponseWarn:
 		a.Logger.Warn("Profile subscriptions synced with warnings on startup", "message", syncResult.Message, "profile_id", activeProfile.ID, "error_count", len(syncResult.Errors))
 	}
+}
+
+func (a *App) bootstrapInstalledState(activeProfile types.UserProfile) {
+	summary, err := a.Registry.BootstrapInstalledStateFromProfile(activeProfile)
+	if err != nil {
+		a.Logger.Warn("Failed to bootstrap installed asset state on startup", "error", err, "profile_id", activeProfile.ID)
+		return
+	}
+
+	a.Logger.Info(
+		"Bootstrapped installed asset state on startup",
+		"profile_id", activeProfile.ID,
+		"desired_mods", summary.DesiredMods,
+		"desired_maps", summary.DesiredMaps,
+		"rebuilt_mods", summary.RebuiltMods,
+		"rebuilt_maps", summary.RebuiltMaps,
+		"skipped_mods_missing_marker", summary.SkippedModsMissingMarker,
+		"skipped_maps_missing_marker", summary.SkippedMapsMissingMarker,
+		"skipped_maps_missing_manifest", summary.SkippedMapsMissingManifest,
+		"skipped_maps_missing_code", summary.SkippedMapsMissingCode,
+	)
 }
 
 // GetGameVersion attempts to detect the installed Subway Builder version.
@@ -647,12 +665,12 @@ func (a *App) generateMod(port int) error {
 }
 
 func (a *App) addSaltsOnFirstRun() error {
-	if _, err := os.Stat(paths.JoinLocalPath(paths.AppDataRoot(), ".railyard_assets_salted")); os.IsNotExist(err) {
+	if _, err := os.Stat(paths.JoinLocalPath(paths.AppDataRoot(), constants.AssetSaltedMarkerFileName)); os.IsNotExist(err) {
 		a.Logger.Info("Adding salts to existing assets on first run")
 		for _, mod := range a.Registry.GetInstalledMods() {
 			id := mod.ID
 
-			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModFolderPath(), id, ".railyard_asset")); err != nil {
+			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetModFolderPath(), id, constants.AssetMarkerFileName)); err != nil {
 				a.Logger.Warn("Failed to add salt file for mod", "mod_id", id, "error", err)
 				return err
 			}
@@ -660,14 +678,14 @@ func (a *App) addSaltsOnFirstRun() error {
 
 		for _, m := range a.Registry.GetInstalledMaps() {
 			code := m.MapConfig.Code
-			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetMapsFolderPath(), code, ".railyard_asset")); err != nil {
+			if _, err := os.Create(paths.JoinLocalPath(a.Config.Cfg.GetMapsFolderPath(), code, constants.AssetMarkerFileName)); err != nil {
 				a.Logger.Warn("Failed to add salt file for map", "map_code", code, "error", err)
 				return err
 			}
 		}
 
 		// Create a marker file to indicate that salts have been added, so we don't repeat this process on subsequent runs
-		if _, err := os.Create(paths.JoinLocalPath(paths.AppDataRoot(), ".railyard_assets_salted")); err != nil {
+		if _, err := os.Create(paths.JoinLocalPath(paths.AppDataRoot(), constants.AssetSaltedMarkerFileName)); err != nil {
 			a.Logger.Warn("Failed to create asset salted marker file", "error", err)
 			return err
 		}

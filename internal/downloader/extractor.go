@@ -146,7 +146,7 @@ func extractMod(d *Downloader, filePath string, modId string, version string) ty
 		return d.installError(types.AssetTypeMod, modId, version, types.ConfigData{}, types.InstallErrorExtractFailed, "Failed to extract file", err, "file_path", filePath, "mod_id", modId)
 	}
 
-	if err := createAssetMarker(paths.JoinLocalPath(destFolder, ".railyard_asset")); err != nil {
+	if err := createAssetMarker(paths.JoinLocalPath(destFolder, constants.AssetMarkerFileName)); err != nil {
 		return d.installError(types.AssetTypeMod, modId, version, types.ConfigData{}, types.InstallErrorFilesystem, "Failed to create asset marker file", err, "mod_id", modId)
 	}
 
@@ -331,7 +331,7 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 		}
 	}
 
-	if err := createAssetMarker(paths.JoinLocalPath(destFolder, ".railyard_asset")); err != nil {
+	if err := createAssetMarker(paths.JoinLocalPath(destFolder, constants.AssetMarkerFileName)); err != nil {
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create asset marker file", err, "assetId", mapId)
 	}
 

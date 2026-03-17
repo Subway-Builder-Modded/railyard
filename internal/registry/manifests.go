@@ -32,12 +32,14 @@ func (r *Registry) fetchFromDisk() error {
 
 	installedMods, err := r.getInstalledModsFromDisk()
 	if err != nil {
-		return fmt.Errorf("failed to load installed mods from disk: %w", err)
+		r.logger.Warn("Failed to load installed mods from disk, continuing with empty installed mods", "error", err)
+		installedMods = []types.InstalledModInfo{}
 	}
 
 	installedMaps, err := r.getInstalledMapsFromDisk()
 	if err != nil {
-		return fmt.Errorf("failed to load installed maps from disk: %w", err)
+		r.logger.Warn("Failed to load installed maps from disk, continuing with empty installed maps", "error", err)
+		installedMaps = []types.InstalledMapInfo{}
 	}
 
 	modIntegrity, mapIntegrity, err := r.loadStatusReport()
