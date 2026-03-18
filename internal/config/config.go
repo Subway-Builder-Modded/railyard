@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,7 +11,9 @@ import (
 	"sync"
 
 	"railyard/internal/files"
+	"railyard/internal/logger"
 	"railyard/internal/paths"
+	"railyard/internal/requests"
 	"railyard/internal/types"
 
 	wruntime "github.com/wailsapp/wails/v2/pkg/runtime"
@@ -21,6 +24,7 @@ type Config struct {
 	mu     sync.Mutex
 	ctx    context.Context
 	Cfg    types.AppConfig
+	logger logger.Logger
 	loaded bool
 }
 
@@ -32,6 +36,12 @@ func (s *Config) SetContext(ctx context.Context) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.ctx = ctx
+}
+
+func (s *Config) SetLogger(logger logger.Logger) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logger = logger
 }
 
 func ReadAppConfig() (types.AppConfig, error) {
@@ -77,14 +87,18 @@ func (s *Config) ResolveConfig() (types.ResolveConfigResult, error) {
 }
 
 // GetConfig returns the current in-memory config without re-reading from disk.
-func (s *Config) GetConfig() types.ResolveConfigResult {
+func (s *Config) GetConfig() types.ResolveConfigResponse {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	return resolveConfigResultFromAppConfig(s.Cfg)
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("Config resolved"),
+		ResolveConfigResult: resolveConfigResultFromAppConfig(s.Cfg),
+	}
 }
 
 func (s *Config) UpdateConfig(mutator func(*types.AppConfig), persist bool) (types.ResolveConfigResult, error) {
+	s.logger.Info("Updating config", "persist", persist)
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -92,24 +106,45 @@ func (s *Config) UpdateConfig(mutator func(*types.AppConfig), persist bool) (typ
 	s.loaded = true
 
 	if persist {
+		s.logger.Info("Persisting updated config to disk")
 		if err := WriteAppConfig(s.Cfg); err != nil {
+			s.logger.Error("Failed to write updated config to disk", err)
 			return types.ResolveConfigResult{}, err
 		}
 	}
 
+	s.logger.Info("Config updated successfully", "persisted", persist)
 	return resolveConfigResultFromAppConfig(s.Cfg), nil
 }
 
-func (s *Config) UpdateCheckForUpdatesOnLaunch(checkForUpdates bool) (types.ResolveConfigResult, error) {
-	return s.UpdateConfig(func(cfg *types.AppConfig) {
+func (s *Config) UpdateCheckForUpdatesOnLaunch(checkForUpdates bool) types.ResolveConfigResponse {
+	result, err := s.UpdateConfig(func(cfg *types.AppConfig) {
 		cfg.CheckForUpdatesOnLaunch = checkForUpdates
 	}, false)
+	if err != nil {
+		return types.ResolveConfigResponse{
+			GenericResponse: types.ErrorResponse(err.Error()),
+		}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("Config updated"),
+		ResolveConfigResult: result,
+	}
 }
 
-func (s *Config) CompleteSetup() (types.ResolveConfigResult, error) {
-	return s.UpdateConfig(func(cfg *types.AppConfig) {
+func (s *Config) CompleteSetup() types.ResolveConfigResponse {
+	result, err := s.UpdateConfig(func(cfg *types.AppConfig) {
 		cfg.SetupCompleted = true
 	}, true) // Persist to disk immediately
+	if err != nil {
+		return types.ResolveConfigResponse{
+			GenericResponse: types.ErrorResponse(err.Error()),
+		}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("Setup completed"),
+		ResolveConfigResult: result,
+	}
 }
 
 // UpdateExecutable updates and persists ExecutablePath to the runtime app config.
@@ -145,25 +180,53 @@ func (s *Config) SetConfig(next types.AppConfig) (types.AppConfig, error) {
 }
 
 // ClearConfig clears all config fields in memory (by replacing them with zero values).
-func (s *Config) ClearConfig() (types.AppConfig, error) {
-	return s.SetConfig(types.AppConfig{})
+func (s *Config) ClearConfig() types.ResolveConfigResponse {
+	updated, err := s.SetConfig(types.AppConfig{})
+	if err != nil {
+		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("Config cleared"),
+		ResolveConfigResult: resolveConfigResultFromAppConfig(updated),
+	}
 }
 
 // SaveConfig persists the current runtime config state to disk.
-func (s *Config) SaveConfig() (types.ResolveConfigResult, error) {
-	return s.UpdateConfig(func(*types.AppConfig) {}, true)
+func (s *Config) SaveConfig() types.ResolveConfigResponse {
+	result, err := s.UpdateConfig(func(*types.AppConfig) {}, true)
+	if err != nil {
+		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("Config saved"),
+		ResolveConfigResult: result,
+	}
 }
 
-func (s *Config) UpdateGithubToken(githubToken string) (types.ResolveConfigResult, error) {
-	return s.UpdateConfig(func(cfg *types.AppConfig) {
+func (s *Config) UpdateGithubToken(githubToken string) types.ResolveConfigResponse {
+	result, err := s.UpdateConfig(func(cfg *types.AppConfig) {
 		cfg.GithubToken = githubToken
 	}, false)
+	if err != nil {
+		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("GitHub token updated"),
+		ResolveConfigResult: result,
+	}
 }
 
-func (s *Config) ClearGithubToken() (types.ResolveConfigResult, error) {
-	return s.UpdateConfig(func(cfg *types.AppConfig) {
+func (s *Config) ClearGithubToken() types.ResolveConfigResponse {
+	result, err := s.UpdateConfig(func(cfg *types.AppConfig) {
 		cfg.GithubToken = ""
 	}, false)
+	if err != nil {
+		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.ResolveConfigResponse{
+		GenericResponse:     types.SuccessResponse("GitHub token cleared"),
+		ResolveConfigResult: result,
+	}
 }
 
 func (s *Config) GetGithubToken() string {
@@ -172,34 +235,45 @@ func (s *Config) GetGithubToken() string {
 	return s.Cfg.GithubToken
 }
 
-func (s *Config) IsGithubTokenValid() bool {
+func (s *Config) IsGithubTokenValid() types.GithubTokenValidResponse {
+	s.logger.Info("Validating GitHub token")
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.Cfg.GithubToken == "" {
-		return false
+		s.logger.Warn("GitHub token is not set, not validating")
+		return types.GithubTokenValidResponse{
+			GenericResponse: types.SuccessResponse("GitHub token not set"),
+			Valid:           false,
+		}
 	}
 
-	req, err := http.NewRequest("GET", "https://api.github.com/rate_limit", nil)
-	req.Header.Add("Authorization", "token "+s.Cfg.GithubToken)
-	if err != nil {
-		return false
-	}
+	resp, err := requests.GetWithGithubToken(http.DefaultClient, requests.GithubTokenRequestArgs{
+		URL:         "https://api.github.com/rate_limit",
+		GitHubToken: s.Cfg.GithubToken,
+	})
 
-	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return false
+		s.logger.Error("Failed to validate GitHub token", err)
+		return types.GithubTokenValidResponse{
+			GenericResponse: types.ErrorResponse(fmt.Sprintf("failed to validate GitHub token: %v", err)),
+			Valid:           false,
+		}
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode == http.StatusOK
+	s.logger.Info("GitHub token validation response received", "status", resp.StatusCode)
+	return types.GithubTokenValidResponse{
+		GenericResponse: types.SuccessResponse("GitHub token validated"),
+		Valid:           resp.StatusCode == http.StatusOK,
+	}
 }
 
 /* ===== Dialog Functions ===== */
 
 // OpenMetroMakerDataFolderDialog opens a directory picker and persists MetroMakerDataPath when selected.
 // On user cancel, it returns the current config unchanged.
-func (s *Config) OpenMetroMakerDataFolderDialog(options types.SetConfigPathOptions) (types.SetConfigPathResult, error) {
-	return s.setConfigPathWithDialog(
+func (s *Config) OpenMetroMakerDataFolderDialog(options types.SetConfigPathOptions) types.SetConfigPathResponse {
+	result, err := s.setConfigPathWithDialog(
 		options,
 		func() (types.SetConfigPathResult, bool) {
 			return s.TryAutoDetectPath(
@@ -218,12 +292,19 @@ func (s *Config) OpenMetroMakerDataFolderDialog(options types.SetConfigPathOptio
 		},
 		s.UpdateMetroMakerDataFolder,
 	)
+	if err != nil {
+		return types.SetConfigPathResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.SetConfigPathResponse{
+		GenericResponse: types.SuccessResponse("Config path resolved"),
+		Result:          result,
+	}
 }
 
 // OpenExecutableDialog opens a file picker and persists ExecutablePath when selected.
 // On user cancel, it returns the current config unchanged.
-func (s *Config) OpenExecutableDialog(options types.SetConfigPathOptions) (types.SetConfigPathResult, error) {
-	return s.setConfigPathWithDialog(
+func (s *Config) OpenExecutableDialog(options types.SetConfigPathOptions) types.SetConfigPathResponse {
+	result, err := s.setConfigPathWithDialog(
 		options,
 		func() (types.SetConfigPathResult, bool) {
 			return s.TryAutoDetectPath(
@@ -247,6 +328,13 @@ func (s *Config) OpenExecutableDialog(options types.SetConfigPathOptions) (types
 		},
 		s.UpdateExecutable,
 	)
+	if err != nil {
+		return types.SetConfigPathResponse{GenericResponse: types.ErrorResponse(err.Error())}
+	}
+	return types.SetConfigPathResponse{
+		GenericResponse: types.SuccessResponse("Config path resolved"),
+		Result:          result,
+	}
 }
 
 func (s *Config) setConfigPathWithDialog(
@@ -255,31 +343,40 @@ func (s *Config) setConfigPathWithDialog(
 	dialog func(ctx context.Context) (string, error),
 	pathMutation func(path string) (types.ResolveConfigResult, error),
 ) (types.SetConfigPathResult, error) {
+	s.logger.Info("Setting config path with dialog")
 	if options.AllowAutoDetect { // If auto-detection is allowed, attempt to find a valid path before showing the dialog
+		s.logger.Info("Attempting auto-detection of config path")
 		autoDetected, ok := autoDetect()
 		if ok {
+			s.logger.Info("Auto-detection successful", "path", autoDetected.AutoDetectedPath)
 			return autoDetected, nil
 		}
+		s.logger.Info("Auto-detection failed, showing dialog")
 	}
 
 	selectedPath, err := dialog(s.ctx)
 	if err != nil {
+		s.logger.Error("Dialog resulted in an error", err)
 		return types.SetConfigPathResult{}, err
 	}
 
 	// User cancellation results in an empty path
 	if strings.TrimSpace(selectedPath) == "" {
+		s.logger.Info("Dialog cancelled by user, returning current config")
+		current := s.GetConfig()
 		return types.SetConfigPathResult{
-			ResolveConfigResult: s.GetConfig(),
+			ResolveConfigResult: current.ResolveConfigResult,
 			SetConfigSource:     types.SourceCancelled,
 		}, nil
 	}
 
 	updated, updateErr := pathMutation(selectedPath)
 	if updateErr != nil {
+		s.logger.Error("Failed to update config with selected path", updateErr, "selectedPath", selectedPath)
 		return types.SetConfigPathResult{}, updateErr
 	}
 
+	s.logger.Info("Config path updated successfully", "newPath", selectedPath)
 	return types.SetConfigPathResult{
 		ResolveConfigResult: updated,
 		SetConfigSource:     types.SourceDialogSelected,
@@ -296,17 +393,21 @@ func (s *Config) TryAutoDetectPath(
 ) (types.SetConfigPathResult, bool) {
 	detectedPath, success := FindDefaultPath(candidates, shouldBeDir)
 	if !success {
+		s.logger.Info("Auto-detection failed")
 		return types.SetConfigPathResult{}, false
 	}
 
 	resolved, err := updatePath(detectedPath)
 	if err != nil {
+		s.logger.Error("Failed to resolve auto-detected path", err, "path", detectedPath)
 		return types.SetConfigPathResult{}, false
 	}
 	if !isPathValid(resolved.Validation) {
+		s.logger.Warn("Auto-detected path is not valid", "path", detectedPath)
 		return types.SetConfigPathResult{}, false
 	}
 
+	s.logger.Info("Auto-detected path is valid", "path", detectedPath)
 	return types.SetConfigPathResult{
 		ResolveConfigResult: resolved,
 		SetConfigSource:     types.SourceAutoDetected,
