@@ -96,3 +96,21 @@ func TestWriteJSONErrorsWhenTargetPathIsDirectory(t *testing.T) {
 	require.Error(t, err)
 	require.ErrorContains(t, err, "failed to write app config")
 }
+
+func TestParseJSONValid(t *testing.T) {
+	parsed, err := ParseJSON[testPayload]([]byte(`{"name":"parsed"}`), "payload")
+	require.NoError(t, err)
+	require.Equal(t, testPayload{Name: "parsed"}, parsed)
+}
+
+func TestParseJSONErrorsOnEmpty(t *testing.T) {
+	_, err := ParseJSON[testPayload]([]byte(" \n\t "), "payload")
+	require.Error(t, err)
+	require.ErrorContains(t, err, "failed to parse payload: data is empty")
+}
+
+func TestParseJSONErrorsOnMalformedJSON(t *testing.T) {
+	_, err := ParseJSON[testPayload]([]byte(`{"name":`), "payload")
+	require.Error(t, err)
+	require.ErrorContains(t, err, "failed to parse payload")
+}
