@@ -1,0 +1,30 @@
+package profiles
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"railyard/internal/paths"
+	"railyard/internal/testutil"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestQuarantineUserProfilesFileMovesSourceToBackup(t *testing.T) {
+	testutil.NewHarness(t)
+	writeRawUserProfilesFile(t, "{}")
+
+	svc := userProfilesService(t)
+	success, backupPath := svc.QuarantineUserProfiles()
+	require.True(t, success)
+	require.NotEmpty(t, backupPath)
+	require.True(t, strings.Contains(filepath.Base(backupPath), "user_profiles.invalid."))
+
+	_, err := os.Stat(backupPath)
+	require.NoError(t, err)
+
+	_, err = os.Stat(paths.UserProfilesPath())
+	require.True(t, os.IsNotExist(err))
+}

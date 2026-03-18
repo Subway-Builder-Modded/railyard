@@ -1,5 +1,5 @@
 param(
-    [double]$MinCoverage = 45,
+    [double]$MinCoverage = 60,
     [string]$GoCoverPackages = ""
 )
 
