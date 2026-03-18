@@ -14,7 +14,7 @@ import (
 )
 
 func TestFilterSemverVersions(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	filtered := reg.filterSemverVersions([]types.VersionInfo{
 		{Version: "1.2.3"},
 		{Version: "v2.3.4"},
@@ -31,7 +31,7 @@ func TestFilterSemverVersions(t *testing.T) {
 }
 
 func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	updated := cfg.UpdateGithubToken("github_pat_test_token")
 	require.Equal(t, types.ResponseSuccess, updated.Status)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
@@ -73,7 +73,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 }
 
 func TestClearVersionsCache(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	reg.setCachedVersions("github|owner/repo", []types.VersionInfo{{Version: "v1.0.0"}})
 
 	_, ok := reg.getCachedVersions("github|owner/repo")

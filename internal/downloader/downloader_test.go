@@ -307,7 +307,7 @@ func TestEnqueueOperationUsesLatestRequestForPendingAsset(t *testing.T) {
 
 func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 	testutil.SetEnv(t)
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	d := &Downloader{
 		Registry:    reg,
@@ -431,7 +431,7 @@ func TestUninstallCancelsRunningInstall(t *testing.T) {
 func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 	testutil.SetEnv(t)
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	configureDownloaderConfig(t, cfg)
 
@@ -516,7 +516,7 @@ func TestDownloadTempZipCancelledCleansUpArtifact(t *testing.T) {
 		<-r.Context().Done()
 	}))
 	defer server.Close()
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 
 	d := &Downloader{
 		tempPath: t.TempDir(),
@@ -566,7 +566,7 @@ func TestEnqueueOperationRunsSequentially(t *testing.T) {
 }
 
 func TestInstallMapForExistingIsNoOp(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	expectedConfig := types.ConfigData{
 		Code:        "ABC",
@@ -591,7 +591,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 }
 
 func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	d := &Downloader{
 		Registry: reg,
@@ -702,7 +702,7 @@ func TestInstallAssetError(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := config.NewConfig()
+			cfg := config.NewConfig(testutil.TestLogSink{})
 			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			d := &Downloader{
 				Registry: reg,
@@ -763,7 +763,7 @@ func TestInstallAssetSuccess(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := config.NewConfig()
+			cfg := config.NewConfig(testutil.TestLogSink{})
 			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			configureDownloaderConfig(t, cfg)
 			d := &Downloader{
@@ -823,7 +823,7 @@ func TestDownloadTempZipGithubAuthFallback(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	cfg.Cfg.GithubToken = "github_pat_test_token"
 	d := &Downloader{
 		Config:   cfg,

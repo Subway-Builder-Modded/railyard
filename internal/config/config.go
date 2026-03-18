@@ -28,20 +28,17 @@ type Config struct {
 	loaded bool
 }
 
-func NewConfig() *Config {
-	return &Config{}
+func NewConfig(l logger.Logger) *Config {
+	if l == nil {
+		panic("config.NewConfig requires non-nil logger")
+	}
+	return &Config{logger: l}
 }
 
 func (s *Config) SetContext(ctx context.Context) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.ctx = ctx
-}
-
-func (s *Config) SetLogger(logger logger.Logger) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.logger = logger
 }
 
 func ReadAppConfig() (types.AppConfig, error) {
@@ -250,6 +247,9 @@ func (s *Config) IsGithubTokenValid() types.GithubTokenValidResponse {
 	resp, err := requests.GetWithGithubToken(http.DefaultClient, requests.GithubTokenRequestArgs{
 		URL:         "https://api.github.com/rate_limit",
 		GitHubToken: s.Cfg.GithubToken,
+		OnTokenRejected: func(statusCode int) {
+			s.logger.Warn("GitHub token rejected during validation", "status", statusCode)
+		},
 	})
 
 	if err != nil {
@@ -262,6 +262,15 @@ func (s *Config) IsGithubTokenValid() types.GithubTokenValidResponse {
 	defer resp.Body.Close()
 
 	s.logger.Info("GitHub token validation response received", "status", resp.StatusCode)
+	// If GitHub rejected the token, requests.GetWithGithubToken may transparently
+	// retry unauthenticated. In that case the token is still invalid.
+	if resp.Request != nil && resp.Request.Header.Get("Authorization") == "" && s.Cfg.GithubToken != "" {
+		return types.GithubTokenValidResponse{
+			GenericResponse: types.SuccessResponse("GitHub token invalid"),
+			Valid:           false,
+		}
+	}
+
 	return types.GithubTokenValidResponse{
 		GenericResponse: types.SuccessResponse("GitHub token validated"),
 		Valid:           resp.StatusCode == http.StatusOK,

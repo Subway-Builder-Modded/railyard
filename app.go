@@ -97,8 +97,8 @@ func (a *App) OpenInFileExplorer(targetPath string) types.GenericResponse {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	cfg := config.NewConfig()
 	l := logger.NewAppLogger()
+	cfg := config.NewConfig(l)
 	reg := registry.NewRegistry(l, cfg)
 	dl := downloader.NewDownloader(cfg, reg, l)
 	return &App{
@@ -116,7 +116,6 @@ func (a *App) startup(ctx context.Context) {
 	a.setStartupReady(false)
 	a.ctx = ctx
 	a.Config.SetContext(ctx)
-	a.Config.SetLogger(a.Logger)
 	a.Downloader.OnExtractProgress = func(itemId string, extracted int64, total int64) {
 		wailsruntime.EventsEmit(ctx, "extract:progress", map[string]interface{}{
 			"itemId":          itemId,

@@ -20,7 +20,7 @@ func mustUnix(t *testing.T, value string) int64 {
 	return parsed.Unix()
 }
 func TestResolveLastUpdated(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-a",
@@ -88,7 +88,7 @@ func TestDetermineLatestTimestampRejectsWrongLayout(t *testing.T) {
 }
 
 func TestLoadLastUpdatedFallsBackToEpochOnFailures(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	closeServer := registrytest.MockLastUpdatedServer(t, reg, []registrytest.LastUpdatedFixture{
 		{
 			AssetID:   "mod-bad",

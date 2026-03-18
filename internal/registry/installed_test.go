@@ -18,7 +18,7 @@ import (
 
 func TestWriteInstalledToDiskPersistsMapsAndMods(t *testing.T) {
 	testutil.NewHarness(t)
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	reg.installedMods = []types.InstalledModInfo{
 		{ID: "mod-a", Version: "1.0.0"},
 	}
@@ -39,7 +39,7 @@ func TestWriteInstalledToDiskPersistsMapsAndMods(t *testing.T) {
 
 func TestWriteInstalledToDiskRollsBackWhenOnePathFails(t *testing.T) {
 	testutil.NewHarness(t)
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 
 	originalMods := []types.InstalledModInfo{
 		{ID: "mod-old", Version: "0.9.0"},
@@ -79,7 +79,7 @@ func TestFetchFromDiskRecoversFromCorruptedInstalledState(t *testing.T) {
 	require.NoError(t, os.WriteFile(paths.InstalledModsPath(), []byte("{invalid"), 0o644))
 	require.NoError(t, os.WriteFile(paths.InstalledMapsPath(), []byte("{invalid"), 0o644))
 
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	require.NoError(t, reg.fetchFromDisk())
 	require.Empty(t, reg.GetInstalledMods())
 	require.Empty(t, reg.GetInstalledMaps())
@@ -93,7 +93,7 @@ func TestBootstrapInstalledStateFromProfileSkipsModOnVersionMismatch(t *testing.
 		},
 	})
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	testutil.SetValidConfigPaths(t, &cfg.Cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())
@@ -124,7 +124,7 @@ func TestBootstrapInstalledStateFromProfileSkipsMissingRequiredData(t *testing.T
 		},
 	})
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	testutil.SetValidConfigPaths(t, &cfg.Cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())
@@ -160,7 +160,7 @@ func TestBootstrapInstalledStateFromProfileSuccessOnEmptyState(t *testing.T) {
 		},
 	})
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	testutil.SetValidConfigPaths(t, &cfg.Cfg)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
 	require.NoError(t, reg.fetchFromDisk())

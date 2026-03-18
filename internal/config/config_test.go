@@ -27,7 +27,7 @@ func setup(t *testing.T, persisted types.AppConfig) *TestSetup {
 	testutil.NewHarness(t)
 	require.NoError(t, WriteAppConfig(persisted))
 
-	c := NewConfig()
+	c := NewConfig(testutil.TestLogSink{})
 	tryResolveConfig(t, c)
 
 	return &TestSetup{t: t, cfg: c}
@@ -125,7 +125,7 @@ func TestResolveConfigOverridesRuntimeState(t *testing.T) {
 	}
 
 	require.NoError(t, WriteAppConfig(initial))
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 
 	resolved, err := cfg.ResolveConfig()
 	require.NoError(t, err)
@@ -371,7 +371,7 @@ func TestTryAutoDetectExecutableSucceedsWhenExecutablePathIsValid(t *testing.T) 
 	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateFile(t, DefaultExecutableCandidates())
 
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 	autoDetected, success := cfg.TryAutoDetectPath(
 		DefaultExecutableCandidates(),
 		false,
@@ -391,7 +391,7 @@ func TestTryAutoDetectMetroMakerSucceedsWhenMetroMakerDataPathIsValid(t *testing
 	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateDir(t, DefaultMetroMakerDataFolderCandidates())
 
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 	autoDetected, success := cfg.TryAutoDetectPath(
 		DefaultMetroMakerDataFolderCandidates(),
 		true,

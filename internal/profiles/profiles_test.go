@@ -47,7 +47,7 @@ func loadedUserProfilesService(t *testing.T, state types.UserProfilesState) *Use
 
 func userProfilesServiceWithDependencies(t *testing.T) (*UserProfiles, *config.Config, *registry.Registry) {
 	t.Helper()
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	l := testUserProfilesLogger(t)
 	reg := registry.NewRegistry(l, cfg)
 	dl := downloader.NewDownloader(cfg, reg, l)

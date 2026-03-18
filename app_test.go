@@ -3,13 +3,18 @@ package main
 import (
 	"testing"
 
+	"railyard/internal/logger"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
 )
 
+func newTestApp() *App {
+	return &App{Logger: logger.LoggerAtPath("")}
+}
+
 func TestIsStartupReady(t *testing.T) {
-	app := &App{}
+	app := newTestApp()
 	require.False(t, app.IsStartupReady().Ready)
 
 	app.setStartupReady(true)
@@ -20,7 +25,7 @@ func TestIsStartupReady(t *testing.T) {
 }
 
 func TestOpenInFileExplorerRejectsInvalidPaths(t *testing.T) {
-	app := &App{}
+	app := newTestApp()
 
 	empty := app.OpenInFileExplorer("   ")
 	require.Equal(t, types.ResponseError, empty.Status)
