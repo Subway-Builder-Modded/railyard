@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"railyard/internal/constants"
 	"railyard/internal/logger"
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
@@ -37,9 +37,15 @@ func TestDeleteOldTempInstallers(t *testing.T) {
 }
 
 func TestVersionIsNewerThanInstalled(t *testing.T) {
+	previousVersion := constants.RAILYARD_VERSION
+	constants.RAILYARD_VERSION = "v1.0.0"
+	t.Cleanup(func() {
+		constants.RAILYARD_VERSION = previousVersion
+	})
+
 	require.False(t, VersionIsNewerThanInstalled(constants.RAILYARD_VERSION))
 	require.True(t, VersionIsNewerThanInstalled("v9999.0.0"))
-	require.False(t, VersionIsNewerThanInstalled("v0.0.1"))
+	require.False(t, VersionIsNewerThanInstalled("v1.0.1+rc1"))
 }
 
 func TestReturnMissingDownloads(t *testing.T) {
@@ -56,7 +62,7 @@ func TestReturnMissingDownloads(t *testing.T) {
 }
 
 func TestPullReleasesParsesResponse(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, `[
 			{
@@ -100,7 +106,7 @@ func TestPullReleasesRetriesWithoutTokenWhenRejected(t *testing.T) {
 	var requests int
 	var sawAuth bool
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++
 		if r.Header.Get("Authorization") != "" {
 			sawAuth = true
@@ -139,7 +145,7 @@ func TestPullReleasesRetriesWithoutTokenWhenRejected(t *testing.T) {
 }
 
 func TestPullReleasesReturnsErrorOnBadStatus(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadGateway)
 	}))
 	defer server.Close()
@@ -160,7 +166,7 @@ func TestPullReleasesReturnsErrorOnBadStatus(t *testing.T) {
 }
 
 func TestPullReleasesReturnsErrorOnInvalidJSON(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, `{ not-json`)
 	}))
@@ -182,7 +188,7 @@ func TestPullReleasesReturnsErrorOnInvalidJSON(t *testing.T) {
 }
 
 func TestDownloadAndRunInstallerReturnsErrorOnBadStatus(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}))
 	defer server.Close()
@@ -193,7 +199,7 @@ func TestDownloadAndRunInstallerReturnsErrorOnBadStatus(t *testing.T) {
 }
 
 func TestCheckForUpdatesNoNewVersionReturnsNil(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, `[
 			{
@@ -222,18 +228,23 @@ func TestCheckForUpdatesNoNewVersionReturnsNil(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestCheckForUpdatesPropagatesReleaseFetchError(t *testing.T) {
+func TestPullReleasesPropagatesFetchError(t *testing.T) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusBadGateway)
+	}))
+	defer server.Close()
+
 	previousBaseURL := updaterGitHubAPIBaseURL
 	previousClient := updaterHTTPClient
-	updaterGitHubAPIBaseURL = "http://127.0.0.1:1"
-	updaterHTTPClient = &http.Client{}
+	updaterGitHubAPIBaseURL = server.URL
+	updaterHTTPClient = server.Client()
 	t.Cleanup(func() {
 		updaterGitHubAPIBaseURL = previousBaseURL
 		updaterHTTPClient = previousClient
 	})
 
 	log := logger.LoggerAtPath(filepath.Join(t.TempDir(), "updater_check_error.log"))
-	err := CheckForUpdates(context.Background(), nil, log, "")
+	_, err := pullReleases(log, "")
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "failed to fetch GitHub releases")
+	require.Contains(t, err.Error(), "GitHub API returned status")
 }

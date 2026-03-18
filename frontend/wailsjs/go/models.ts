@@ -786,6 +786,24 @@ export namespace types {
 		    return a;
 		}
 	}
+	export class PendingSubscriptionUpdate {
+	    assetId: string;
+	    type: string;
+	    currentVersion: string;
+	    latestVersion: string;
+
+	    static createFrom(source: any = {}) {
+	        return new PendingSubscriptionUpdate(source);
+	    }
+
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.assetId = source["assetId"];
+	        this.type = source["type"];
+	        this.currentVersion = source["currentVersion"];
+	        this.latestVersion = source["latestVersion"];
+	    }
+	}
 	export class PlatformResponse {
 	    status: string;
 	    message: string;
@@ -1087,6 +1105,20 @@ export namespace types {
 	        this.type = source["type"];
 	    }
 	}
+	export class SubscriptionUpdateTarget {
+	    assetId: string;
+	    type: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SubscriptionUpdateTarget(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.assetId = source["assetId"];
+	        this.type = source["type"];
+	    }
+	}
 	export class Subscriptions {
 	    maps: Record<string, string>;
 	    mods: Record<string, string>;
@@ -1189,20 +1221,6 @@ export namespace types {
 	        this.searchViewMode = source["searchViewMode"];
 	    }
 	}
-	export class UpdateAllSubscriptionsToLatestRequest {
-	    profileId: string;
-	    apply: boolean;
-	
-	    static createFrom(source: any = {}) {
-	        return new UpdateAllSubscriptionsToLatestRequest(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.profileId = source["profileId"];
-	        this.apply = source["apply"];
-	    }
-	}
 	
 	export class UpdateSubscriptionsRequest {
 	    profileId: string;
@@ -1288,6 +1306,7 @@ export namespace types {
 	    requestType: string;
 	    hasUpdates: boolean;
 	    pendingCount: number;
+	    pendingUpdates: PendingSubscriptionUpdate[];
 	    applied: boolean;
 	    profile: UserProfile;
 	    persisted: boolean;
@@ -1305,11 +1324,46 @@ export namespace types {
 	        this.requestType = source["requestType"];
 	        this.hasUpdates = source["hasUpdates"];
 	        this.pendingCount = source["pendingCount"];
+	        this.pendingUpdates = this.convertValues(source["pendingUpdates"], PendingSubscriptionUpdate);
 	        this.applied = source["applied"];
 	        this.profile = this.convertValues(source["profile"], UserProfile);
 	        this.persisted = source["persisted"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
 	        this.errors = this.convertValues(source["errors"], UserProfilesError);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class UpdateSubscriptionsToLatestRequest {
+	    profileId: string;
+	    apply: boolean;
+	    targets?: SubscriptionUpdateTarget[];
+	
+	    static createFrom(source: any = {}) {
+	        return new UpdateSubscriptionsToLatestRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.profileId = source["profileId"];
+	        this.apply = source["apply"];
+	        this.targets = this.convertValues(source["targets"], SubscriptionUpdateTarget);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

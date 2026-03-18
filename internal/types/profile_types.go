@@ -93,9 +93,10 @@ type UpdateSubscriptionsRequest struct {
 	ForceSync bool                              `json:"forceSync"`
 }
 
-type UpdateAllSubscriptionsToLatestRequest struct {
-	ProfileID string `json:"profileId"`
-	Apply     bool   `json:"apply"`
+type UpdateSubscriptionsToLatestRequest struct {
+	ProfileID string                     `json:"profileId"`
+	Apply     bool                       `json:"apply"`
+	Targets   []SubscriptionUpdateTarget `json:"targets,omitempty"`
 }
 
 type UpdateSubscriptionRequestType string
@@ -111,6 +112,18 @@ type SubscriptionOperation struct {
 	Type    AssetType          `json:"type"`
 	Action  SubscriptionAction `json:"action"`
 	Version Version            `json:"version"`
+}
+
+type SubscriptionUpdateTarget struct {
+	AssetID string    `json:"assetId"`
+	Type    AssetType `json:"type"`
+}
+
+type PendingSubscriptionUpdate struct {
+	AssetID        string    `json:"assetId"`
+	Type           AssetType `json:"type"`
+	CurrentVersion Version   `json:"currentVersion"`
+	LatestVersion  Version   `json:"latestVersion"`
 }
 
 type UserProfilesErrorType string
@@ -153,21 +166,22 @@ type UserProfileResult struct {
 
 type UpdateSubscriptionsResult struct {
 	GenericResponse
-	RequestType  UpdateSubscriptionRequestType `json:"requestType"`
-	HasUpdates   bool                          `json:"hasUpdates"`
-	PendingCount int                           `json:"pendingCount"`
-	Applied      bool                          `json:"applied"`
-	Profile      UserProfile                   `json:"profile"`
-	Persisted    bool                          `json:"persisted"`
-	Operations   []SubscriptionOperation       `json:"operations"`
-	Errors       []UserProfilesError           `json:"errors"`
+	RequestType    UpdateSubscriptionRequestType `json:"requestType"`
+	HasUpdates     bool                          `json:"hasUpdates"`     // whether there are updates to apply based on the profile's subscriptions and the registry state at the time of the request
+	PendingCount   int                           `json:"pendingCount"`   // number of pending updates (only relevant for latest_check and latest_apply request types)
+	PendingUpdates []PendingSubscriptionUpdate   `json:"pendingUpdates"` // list of pending updates with details (if any)
+	Applied        bool                          `json:"applied"`        // whether the updates were applied (or if this request was just a check)
+	Profile        UserProfile                   `json:"profile"`        // the updated profile after applying subscription changes (if applicable)
+	Persisted      bool                          `json:"persisted"`      // whether the updated profile state was persisted to disk (if applicable)
+	Operations     []SubscriptionOperation       `json:"operations"`     // the list of subscription operations that were performed (if any)
+	Errors         []UserProfilesError           `json:"errors"`         // errors that were encountered during the subscription update process
 }
 
 type SyncSubscriptionsResult struct {
 	GenericResponse
 	ProfileID  string                  `json:"profileId"`
-	Operations []SubscriptionOperation `json:"operations"`
-	Errors     []UserProfilesError     `json:"errors"`
+	Operations []SubscriptionOperation `json:"operations"` // the list of subscription operations that were performed (if any)
+	Errors     []UserProfilesError     `json:"errors"`     // errors that were encountered during the subscription sync process
 }
 
 // UserProfile represents a profile within the application.

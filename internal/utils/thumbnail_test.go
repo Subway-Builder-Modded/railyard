@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 	"strings"
 	"testing"
@@ -55,7 +55,7 @@ func TestBuildRingPath(t *testing.T) {
 
 func TestFetchWithRetrySuccessAfterRetries(t *testing.T) {
 	var calls int
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		calls++
 		if calls < 3 {
 			w.WriteHeader(http.StatusBadGateway)
@@ -73,7 +73,7 @@ func TestFetchWithRetrySuccessAfterRetries(t *testing.T) {
 }
 
 func TestFetchWithRetryFailure(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadGateway)
 		_, _ = io.WriteString(w, "nope")
 	}))
@@ -93,7 +93,7 @@ func TestGenerateThumbnailErrorsWhenNoBoundsOrViewState(t *testing.T) {
 }
 
 func TestGenerateThumbnailReturnsSVGWhenTilesUnavailableOrInvalid(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = io.WriteString(w, "not-a-valid-mvt")
 	}))

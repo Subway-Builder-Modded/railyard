@@ -38,7 +38,7 @@ func loadedRegistryWithDownloads(t *testing.T) *Registry {
 		},
 	})
 
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	require.NoError(t, reg.fetchFromDisk())
 	return reg
 }
@@ -140,7 +140,7 @@ func TestFetchFromDiskFiltersOutAssetsMissingIntegrityListings(t *testing.T) {
 		},
 	))
 
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	require.NoError(t, reg.fetchFromDisk())
 
 	require.Len(t, reg.GetMods(), 1)

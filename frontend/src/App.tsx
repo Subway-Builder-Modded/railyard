@@ -76,14 +76,19 @@ function App() {
         acknowledgeCancel(payload.itemId);
       },
     );
-    const deepLinkOpened = EventsOn('deeplink:open', (payload: DeepLinkEvent) => {
-      const routeType = payload?.type;
-      const routeID = payload?.id;
-      if (!routeType || !routeID) {
-        return;
-      }
-      setPendingDeepLinkRoute(`/project/${routeType}/${encodeURIComponent(routeID)}`);
-    });
+    const deepLinkOpened = EventsOn(
+      'deeplink:open',
+      (payload: DeepLinkEvent) => {
+        const routeType = payload?.type;
+        const routeID = payload?.id;
+        if (!routeType || !routeID) {
+          return;
+        }
+        setPendingDeepLinkRoute(
+          `/project/${routeType}/${encodeURIComponent(routeID)}`,
+        );
+      },
+    );
     let cancelled = false;
     let timer: number | undefined;
 
@@ -185,7 +190,9 @@ function App() {
         if (!routeType || !routeID) {
           return;
         }
-        setPendingDeepLinkRoute(`/project/${routeType}/${encodeURIComponent(routeID)}`);
+        setPendingDeepLinkRoute(
+          `/project/${routeType}/${encodeURIComponent(routeID)}`,
+        );
       })
       .catch(() => {});
   }, [startupReady]);

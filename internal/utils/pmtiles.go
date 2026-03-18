@@ -17,12 +17,11 @@ import (
 // and returns the server and port. The caller is responsible for calling
 // server.Close() when done.
 func StartTempPMTilesServer() (*http.Server, int, error) {
-	listener, err := net.Listen("tcp", ":0")
+	listener, err := net.Listen("tcp4", "127.0.0.1:0")
 	if err != nil {
 		return nil, 0, err
 	}
 	port := listener.Addr().(*net.TCPAddr).Port
-	listener.Close()
 
 	pmtilesServer, err := pmtiles.NewServerWithBucket(
 		pmtiles.NewFileBucket(paths.TilesPath()),
@@ -43,12 +42,11 @@ func StartTempPMTilesServer() (*http.Server, int, error) {
 	})
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
 		Handler: mux,
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.Serve(listener); err != nil && err != http.ErrServerClosed {
 			log.Printf("PMTiles server error: %v\n", err)
 		}
 	}()

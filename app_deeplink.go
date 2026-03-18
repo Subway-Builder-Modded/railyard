@@ -92,10 +92,14 @@ func (a *App) emitPendingDeepLinks() {
 }
 
 func (a *App) ConsumePendingDeepLink() types.DeepLinkResponse {
-	a.Logger.Info("Consuming pending deep link")
+	if a.Logger != nil {
+		a.Logger.Info("Consuming pending deep link")
+	}
 	target, ok := a.deepLinks.consume()
 	if !ok {
-		a.Logger.Warn("No pending deep link to consume")
+		if a.Logger != nil {
+			a.Logger.Warn("No pending deep link to consume")
+		}
 		return types.DeepLinkResponse{
 			GenericResponse: types.SuccessResponse("No pending deep link"),
 			Target:          nil,
@@ -103,7 +107,9 @@ func (a *App) ConsumePendingDeepLink() types.DeepLinkResponse {
 	}
 	a.bringToFront()
 
-	a.Logger.Info("Pending deep link consumed", "type", target.Type, "id", target.ID)
+	if a.Logger != nil {
+		a.Logger.Info("Pending deep link consumed", "type", target.Type, "id", target.ID)
+	}
 	return types.DeepLinkResponse{
 		GenericResponse: types.SuccessResponse("Pending deep link resolved"),
 		Target: &types.DeepLinkTarget{

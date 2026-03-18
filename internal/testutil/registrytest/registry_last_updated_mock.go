@@ -3,9 +3,9 @@ package registrytest
 import (
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
@@ -45,7 +45,7 @@ func MockLastUpdatedServer(t *testing.T, reg any, fixtures []LastUpdatedFixture)
 		})
 	}
 
-	server := httptest.NewServer(mux)
+	server := testutil.NewLocalhostServer(t, mux)
 
 	for _, fixture := range fixtures {
 		update := types.UpdateConfig{

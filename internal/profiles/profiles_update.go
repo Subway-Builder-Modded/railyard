@@ -101,26 +101,37 @@ func (s *UserProfiles) UpdateSubscriptions(req types.UpdateSubscriptionsRequest)
 	return result
 }
 
-// UpdateAllSubscriptionsToLatest resolves the latest available registry versions for all current profile subscriptions,
+// UpdateSubscriptionsToLatest resolves the latest available registry versions for current profile subscriptions,
 // updates those that are behind, persists updates to disk, and runs sync/install-uninstall routines.
-func (s *UserProfiles) UpdateAllSubscriptionsToLatest(req types.UpdateAllSubscriptionsToLatestRequest) types.UpdateSubscriptionsResult {
-	s.logRequest("UpdateAllSubscriptionsToLatest", "profile_id", req.ProfileID, "apply", req.Apply)
+func (s *UserProfiles) UpdateSubscriptionsToLatest(req types.UpdateSubscriptionsToLatestRequest) types.UpdateSubscriptionsResult {
+	s.logRequest(
+		"UpdateSubscriptionsToLatest",
+		"profile_id", req.ProfileID,
+		"apply", req.Apply,
+		"target_count", len(req.Targets),
+	)
 
-	profile, requiredUpdates, resultWarnings, profileErr := s.resolveLatestUpdatesForProfile(req.ProfileID)
+	requestType := types.LatestCheck
+	if req.Apply {
+		requestType = types.LatestApply
+	}
+
+	profile, requiredUpdates, pendingUpdates, resultWarnings, profileErr := s.resolveLatestUpdatesForProfile(req.ProfileID, req.Targets)
 	if profileErr != nil {
 		return types.UpdateSubscriptionsResult{
 			GenericResponse: types.GenericResponse{
 				Status:  types.ResponseError,
 				Message: "Profile not found",
 			},
-			RequestType:  types.LatestCheck,
-			HasUpdates:   false,
-			PendingCount: 0,
-			Applied:      false,
-			Profile:      types.UserProfile{},
-			Persisted:    false,
-			Operations:   []types.SubscriptionOperation{},
-			Errors:       []types.UserProfilesError{*profileErr},
+			RequestType:    requestType,
+			HasUpdates:     false,
+			PendingCount:   0,
+			PendingUpdates: []types.PendingSubscriptionUpdate{},
+			Applied:        false,
+			Profile:        types.UserProfile{},
+			Persisted:      false,
+			Operations:     []types.SubscriptionOperation{},
+			Errors:         []types.UserProfilesError{*profileErr},
 		}
 	}
 
@@ -135,7 +146,7 @@ func (s *UserProfiles) UpdateAllSubscriptionsToLatest(req types.UpdateAllSubscri
 		)
 	}
 
-	pendingCount := len(requiredUpdates)
+	pendingCount := len(pendingUpdates)
 	hasUpdates := pendingCount > 0
 
 	if !req.Apply || !hasUpdates {
@@ -153,23 +164,20 @@ func (s *UserProfiles) UpdateAllSubscriptionsToLatest(req types.UpdateAllSubscri
 			}
 		}
 
-		requestType := types.LatestCheck
-		if req.Apply {
-			requestType = types.LatestApply
-		}
 		return types.UpdateSubscriptionsResult{
 			GenericResponse: types.GenericResponse{
 				Status:  status,
 				Message: message,
 			},
-			RequestType:  requestType,
-			HasUpdates:   hasUpdates,
-			PendingCount: pendingCount,
-			Applied:      false,
-			Profile:      profile,
-			Persisted:    false,
-			Operations:   []types.SubscriptionOperation{},
-			Errors:       resultWarnings,
+			RequestType:    requestType,
+			HasUpdates:     hasUpdates,
+			PendingCount:   pendingCount,
+			PendingUpdates: pendingUpdates,
+			Applied:        false,
+			Profile:        profile,
+			Persisted:      false,
+			Operations:     []types.SubscriptionOperation{},
+			Errors:         resultWarnings,
 		}
 	}
 
@@ -196,32 +204,52 @@ func (s *UserProfiles) UpdateAllSubscriptionsToLatest(req types.UpdateAllSubscri
 			Status:  status,
 			Message: message,
 		},
-		RequestType:  types.LatestApply,
-		HasUpdates:   hasUpdates,
-		PendingCount: pendingCount,
-		Applied:      true,
-		Profile:      updateResult.Profile,
-		Persisted:    updateResult.Persisted,
-		Operations:   updateResult.Operations,
-		Errors:       errors,
+		RequestType:    types.LatestApply,
+		HasUpdates:     hasUpdates,
+		PendingCount:   pendingCount,
+		PendingUpdates: pendingUpdates,
+		Applied:        true,
+		Profile:        updateResult.Profile,
+		Persisted:      updateResult.Persisted,
+		Operations:     updateResult.Operations,
+		Errors:         errors,
 	}
 }
 
-func (s *UserProfiles) resolveLatestUpdatesForProfile(profileID string) (types.UserProfile, map[string]types.SubscriptionUpdateItem, []types.UserProfilesError, *types.UserProfilesError) {
+func (s *UserProfiles) resolveLatestUpdatesForProfile(
+	profileID string,
+	targets []types.SubscriptionUpdateTarget,
+) (
+	types.UserProfile,
+	map[string]types.SubscriptionUpdateItem,
+	[]types.PendingSubscriptionUpdate,
+	[]types.UserProfilesError,
+	*types.UserProfilesError,
+) {
 	profile, _, profileErr := s.profileSnapshot(profileID)
 	if profileErr != nil {
-		return types.UserProfile{}, map[string]types.SubscriptionUpdateItem{}, []types.UserProfilesError{}, profileErr
+		return types.UserProfile{}, map[string]types.SubscriptionUpdateItem{}, []types.PendingSubscriptionUpdate{}, []types.UserProfilesError{}, profileErr
 	}
 
-	requiredUpdates, warnings := s.resolveLatestSubscriptionUpdates(profileID, profile)
-	return profile, requiredUpdates, warnings, nil
+	requiredUpdates, pendingUpdates, warnings := s.resolveLatestSubscriptionUpdates(profileID, profile, targets)
+	return profile, requiredUpdates, pendingUpdates, warnings, nil
 }
 
 // ===== Registry Helpers ===== //
 
-func (s *UserProfiles) resolveLatestSubscriptionUpdates(profileID string, profile types.UserProfile) (map[string]types.SubscriptionUpdateItem, []types.UserProfilesError) {
+func (s *UserProfiles) resolveLatestSubscriptionUpdates(
+	profileID string,
+	profile types.UserProfile,
+	targets []types.SubscriptionUpdateTarget,
+) (
+	map[string]types.SubscriptionUpdateItem,
+	[]types.PendingSubscriptionUpdate,
+	[]types.UserProfilesError,
+) {
 	updates := make(map[string]types.SubscriptionUpdateItem)
+	pendingUpdates := make([]types.PendingSubscriptionUpdate, 0)
 	warnings := make([]types.UserProfilesError, 0)
+	targetSet := makeTargetSet(targets)
 
 	latestAssetUpdates(
 		latestSubscriptionArgs[types.MapManifest]{
@@ -231,7 +259,7 @@ func (s *UserProfiles) resolveLatestSubscriptionUpdates(profileID string, profil
 			idFn:          func(m types.MapManifest) string { return m.ID },
 			updateFn:      func(m types.MapManifest) types.UpdateConfig { return m.Update },
 		},
-		profileID, s.Registry.GetVersions, updates, &warnings,
+		profileID, targetSet, s.Registry.GetVersions, updates, &pendingUpdates, &warnings,
 	)
 
 	latestAssetUpdates(
@@ -242,10 +270,10 @@ func (s *UserProfiles) resolveLatestSubscriptionUpdates(profileID string, profil
 			idFn:          func(m types.ModManifest) string { return m.ID },
 			updateFn:      func(m types.ModManifest) types.UpdateConfig { return m.Update },
 		},
-		profileID, s.Registry.GetVersions, updates, &warnings,
+		profileID, targetSet, s.Registry.GetVersions, updates, &pendingUpdates, &warnings,
 	)
 
-	return updates, warnings
+	return updates, pendingUpdates, warnings
 }
 
 type latestSubscriptionArgs[T any] struct {
@@ -259,8 +287,10 @@ type latestSubscriptionArgs[T any] struct {
 func latestAssetUpdates[T any](
 	args latestSubscriptionArgs[T],
 	profileID string,
+	targetSet map[assetVersionKey]struct{},
 	getVersionsFn func(string, string) ([]types.VersionInfo, error),
 	updates map[string]types.SubscriptionUpdateItem,
+	pendingUpdates *[]types.PendingSubscriptionUpdate,
 	errors *[]types.UserProfilesError,
 ) {
 	manifestUpdateByID := make(map[string]types.UpdateConfig)
@@ -269,6 +299,11 @@ func latestAssetUpdates[T any](
 	}
 
 	for assetID, currentVersion := range args.subscriptions {
+		// Check if the asset is within the requested update targets (if any were given)
+		if !shouldUpdate(targetSet, args.assetType, assetID) {
+			continue
+		}
+
 		update, ok := manifestUpdateByID[assetID]
 		if !ok {
 			*errors = append(*errors, updateSubscriptionError(
@@ -292,8 +327,41 @@ func latestAssetUpdates[T any](
 				Type:    args.assetType,
 				Version: types.Version(latestVersion),
 			}
+			*pendingUpdates = append(*pendingUpdates, types.PendingSubscriptionUpdate{
+				AssetID:        assetID,
+				Type:           args.assetType,
+				CurrentVersion: types.Version(strings.TrimSpace(currentVersion)),
+				LatestVersion:  types.Version(latestVersion),
+			})
 		}
 	}
+}
+
+type assetVersionKey struct {
+	AssetType types.AssetType
+	AssetID   string
+}
+
+func makeTargetSet(targets []types.SubscriptionUpdateTarget) map[assetVersionKey]struct{} {
+	targetSet := make(map[assetVersionKey]struct{}, len(targets))
+	for _, target := range targets {
+		targetSet[assetVersionKey{
+			AssetType: target.Type,
+			AssetID:   target.AssetID,
+		}] = struct{}{}
+	}
+	return targetSet
+}
+
+func shouldUpdate(targetSet map[assetVersionKey]struct{}, assetType types.AssetType, assetID string) bool {
+	if len(targetSet) == 0 {
+		return true
+	}
+	_, ok := targetSet[assetVersionKey{
+		AssetType: assetType,
+		AssetID:   assetID,
+	}]
+	return ok
 }
 
 func resolveLatestVersionForManifest(

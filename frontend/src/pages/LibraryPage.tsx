@@ -1,5 +1,5 @@
 import { Inbox, Plus } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 
 import { LibraryActionBar } from '@/components/library/LibraryActionBar';
@@ -13,6 +13,11 @@ import { Button } from '@/components/ui/button';
 import { useFilteredInstalledItems } from '@/hooks/use-filtered-installed-items';
 import { buildAssetListingCounts } from '@/lib/listing-counts';
 import { buildSpecialDemandValues } from '@/lib/map-filter-values';
+import {
+  indexPendingSubscriptionUpdates,
+  type PendingUpdatesByKey,
+  requestLatestSubscriptionUpdatesForActiveProfile,
+} from '@/lib/subscription-updates';
 import { useInstalledStore } from '@/stores/installed-store';
 import { useRegistryStore } from '@/stores/registry-store';
 
@@ -25,10 +30,45 @@ export function LibraryPage() {
     ensureDownloadTotals,
   } = useRegistryStore();
   const { installedMods, installedMaps } = useInstalledStore();
+  const [pendingUpdatesByKey, setPendingUpdatesByKey] =
+    useState<PendingUpdatesByKey>({});
+
+  const refreshPendingSubscriptionUpdates = useCallback(async () => {
+    let result;
+    try {
+      result = await requestLatestSubscriptionUpdatesForActiveProfile({
+        apply: false,
+      });
+    } catch (err) {
+      setPendingUpdatesByKey({});
+      console.warn(
+        `[library:latest_check] Failed to resolve pending updates: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return;
+    }
+
+    if (result.status === 'error') {
+      setPendingUpdatesByKey({});
+      console.warn(
+        `[library:latest_check] Failed to resolve pending updates: ${result.message}`,
+      );
+      return;
+    }
+
+    setPendingUpdatesByKey(
+      indexPendingSubscriptionUpdates(result.pendingUpdates),
+    );
+    if (result.status === 'warn') {
+      console.warn(
+        `[library:latest_check] Completed with warnings: ${result.message}`,
+      );
+    }
+  }, []);
 
   useEffect(() => {
     ensureDownloadTotals();
-  }, [ensureDownloadTotals]);
+    void refreshPendingSubscriptionUpdates();
+  }, [ensureDownloadTotals, refreshPendingSubscriptionUpdates]);
 
   const modManifestById = useMemo(
     () => new Map(mods.map((manifest) => [manifest.id, manifest])),
@@ -242,6 +282,8 @@ export function LibraryPage() {
                   <LibraryTable
                     items={paginatedItems}
                     activeType={filters.type}
+                    pendingUpdatesByKey={pendingUpdatesByKey}
+                    onRefreshPendingUpdates={refreshPendingSubscriptionUpdates}
                     sort={filters.sort}
                     onSortChange={(value) =>
                       setFilters((prev) => ({
@@ -267,7 +309,11 @@ export function LibraryPage() {
               )}
 
               <div className="sticky bottom-4">
-                <LibraryActionBar allItems={allFilteredItems} />
+                <LibraryActionBar
+                  allItems={allFilteredItems}
+                  pendingUpdatesByKey={pendingUpdatesByKey}
+                  onRefreshPendingUpdates={refreshPendingSubscriptionUpdates}
+                />
               </div>
             </div>
           </div>

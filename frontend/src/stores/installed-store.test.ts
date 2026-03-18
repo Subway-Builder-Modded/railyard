@@ -15,6 +15,7 @@ const {
   mockGetInstalledMapsResponse,
   mockGetActiveProfile,
   mockUpdateSubscriptions,
+  mockUpdateSubscriptionsToLatest,
   mockInstallMapFiles,
   mockInstallModFiles,
   mockUninstallMapFiles,
@@ -24,6 +25,7 @@ const {
   mockGetInstalledMapsResponse: vi.fn(),
   mockGetActiveProfile: vi.fn(),
   mockUpdateSubscriptions: vi.fn(),
+  mockUpdateSubscriptionsToLatest: vi.fn(),
   mockInstallMapFiles: vi.fn(),
   mockInstallModFiles: vi.fn(),
   mockUninstallMapFiles: vi.fn(),
@@ -38,6 +40,7 @@ vi.mock('../../wailsjs/go/registry/Registry', () => ({
 vi.mock('../../wailsjs/go/profiles/UserProfiles', () => ({
   GetActiveProfile: mockGetActiveProfile,
   UpdateSubscriptions: mockUpdateSubscriptions,
+  UpdateSubscriptionsToLatest: mockUpdateSubscriptionsToLatest,
 }));
 
 vi.mock('../../wailsjs/go/downloader/Downloader', () => ({
@@ -100,6 +103,9 @@ describe('useInstalledStore', () => {
     mockInstallModFiles.mockResolvedValue({ status: 'success', message: '' });
     mockUninstallMapFiles.mockResolvedValue({ status: 'success', message: '' });
     mockUninstallModFiles.mockResolvedValue({ status: 'success', message: '' });
+    mockUpdateSubscriptionsToLatest.mockResolvedValue(
+      updateSubscriptionsSuccess('latest apply ok'),
+    );
   });
 
   it('installMap correctly updates subscriptions and refreshes installed lists', async () => {
@@ -291,5 +297,55 @@ describe('useInstalledStore', () => {
 
     useInstalledStore.getState().acknowledgeCancelledInstall('missing-map');
     expect(useInstalledStore.getState().installing.has('map-2')).toBe(true);
+  });
+
+  it('updateAssetsToLatest invokes latest_apply with scoped targets and refreshes lists', async () => {
+    mockGetActiveProfile.mockResolvedValue(
+      activeProfileResultSuccess('profile-a'),
+    );
+    mockGetInstalledModsResponse.mockResolvedValue({
+      status: 'success',
+      message: 'ok',
+      mods: [{ id: 'mod-1', version: '1.0.0' }],
+    });
+    mockGetInstalledMapsResponse.mockResolvedValue({
+      status: 'success',
+      message: 'ok',
+      maps: [{ id: 'map-1', version: '2.0.0', config: { code: 'AAA' } }],
+    });
+
+    const result = await useInstalledStore.getState().updateAssetsToLatest([
+      { id: 'map-1', type: 'map' },
+      { id: 'mod-1', type: 'mod' },
+    ]);
+
+    expect(mockUpdateSubscriptionsToLatest).toHaveBeenCalledTimes(1);
+    const request = mockUpdateSubscriptionsToLatest.mock.calls[0][0];
+    expect(request.profileId).toBe('profile-a');
+    expect(request.apply).toBe(true);
+    expect(request.targets).toEqual([
+      { assetId: 'map-1', type: 'map' },
+      { assetId: 'mod-1', type: 'mod' },
+    ]);
+    validateInstallationRefreshes(1);
+    expect(useInstalledStore.getState().installing.has('map-1')).toBe(false);
+    expect(useInstalledStore.getState().installing.has('mod-1')).toBe(false);
+    expect(result.status).toBe('success');
+  });
+
+  it('updateAssetsToLatest surfaces latest_apply errors', async () => {
+    mockGetActiveProfile.mockResolvedValue(
+      activeProfileResultSuccess('profile-a'),
+    );
+    mockUpdateSubscriptionsToLatest.mockResolvedValue(
+      updateSubscriptionsError('Failed to apply latest updates'),
+    );
+
+    await expect(
+      useInstalledStore
+        .getState()
+        .updateAssetsToLatest([{ id: 'map-1', type: 'map' }]),
+    ).rejects.toThrow('Failed to apply latest updates');
+    expect(useInstalledStore.getState().installing.has('map-1')).toBe(false);
   });
 });

@@ -1,13 +1,11 @@
 package config
 
 import (
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"railyard/internal/testutil"
 	"railyard/internal/types"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +27,7 @@ func setup(t *testing.T, persisted types.AppConfig) *TestSetup {
 	testutil.NewHarness(t)
 	require.NoError(t, WriteAppConfig(persisted))
 
-	c := NewConfig()
+	c := NewConfig(testutil.TestLogSink{})
 	tryResolveConfig(t, c)
 
 	return &TestSetup{t: t, cfg: c}
@@ -127,7 +125,7 @@ func TestResolveConfigOverridesRuntimeState(t *testing.T) {
 	}
 
 	require.NoError(t, WriteAppConfig(initial))
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 
 	resolved, err := cfg.ResolveConfig()
 	require.NoError(t, err)
@@ -191,25 +189,15 @@ func mockGithubTokenValidationResponse(t *testing.T, apiKey string) func() (bool
 			require.NoError(t, err)
 		})
 
-		openPort, err := net.Listen("tcp", ":0")
+		testServer := testutil.NewLocalhostServer(t, httpserver)
+		request, err := http.NewRequest("GET", testServer.URL+"/rate_limit", nil)
 		require.NoError(t, err)
-		require.NoError(t, openPort.Close())
-		port := openPort.Addr().(*net.TCPAddr).Port
-
-		testServer := http.Server{
-			Addr:    ":" + strconv.Itoa(port),
-			Handler: httpserver,
-		}
-		go testServer.ListenAndServe()
-
-		request, err := http.NewRequest("GET", "http://localhost:"+strconv.Itoa(port)+"/rate_limit", nil)
 		request.Header.Add("Authorization", "token "+apiKey)
 
-		req, err := http.DefaultClient.Do(request)
+		req, err := testServer.Client().Do(request)
 
 		require.NoError(t, err)
 		defer req.Body.Close()
-		defer testServer.Close()
 		return req.StatusCode == http.StatusOK, nil
 	}
 }
@@ -383,7 +371,7 @@ func TestTryAutoDetectExecutableSucceedsWhenExecutablePathIsValid(t *testing.T) 
 	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateFile(t, DefaultExecutableCandidates())
 
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 	autoDetected, success := cfg.TryAutoDetectPath(
 		DefaultExecutableCandidates(),
 		false,
@@ -403,7 +391,7 @@ func TestTryAutoDetectMetroMakerSucceedsWhenMetroMakerDataPathIsValid(t *testing
 	testutil.NewHarness(t)
 	detectedPath := createWritableCandidateDir(t, DefaultMetroMakerDataFolderCandidates())
 
-	cfg := NewConfig()
+	cfg := NewConfig(testutil.TestLogSink{})
 	autoDetected, success := cfg.TryAutoDetectPath(
 		DefaultMetroMakerDataFolderCandidates(),
 		true,

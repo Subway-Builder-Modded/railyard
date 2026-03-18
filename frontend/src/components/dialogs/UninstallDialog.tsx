@@ -1,16 +1,8 @@
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { AssetActionDialog } from '@/components/dialogs/AssetActionDialog';
 import type { AssetType } from '@/lib/asset-types';
 import { useInstalledStore } from '@/stores/installed-store';
 
@@ -81,37 +73,21 @@ export function UninstallDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-destructive" />
-            Uninstall {titleName}?
-          </DialogTitle>
-          <DialogDescription>
-            {itemCount === 1
-              ? `This will remove all installed files for this ${singleType === 'mod' ? 'mod' : 'map'}. You can reinstall it later from the registry.`
-              : 'This will remove all installed files for the selected assets. You can reinstall them later from the registry.'}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleUninstall}
-            disabled={loading}
-          >
-            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Uninstall
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AssetActionDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={`Uninstall ${titleName}?`}
+      description={
+        itemCount === 1
+          ? `This will remove all installed files for this ${singleType === 'mod' ? 'mod' : 'map'}. You can reinstall it later from the registry.`
+          : 'This will remove all installed files for the selected assets. You can reinstall them later from the registry.'
+      }
+      icon={AlertTriangle}
+      iconClassName="h-5 w-5 text-destructive"
+      confirmLabel="Uninstall"
+      confirmVariant="destructive"
+      loading={loading}
+      onConfirm={handleUninstall}
+    />
   );
 }

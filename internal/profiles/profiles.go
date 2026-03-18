@@ -63,14 +63,15 @@ func newUpdateSubscriptionsResult(
 			Status:  status,
 			Message: message,
 		},
-		RequestType:  types.UpdateSubscriptions,
-		HasUpdates:   false,
-		PendingCount: 0,
-		Applied:      applied,
-		Profile:      profile,
-		Persisted:    persisted,
-		Operations:   operations,
-		Errors:       profileErrors,
+		RequestType:    types.UpdateSubscriptions,
+		HasUpdates:     false,
+		PendingCount:   0,
+		PendingUpdates: []types.PendingSubscriptionUpdate{},
+		Applied:        applied,
+		Profile:        profile,
+		Persisted:      persisted,
+		Operations:     operations,
+		Errors:         profileErrors,
 	}
 }
 

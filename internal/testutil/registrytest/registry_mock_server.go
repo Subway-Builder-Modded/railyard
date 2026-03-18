@@ -4,12 +4,12 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"railyard/internal/testutil"
 	"railyard/internal/types"
 
 	"github.com/stretchr/testify/require"
@@ -165,7 +165,7 @@ func MockRegistryServer(t *testing.T, reg any, fixtures []UpdateFixture) func() 
 		}
 	}
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if content, ok := zipByDownloadPath[r.URL.Path]; ok {
 			w.Header().Set("Content-Type", "application/zip")
 			_, _ = w.Write(content)

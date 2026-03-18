@@ -3,7 +3,6 @@ package registry
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"sync/atomic"
 	"testing"
 
@@ -15,7 +14,7 @@ import (
 )
 
 func TestFilterSemverVersions(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	filtered := reg.filterSemverVersions([]types.VersionInfo{
 		{Version: "1.2.3"},
 		{Version: "v2.3.4"},
@@ -32,7 +31,7 @@ func TestFilterSemverVersions(t *testing.T) {
 }
 
 func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	updated := cfg.UpdateGithubToken("github_pat_test_token")
 	require.Equal(t, types.ResponseSuccess, updated.Status)
 	reg := NewRegistry(testutil.TestLogSink{}, cfg)
@@ -42,7 +41,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 	})
 
 	var requestCount int32
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		current := atomic.AddInt32(&requestCount, 1)
 		require.Equal(t, "/repos/owner/repo/releases", r.URL.Path)
 
@@ -74,7 +73,7 @@ func TestGetGitHubVersionsAuthFallbackAndCache(t *testing.T) {
 }
 
 func TestClearVersionsCache(t *testing.T) {
-	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig())
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
 	reg.setCachedVersions("github|owner/repo", []types.VersionInfo{{Version: "v1.0.0"}})
 
 	_, ok := reg.getCachedVersions("github|owner/repo")

@@ -1,9 +1,16 @@
-import { ChevronDown, ChevronUp, FolderOpen, Trash2 } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleFadingArrowUp,
+  FolderOpen,
+  Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Link } from 'wouter';
 
 import { UninstallDialog } from '@/components/dialogs/UninstallDialog';
+import { UpdateSubscriptionsDialog } from '@/components/dialogs/UpdateSubscriptionsDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,6 +30,11 @@ import { toggleSortField } from '@/lib/constants';
 import { getCountryFlagIcon } from '@/lib/flags';
 import { formatSourceQuality } from '@/lib/map-filter-values';
 import { MAX_CARD_BADGES } from '@/lib/search';
+import {
+  composeAssetKey,
+  getPendingSubscriptionUpdate,
+  type PendingUpdatesByKey,
+} from '@/lib/subscription-updates';
 import { cn } from '@/lib/utils';
 import { useConfigStore } from '@/stores/config-store';
 import { useLibraryStore } from '@/stores/library-store';
@@ -33,12 +45,14 @@ import type { types } from '../../../wailsjs/go/models';
 interface LibraryTableProps {
   items: InstalledTaggedItem[];
   activeType: AssetType;
+  pendingUpdatesByKey: PendingUpdatesByKey;
+  onRefreshPendingUpdates: () => Promise<void>;
   sort: SortState;
   onSortChange: (sort: SortState) => void;
 }
 
 function composeItemKey(item: InstalledTaggedItem): string {
-  return `${item.type}-${item.item.id}`;
+  return composeAssetKey(item.type, item.item.id);
 }
 
 function joinOsPath(...parts: string[]): string {
@@ -54,6 +68,8 @@ function joinOsPath(...parts: string[]): string {
 export function LibraryTable({
   items,
   activeType,
+  pendingUpdatesByKey,
+  onRefreshPendingUpdates,
   sort,
   onSortChange,
 }: LibraryTableProps) {
@@ -150,8 +166,10 @@ export function LibraryTable({
               <LibraryTableRow
                 key={key}
                 entry={entry}
+                pendingUpdatesByKey={pendingUpdatesByKey}
                 isSelected={isSelected}
                 showCountryColumn={showCountryColumn}
+                onRefreshPendingUpdates={onRefreshPendingUpdates}
                 onToggleSelect={() => toggleSelected(key)}
               />
             );
@@ -164,18 +182,23 @@ export function LibraryTable({
 
 interface LibraryTableRowProps {
   entry: InstalledTaggedItem;
+  pendingUpdatesByKey: PendingUpdatesByKey;
   isSelected: boolean;
   showCountryColumn: boolean;
+  onRefreshPendingUpdates: () => Promise<void>;
   onToggleSelect: () => void;
 }
 
 function LibraryTableRow({
   entry,
+  pendingUpdatesByKey,
   isSelected,
   showCountryColumn,
+  onRefreshPendingUpdates,
   onToggleSelect,
 }: LibraryTableRowProps) {
   const [uninstallOpen, setUninstallOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
   const removeSelected = useLibraryStore((s) => s.removeSelected);
   const metroMakerDataPath = useConfigStore(
     (s) => s.config?.metroMakerDataPath,
@@ -193,6 +216,11 @@ function LibraryTableRow({
   const badges = isMap ? mapBadges : (entry.item.tags ?? []);
   const mapCountry = map?.country?.trim().toUpperCase() ?? '';
   const CountryFlag = isMap ? getCountryFlagIcon(mapCountry) : null;
+  const pendingUpdate = getPendingSubscriptionUpdate(
+    pendingUpdatesByKey,
+    entry.type,
+    entry.item.id,
+  );
 
   const resolveInstallFolderPath = (): string | null => {
     if (!metroMakerDataPath) return null;
@@ -307,27 +335,41 @@ function LibraryTableRow({
         </TableCell>
 
         <TableCell>
-          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
-              onClick={handleOpenInstallFolder}
-              aria-label="Open install folder"
-              disabled={!metroMakerDataPath}
-            >
-              <FolderOpen className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center justify-end gap-1">
+            {pendingUpdate && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-[var(--update-primary)]/70 hover:text-[var(--update-primary)] hover:bg-[var(--update-tertiary)] transition-colors"
+                onClick={() => setUpdateOpen(true)}
+                aria-label="Update to latest"
+              >
+                <CircleFadingArrowUp className="h-4 w-4" />
+              </Button>
+            )}
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setUninstallOpen(true)}
-              aria-label="Delete"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
+                onClick={handleOpenInstallFolder}
+                aria-label="Open install folder"
+                disabled={!metroMakerDataPath}
+              >
+                <FolderOpen className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setUninstallOpen(true)}
+                aria-label="Delete"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </TableCell>
       </TableRow>
@@ -337,11 +379,31 @@ function LibraryTableRow({
           open={uninstallOpen}
           onOpenChange={setUninstallOpen}
           onUninstallSuccess={() => {
-            removeSelected([`${entry.type}-${entry.item.id}`]);
+            removeSelected([composeAssetKey(entry.type, entry.item.id)]);
+            void onRefreshPendingUpdates();
           }}
           type={entry.type}
           id={entry.item.id}
           name={entry.item.name}
+        />
+      )}
+
+      {updateOpen && pendingUpdate && (
+        <UpdateSubscriptionsDialog
+          open={updateOpen}
+          onOpenChange={setUpdateOpen}
+          onUpdateSuccess={() => {
+            void onRefreshPendingUpdates();
+          }}
+          targets={[
+            {
+              id: entry.item.id,
+              type: entry.type,
+              name: entry.item.name,
+              currentVersion: pendingUpdate.currentVersion,
+              latestVersion: pendingUpdate.latestVersion,
+            },
+          ]}
         />
       )}
     </>

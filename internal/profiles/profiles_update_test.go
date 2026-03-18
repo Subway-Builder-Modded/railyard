@@ -244,12 +244,13 @@ func TestUpdateSubscriptionsForceSyncErrors(t *testing.T) {
 	require.Equal(t, types.DefaultProfileID, result.Errors[len(result.Errors)-1].ProfileID)
 }
 
-func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
+func TestUpdateSubscriptionsToLatest(t *testing.T) {
 	type expectation struct {
 		expectedStatus          types.Status
 		expectedRequestType     types.UpdateSubscriptionRequestType
 		expectedHasUpdates      bool
 		expectedPendingCount    int
+		expectedPendingByKey    map[string][2]string
 		expectedApplied         bool
 		expectedPersisted       bool
 		expectedOperationByID   map[string]string
@@ -264,6 +265,7 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 		name         string
 		profileID    string
 		apply        bool
+		targets      []types.SubscriptionUpdateTarget
 		state        types.UserProfilesState
 		setup        func(t *testing.T, cfg *config.Config, reg *registry.Registry) func()
 		expected     expectation
@@ -299,10 +301,14 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				})
 			},
 			expected: expectation{
-				expectedStatus:          types.ResponseSuccess,
-				expectedRequestType:     types.LatestApply,
-				expectedHasUpdates:      true,
-				expectedPendingCount:    2,
+				expectedStatus:       types.ResponseSuccess,
+				expectedRequestType:  types.LatestApply,
+				expectedHasUpdates:   true,
+				expectedPendingCount: 2,
+				expectedPendingByKey: map[string][2]string{
+					"map:map-a": {"1.0.0", "2.0.0"},
+					"mod:mod-a": {"1.0.0", "1.5.0"},
+				},
 				expectedApplied:         true,
 				expectedPersisted:       true,
 				expectedOperationByID:   map[string]string{"map-a": "2.0.0", "mod-a": "1.5.0"},
@@ -353,6 +359,7 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				expectedRequestType:     types.LatestApply,
 				expectedHasUpdates:      false,
 				expectedPendingCount:    0,
+				expectedPendingByKey:    map[string][2]string{},
 				expectedApplied:         false,
 				expectedPersisted:       false,
 				expectedOperationByID:   map[string]string{},
@@ -388,10 +395,13 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				})
 			},
 			expected: expectation{
-				expectedStatus:          types.ResponseWarn,
-				expectedRequestType:     types.LatestApply,
-				expectedHasUpdates:      true,
-				expectedPendingCount:    1,
+				expectedStatus:       types.ResponseWarn,
+				expectedRequestType:  types.LatestApply,
+				expectedHasUpdates:   true,
+				expectedPendingCount: 1,
+				expectedPendingByKey: map[string][2]string{
+					"map:map-a": {"1.0.0", "1.1.0"},
+				},
 				expectedApplied:         true,
 				expectedPersisted:       true, // state is updated for map-a but not mod-missing
 				expectedOperationByID:   map[string]string{"map-a": "1.1.0"},
@@ -422,6 +432,7 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				expectedRequestType:     types.LatestApply,
 				expectedHasUpdates:      false,
 				expectedPendingCount:    0,
+				expectedPendingByKey:    map[string][2]string{},
 				expectedApplied:         false,
 				expectedPersisted:       false, // no state updates occur
 				expectedOperationByID:   map[string]string{},
@@ -454,10 +465,13 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				})
 			},
 			expected: expectation{
-				expectedStatus:          types.ResponseError,
-				expectedRequestType:     types.LatestApply,
-				expectedHasUpdates:      true,
-				expectedPendingCount:    1,
+				expectedStatus:       types.ResponseError,
+				expectedRequestType:  types.LatestApply,
+				expectedHasUpdates:   true,
+				expectedPendingCount: 1,
+				expectedPendingByKey: map[string][2]string{
+					"map:map-a": {"1.0.0", "1.1.0"},
+				},
 				expectedApplied:         true,
 				expectedPersisted:       true, // state is updated to desired but sync fails
 				expectedOperationByID:   map[string]string{"map-a": "1.1.0"},
@@ -494,14 +508,111 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				})
 			},
 			expected: expectation{
-				expectedStatus:          types.ResponseSuccess,
-				expectedRequestType:     types.LatestCheck,
-				expectedHasUpdates:      true,
-				expectedPendingCount:    2,
+				expectedStatus:       types.ResponseSuccess,
+				expectedRequestType:  types.LatestCheck,
+				expectedHasUpdates:   true,
+				expectedPendingCount: 2,
+				expectedPendingByKey: map[string][2]string{
+					"map:map-a": {"1.0.0", "1.2.0"},
+					"mod:mod-a": {"1.0.0", "1.5.0"},
+				},
 				expectedApplied:         false,
 				expectedPersisted:       false,
 				expectedOperationByID:   map[string]string{},
 				expectedMapSubscription: "1.0.0",
+				expectedModID:           "mod-a",
+				expectedModSubscription: "1.0.0",
+			},
+		},
+		{
+			name:      "Check mode with targets only reports targeted pending updates",
+			profileID: types.DefaultProfileID,
+			apply:     false,
+			targets: []types.SubscriptionUpdateTarget{
+				{AssetID: "mod-a", Type: types.AssetTypeMod},
+			},
+			state: func() types.UserProfilesState {
+				state := types.InitialProfilesState()
+				profile := state.Profiles[types.DefaultProfileID]
+				profile.Subscriptions.Maps["map-a"] = "1.0.0"
+				profile.Subscriptions.Mods["mod-a"] = "1.0.0"
+				state.Profiles[types.DefaultProfileID] = profile
+				return state
+			}(),
+			setup: func(t *testing.T, _ *config.Config, reg *registry.Registry) func() {
+				t.Helper()
+				return mockRegistry(t, reg, []registryFixture{
+					{
+						assetID:   "map-a",
+						assetType: types.AssetTypeMap,
+						versions:  []string{"1.0.0", "1.2.0"},
+						mapCode:   "AAA",
+					},
+					{
+						assetID:   "mod-a",
+						assetType: types.AssetTypeMod,
+						versions:  []string{"1.0.0", "1.5.0"},
+					},
+				})
+			},
+			expected: expectation{
+				expectedStatus:          types.ResponseSuccess,
+				expectedRequestType:     types.LatestCheck,
+				expectedHasUpdates:      true,
+				expectedPendingCount:    1,
+				expectedPendingByKey:    map[string][2]string{"mod:mod-a": {"1.0.0", "1.5.0"}},
+				expectedApplied:         false,
+				expectedPersisted:       false,
+				expectedOperationByID:   map[string]string{},
+				expectedMapSubscription: "1.0.0",
+				expectedModID:           "mod-a",
+				expectedModSubscription: "1.0.0",
+			},
+		},
+		{
+			name:      "Apply mode with targets updates only targeted subscriptions",
+			profileID: types.DefaultProfileID,
+			apply:     true,
+			targets: []types.SubscriptionUpdateTarget{
+				{AssetID: "map-a", Type: types.AssetTypeMap},
+			},
+			state: func() types.UserProfilesState {
+				state := types.InitialProfilesState()
+				profile := state.Profiles[types.DefaultProfileID]
+				profile.Subscriptions.Maps["map-a"] = "1.0.0"
+				profile.Subscriptions.Mods["mod-a"] = "1.0.0"
+				state.Profiles[types.DefaultProfileID] = profile
+				return state
+			}(),
+			setup: func(t *testing.T, cfg *config.Config, reg *registry.Registry) func() {
+				t.Helper()
+				configureConfig(t, cfg)
+				return mockRegistry(t, reg, []registryFixture{
+					{
+						assetID:   "map-a",
+						assetType: types.AssetTypeMap,
+						versions:  []string{"1.0.0", "1.2.0"},
+						mapCode:   "AAA",
+					},
+					{
+						assetID:   "mod-a",
+						assetType: types.AssetTypeMod,
+						versions:  []string{"1.0.0", "1.5.0"},
+					},
+				})
+			},
+			expected: expectation{
+				expectedStatus:       types.ResponseSuccess,
+				expectedRequestType:  types.LatestApply,
+				expectedHasUpdates:   true,
+				expectedPendingCount: 1,
+				expectedPendingByKey: map[string][2]string{
+					"map:map-a": {"1.0.0", "1.2.0"},
+				},
+				expectedApplied:         true,
+				expectedPersisted:       true,
+				expectedOperationByID:   map[string]string{"map-a": "1.2.0"},
+				expectedMapSubscription: "1.2.0",
 				expectedModID:           "mod-a",
 				expectedModSubscription: "1.0.0",
 			},
@@ -520,14 +631,24 @@ func TestUpdateAllSubscriptionsToLatest(t *testing.T) {
 				defer cleanup()
 			}
 
-			result := svc.UpdateAllSubscriptionsToLatest(types.UpdateAllSubscriptionsToLatestRequest{
+			result := svc.UpdateSubscriptionsToLatest(types.UpdateSubscriptionsToLatestRequest{
 				ProfileID: tc.profileID,
 				Apply:     tc.apply,
+				Targets:   tc.targets,
 			})
 			require.Equal(t, tc.expected.expectedStatus, result.Status)
 			require.Equal(t, tc.expected.expectedRequestType, result.RequestType)
 			require.Equal(t, tc.expected.expectedHasUpdates, result.HasUpdates)
 			require.Equal(t, tc.expected.expectedPendingCount, result.PendingCount)
+			pendingByKey := map[string][2]string{}
+			for _, pending := range result.PendingUpdates {
+				key := string(pending.Type) + ":" + pending.AssetID
+				pendingByKey[key] = [2]string{
+					strings.TrimSpace(string(pending.CurrentVersion)),
+					strings.TrimSpace(string(pending.LatestVersion)),
+				}
+			}
+			require.Equal(t, tc.expected.expectedPendingByKey, pendingByKey)
 			require.Equal(t, tc.expected.expectedApplied, result.Applied)
 			if tc.expected.expectedErrContains != "" {
 				require.NotEmpty(t, result.Errors)

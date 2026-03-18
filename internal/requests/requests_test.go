@@ -3,9 +3,10 @@ package requests
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"sync"
 	"testing"
+
+	"railyard/internal/testutil"
 
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +23,7 @@ func TestGetWithGithubTokenAppliesHeadersAndToken(t *testing.T) {
 	var seenUA string
 	var seenCustom string
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		seenAuth = r.Header.Get("Authorization")
 		seenUA = r.Header.Get("User-Agent")
 		seenCustom = r.Header.Get("X-Test")
@@ -52,7 +53,7 @@ func TestGetWithGithubTokenFallsBackToUnauthenticatedOn401(t *testing.T) {
 	authHeaders := make([]string, 0, 2)
 	callbackCodes := make([]int, 0, 1)
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		requestCount++
 		authHeaders = append(authHeaders, r.Header.Get("Authorization"))
@@ -87,7 +88,7 @@ func TestGetWithGithubTokenFallsBackToUnauthenticatedOn401(t *testing.T) {
 
 func TestGetWithGithubTokenSkipsAuthForNonGitHubHostWhenNotForced(t *testing.T) {
 	seenAuth := ""
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		seenAuth = r.Header.Get("Authorization")
 		w.WriteHeader(http.StatusOK)
 	}))

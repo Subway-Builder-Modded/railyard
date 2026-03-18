@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 
 import type { AssetType } from '@/lib/asset-types';
+import {
+  requestLatestSubscriptionUpdatesForActiveProfile,
+  resolveActiveProfileID,
+} from '@/lib/subscription-updates';
 
 import { types } from '../../wailsjs/go/models';
-import {
-  GetActiveProfile,
-  UpdateSubscriptions,
-} from '../../wailsjs/go/profiles/UserProfiles';
+import { UpdateSubscriptions } from '../../wailsjs/go/profiles/UserProfiles';
 import {
   GetInstalledMapsResponse,
   GetInstalledModsResponse,
@@ -66,6 +67,9 @@ interface InstalledState {
   uninstallMod: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallMap: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallAssets: (
+    assets: Array<{ id: string; type: AssetType }>,
+  ) => Promise<types.UpdateSubscriptionsResult>;
+  updateAssetsToLatest: (
     assets: Array<{ id: string; type: AssetType }>,
   ) => Promise<types.UpdateSubscriptionsResult>;
   cancelPendingInstall: (
@@ -144,14 +148,9 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
       throw new Error('No assets provided for subscription update');
     }
 
-    const activeProfileResult = await GetActiveProfile();
-    if (activeProfileResult.status !== 'success') {
-      throw new Error(
-        activeProfileResult.message || 'Failed to resolve active profile',
-      );
-    }
+    const profileID = await resolveActiveProfileID();
     const request = new types.UpdateSubscriptionsRequest({
-      profileId: activeProfileResult.profile.id,
+      profileId: profileID,
       assets,
       action,
       forceSync: true,
@@ -233,6 +232,42 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     }
   };
 
+  const updateAssetsToLatest = async (
+    assets: Array<{ id: string; type: AssetType }>,
+  ) => {
+    if (assets.length === 0) {
+      throw new Error('No assets provided for update');
+    }
+
+    const ids = assets.map((asset) => asset.id);
+    useDownloadQueueStore.getState().enqueue();
+    setOperationStateForIds('installing', ids, true);
+    set({ error: null });
+
+    try {
+      const result = await requestLatestSubscriptionUpdatesForActiveProfile({
+        apply: true,
+        targets: assets,
+      });
+      if (result.status === 'error') {
+        throw new SubscriptionSyncError(
+          resolveSubscriptionSyncMessage(result, 'Subscription update failed'),
+          result.status,
+          result.errors ?? [],
+        );
+      }
+
+      set({ ...(await getInstalledLists()) });
+      return result;
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err) });
+      throw err;
+    } finally {
+      setOperationStateForIds('installing', ids, false);
+      useDownloadQueueStore.getState().complete();
+    }
+  };
+
   return {
     installedMods: [],
     installedMaps: [],
@@ -282,6 +317,8 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     uninstallMap: (id: string) => uninstallAssets([{ id, type: 'map' }]),
 
     uninstallAssets,
+
+    updateAssetsToLatest,
 
     cancelPendingInstall: async (type: AssetType, id: string) => {
       return uninstallAssets([{ id, type }]);

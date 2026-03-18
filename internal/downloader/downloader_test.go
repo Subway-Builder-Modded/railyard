@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -308,7 +307,7 @@ func TestEnqueueOperationUsesLatestRequestForPendingAsset(t *testing.T) {
 
 func TestUninstallAssetCancelsQueuedInstall(t *testing.T) {
 	testutil.SetEnv(t)
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	d := &Downloader{
 		Registry:    reg,
@@ -432,7 +431,7 @@ func TestUninstallCancelsRunningInstall(t *testing.T) {
 func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 	testutil.SetEnv(t)
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	configureDownloaderConfig(t, cfg)
 
@@ -513,11 +512,11 @@ func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 }
 
 func TestDownloadTempZipCancelledCleansUpArtifact(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		<-r.Context().Done()
 	}))
 	defer server.Close()
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 
 	d := &Downloader{
 		tempPath: t.TempDir(),
@@ -567,7 +566,7 @@ func TestEnqueueOperationRunsSequentially(t *testing.T) {
 }
 
 func TestInstallMapForExistingIsNoOp(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	expectedConfig := types.ConfigData{
 		Code:        "ABC",
@@ -592,7 +591,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 }
 
 func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 	d := &Downloader{
 		Registry: reg,
@@ -703,7 +702,7 @@ func TestInstallAssetError(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := config.NewConfig()
+			cfg := config.NewConfig(testutil.TestLogSink{})
 			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			d := &Downloader{
 				Registry: reg,
@@ -764,7 +763,7 @@ func TestInstallAssetSuccess(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg := config.NewConfig()
+			cfg := config.NewConfig(testutil.TestLogSink{})
 			reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
 			configureDownloaderConfig(t, cfg)
 			d := &Downloader{
@@ -809,7 +808,7 @@ func TestDownloadTempZipGithubAuthFallback(t *testing.T) {
 	defer func() { isGitHubDownloadHost = originalHostCheck }()
 
 	requestCount := 0
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := testutil.NewLocalhostServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestCount++
 		if requestCount == 1 {
 			// On first request, return a 403 on the Github token based request
@@ -824,7 +823,7 @@ func TestDownloadTempZipGithubAuthFallback(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cfg := config.NewConfig()
+	cfg := config.NewConfig(testutil.TestLogSink{})
 	cfg.Cfg.GithubToken = "github_pat_test_token"
 	d := &Downloader{
 		Config:   cfg,
