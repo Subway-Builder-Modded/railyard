@@ -82,7 +82,7 @@ func (s *Config) GetConfig() types.ResolveConfigResponse {
 	defer s.mu.Unlock()
 
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("Config resolved"),
+		GenericResponse:     types.SuccessResponse("Config resolved"),
 		ResolveConfigResult: resolveConfigResultFromAppConfig(s.Cfg),
 	}
 }
@@ -113,7 +113,7 @@ func (s *Config) UpdateCheckForUpdatesOnLaunch(checkForUpdates bool) types.Resol
 		}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("Config updated"),
+		GenericResponse:     types.SuccessResponse("Config updated"),
 		ResolveConfigResult: result,
 	}
 }
@@ -128,7 +128,7 @@ func (s *Config) CompleteSetup() types.ResolveConfigResponse {
 		}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("Setup completed"),
+		GenericResponse:     types.SuccessResponse("Setup completed"),
 		ResolveConfigResult: result,
 	}
 }
@@ -172,7 +172,7 @@ func (s *Config) ClearConfig() types.ResolveConfigResponse {
 		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("Config cleared"),
+		GenericResponse:     types.SuccessResponse("Config cleared"),
 		ResolveConfigResult: resolveConfigResultFromAppConfig(updated),
 	}
 }
@@ -184,7 +184,7 @@ func (s *Config) SaveConfig() types.ResolveConfigResponse {
 		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("Config saved"),
+		GenericResponse:     types.SuccessResponse("Config saved"),
 		ResolveConfigResult: result,
 	}
 }
@@ -197,7 +197,7 @@ func (s *Config) UpdateGithubToken(githubToken string) types.ResolveConfigRespon
 		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("GitHub token updated"),
+		GenericResponse:     types.SuccessResponse("GitHub token updated"),
 		ResolveConfigResult: result,
 	}
 }
@@ -210,7 +210,7 @@ func (s *Config) ClearGithubToken() types.ResolveConfigResponse {
 		return types.ResolveConfigResponse{GenericResponse: types.ErrorResponse(err.Error())}
 	}
 	return types.ResolveConfigResponse{
-		GenericResponse:    types.SuccessResponse("GitHub token cleared"),
+		GenericResponse:     types.SuccessResponse("GitHub token cleared"),
 		ResolveConfigResult: result,
 	}
 }
