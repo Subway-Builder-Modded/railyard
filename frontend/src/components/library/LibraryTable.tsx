@@ -199,6 +199,8 @@ function LibraryTableRow({
 }: LibraryTableRowProps) {
   const [uninstallOpen, setUninstallOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const actionButtonBaseClass =
+    'h-8 w-8 transition-colors hover:!bg-muted/70 dark:hover:!bg-muted/70';
   const removeSelected = useLibraryStore((s) => s.removeSelected);
   const metroMakerDataPath = useConfigStore(
     (s) => s.config?.metroMakerDataPath,
@@ -340,7 +342,10 @@ function LibraryTableRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-[var(--update-primary)]/70 hover:text-[var(--update-primary)] hover:bg-[var(--update-tertiary)] transition-colors"
+                className={cn(
+                  actionButtonBaseClass,
+                  'text-[var(--update-primary)]/70 hover:text-[var(--update-primary)]',
+                )}
                 onClick={() => setUpdateOpen(true)}
                 aria-label="Update to latest"
               >
@@ -352,7 +357,10 @@ function LibraryTableRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
+                className={cn(
+                  actionButtonBaseClass,
+                  'text-[var(--folder-primary)]/85 hover:text-[var(--folder-primary)]',
+                )}
                 onClick={handleOpenInstallFolder}
                 aria-label="Open install folder"
                 disabled={!metroMakerDataPath}
@@ -363,7 +371,10 @@ function LibraryTableRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className={cn(
+                  actionButtonBaseClass,
+                  'text-destructive hover:text-destructive',
+                )}
                 onClick={() => setUninstallOpen(true)}
                 aria-label="Delete"
               >
