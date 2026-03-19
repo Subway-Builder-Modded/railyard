@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"railyard/internal/deeplink"
-	"railyard/internal/paths"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -15,6 +14,8 @@ import (
 
 //go:embed all:frontend/dist
 var assets embed.FS
+
+const singleInstanceID = "org.subwaybuildermodded.railyard"
 
 func main() {
 	// Create an instance of the app structure
@@ -33,7 +34,7 @@ func main() {
 			Assets: assets,
 		},
 		SingleInstanceLock: &options.SingleInstanceLock{
-			UniqueId:               paths.LockFilePath(),
+			UniqueId:               singleInstanceID,
 			OnSecondInstanceLaunch: app.onSecondInstanceLaunch,
 		},
 		Mac: &mac.Options{
