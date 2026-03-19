@@ -258,7 +258,7 @@ export function VersionsTable({
                         <span className="inline-flex h-8 w-8" />
                       )
                     ) : isThisInstalled ? (
-                      <Badge variant="secondary" className="gap-1">
+                      <Badge className="gap-1 bg-[var(--installed-primary)] text-[var(--primary-foreground)]">
                         <CheckCircle className="h-3 w-3" />
                         Installed
                       </Badge>

@@ -209,7 +209,7 @@ export function ItemCard({
             <div className="relative h-44 sm:h-36 sm:w-48 md:w-52 overflow-hidden bg-muted shrink-0">
               {installedVersion && (
                 <div className="absolute top-2 right-2 z-10">
-                  <Badge className="gap-1 text-xs shadow-sm">
+                  <Badge className="gap-1 text-xs shadow-sm bg-[var(--installed-primary)] text-[var(--primary-foreground)]">
                     <CheckCircle className="h-2.5 w-2.5" />
                     {installedVersion}
                   </Badge>
@@ -295,7 +295,7 @@ export function ItemCard({
           <div className="relative aspect-[16/10] overflow-hidden bg-muted shrink-0">
             {installedVersion && (
               <div className="absolute top-2 right-2 z-10">
-                <Badge className="gap-1 text-[11px] h-5 px-1.5 shadow-sm">
+                <Badge className="gap-1 text-[11px] h-5 px-1.5 shadow-sm bg-[var(--installed-primary)] text-[var(--primary-foreground)]">
                   <CheckCircle className="h-2.5 w-2.5" />
                   {installedVersion}
                 </Badge>
@@ -381,7 +381,7 @@ export function ItemCard({
         <div className="relative aspect-video overflow-hidden bg-muted shrink-0">
           {installedVersion && (
             <div className="absolute top-2 right-2 z-10">
-              <Badge className="gap-1 text-xs shadow-sm">
+              <Badge className="gap-1 text-xs shadow-sm bg-[var(--installed-primary)] text-[var(--primary-foreground)]">
                 <CheckCircle className="h-2.5 w-2.5" />
                 {installedVersion}
               </Badge>

@@ -131,7 +131,7 @@ export function LogsPage() {
             </Button>
           )}
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
             onClick={clearLogs}
             disabled={logs.length === 0}

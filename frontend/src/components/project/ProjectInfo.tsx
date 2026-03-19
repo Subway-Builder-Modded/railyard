@@ -205,7 +205,7 @@ export function ProjectInfo({
           className={
             isUpdate
               ? 'bg-[var(--update-primary)] text-white hover:opacity-90'
-              : undefined
+              : 'bg-[var(--installed-primary)] text-[var(--primary-foreground)] hover:opacity-90'
           }
           onClick={() => handleInstallClick(v.version, v.prerelease)}
         >
@@ -218,9 +218,9 @@ export function ProjectInfo({
         </Button>
         {isUpdate && (
           <Button
-            variant="outline"
+            variant="destructive"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-white hover:opacity-90"
             onClick={() => setUninstallOpen(true)}
           >
             <Trash2 className="h-4 w-4" />
@@ -266,14 +266,14 @@ export function ProjectInfo({
             )
           ) : installedVersion ? (
             <>
-              <Badge variant="secondary" className="gap-1">
+              <Badge className="gap-1 bg-[var(--installed-primary)] text-[var(--primary-foreground)]">
                 <CheckCircle className="h-3 w-3" />
                 Installed {installedVersion}
               </Badge>
               <Button
-                variant="outline"
+                variant="destructive"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 text-white hover:opacity-90"
                 onClick={() => setUninstallOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />

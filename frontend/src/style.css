@@ -27,7 +27,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
+  --color-destructive: var(--destructive-primary);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -83,6 +83,7 @@
   --sidebar-ring: oklch(0.65 0 0);
   --update-primary: #1f6bc0;
   --destructive-primary: oklch(0.577 0.245 27.325);
+  --installed-primary: var(--primary);
 }
 
 .dark {
@@ -120,6 +121,7 @@
   --sidebar-ring: oklch(0.5 0 0);
   --update-primary: #3f5f80;
   --destructive-primary: oklch(0.704 0.191 22.216);
+  --installed-primary: var(--primary);
 }
 
 .railyard-accent {
