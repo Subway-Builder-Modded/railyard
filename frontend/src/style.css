@@ -82,8 +82,9 @@
   --sidebar-border: oklch(0.88 0 0);
   --sidebar-ring: oklch(0.65 0 0);
   --update-primary: #1f6bc0;
+  --warning-primary: oklch(0.828 0.189 84.429);
   --uninstall-primary: oklch(0.577 0.245 27.325);
-  --folder-primary: oklch(0.828 0.189 84.429);
+  --folder-primary: var(--warning-primary);
   --installed-primary: var(--primary);
 }
 
@@ -121,8 +122,9 @@
   --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.5 0 0);
   --update-primary: #3f5f80;
+  --warning-primary: #a0770d;
   --uninstall-primary: oklch(0.704 0.191 22.216);
-  --folder-primary: #a0770d;
+  --folder-primary: var(--warning-primary);
   --installed-primary: var(--primary);
 }
 

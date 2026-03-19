@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   CheckCircle,
   CircleFadingArrowUp,
   Download,
@@ -15,6 +16,7 @@ import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { toast } from 'sonner';
 
+import { AssetActionDialog } from '@/components/dialogs/AssetActionDialog';
 import { InstallErrorDialog } from '@/components/dialogs/InstallErrorDialog';
 import { PrereleaseConfirmDialog } from '@/components/dialogs/PrereleaseConfirmDialog';
 import { SubscriptionSyncErrorDialog } from '@/components/dialogs/SubscriptionSyncErrorDialog';
@@ -37,7 +39,10 @@ import {
   toSubscriptionSyncErrorState,
 } from '@/lib/subscription-sync-error';
 import { useDownloadQueueStore } from '@/stores/download-queue-store';
-import { useInstalledStore } from '@/stores/installed-store';
+import {
+  AssetConflictError,
+  useInstalledStore,
+} from '@/stores/installed-store';
 
 import type { types } from '../../../wailsjs/go/models';
 import { BrowserOpenURL } from '../../../wailsjs/runtime/runtime';
@@ -77,6 +82,10 @@ export function ProjectInfo({
     message: string;
     errors: types.UserProfilesError[];
   } | null>(null);
+  const [conflictState, setConflictState] = useState<{
+    version: string;
+    conflict: types.MapCodeConflict;
+  } | null>(null);
   const {
     installMod,
     installMap,
@@ -107,13 +116,13 @@ export function ProjectInfo({
   const noCompatibleVersion =
     gameVersion && latestVersion && !latestCompatibleVersion;
 
-  const handleInstall = async (version: string) => {
+  const handleInstall = async (version: string, replaceOnConflict = false) => {
     try {
       let result: types.UpdateSubscriptionsResult;
       if (type === 'mod') {
         result = await installMod(item.id, version);
       } else {
-        result = await installMap(item.id, version);
+        result = await installMap(item.id, version, replaceOnConflict);
       }
       if (result.status === 'warn') {
         if (hasCancellationSyncErrors(result.errors)) {
@@ -136,6 +145,11 @@ export function ProjectInfo({
         `${item.name} ${version} installed successfully.${queueText}`,
       );
     } catch (err) {
+      if (err instanceof AssetConflictError && err.conflicts.length > 0) {
+        setConflictState({ version, conflict: err.conflicts[0] });
+        return;
+      }
+
       const syncError = toSubscriptionSyncErrorState(err, version);
       if (syncError) {
         if (
@@ -395,6 +409,30 @@ export function ProjectInfo({
           version={subscriptionSyncError.version}
           message={subscriptionSyncError.message}
           errors={subscriptionSyncError.errors}
+        />
+      )}
+
+      {conflictState && (
+        <AssetActionDialog
+          open={!!conflictState}
+          onOpenChange={(open) => {
+            if (!open) {
+              setConflictState(null);
+            }
+          }}
+          loading={false}
+          icon={AlertTriangle}
+          iconClassName="h-5 w-5 text-[var(--warning-primary)]"
+          title={`Replace conflicting map for ${item.name}?`}
+          description={`Installing ${item.name} ${conflictState.version} conflicts with an existing map. Replace the existing map to continue.`}
+          conflict={conflictState.conflict}
+          confirmLabel="Replace"
+          confirmClassName="bg-[var(--warning-primary)] text-black hover:opacity-90"
+          onConfirm={() => {
+            const version = conflictState.version;
+            setConflictState(null);
+            void handleInstall(version, true);
+          }}
         />
       )}
     </div>

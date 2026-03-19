@@ -17,7 +17,7 @@ func mapConfigFromManifest(manifest *types.MapManifest, version string) types.Co
 	config.Population = manifest.Population
 	config.Creator = manifest.Author
 	config.Version = version
-	config.Country = &manifest.Country
+	config.Country = nonEmptyCountryPointer(manifest.Country)
 	config.InitialViewState = manifest.InitialViewState
 
 	return config
@@ -27,6 +27,7 @@ func installedMapInfoFromManifest(mapID string, version string, manifest *types.
 	return types.InstalledMapInfo{
 		ID:        mapID,
 		Version:   version,
+		IsLocal:   false,
 		MapConfig: mapConfigFromManifest(manifest, version),
 	}
 }
@@ -38,5 +39,6 @@ func installedModInfoFromManifest(modID string, version string, manifest *types.
 	return types.InstalledModInfo{
 		ID:      modID,
 		Version: version,
+		IsLocal: false,
 	}
 }

@@ -89,3 +89,37 @@ func TestProgressReader(t *testing.T) {
 	require.Equal(t, int64(len(payload)), lastReceived)
 	require.Equal(t, int64(len(payload)), lastTotal)
 }
+
+func TestLocalMapAssetIDRoundTrip(t *testing.T) {
+	id := LocalMapAssetID("DCA")
+	require.Equal(t, "DCA", id)
+
+	code, ok := LocalMapCodeFromAssetID(id)
+	require.True(t, ok)
+	require.Equal(t, "DCA", code)
+
+	_, ok = LocalMapCodeFromAssetID("dca")
+	require.False(t, ok)
+	_, ok = LocalMapCodeFromAssetID("ABCDE")
+	require.False(t, ok)
+}
+
+func TestIsValidMapCode(t *testing.T) {
+	require.True(t, IsValidMapCode("AB"))
+	require.True(t, IsValidMapCode("ABC"))
+	require.True(t, IsValidMapCode("ABCD"))
+	require.False(t, IsValidMapCode("A"))
+	require.False(t, IsValidMapCode("ABCDE"))
+	require.False(t, IsValidMapCode("AbC"))
+	require.False(t, IsValidMapCode("abc"))
+	require.False(t, IsValidMapCode("AB1"))
+	require.False(t, IsValidMapCode(" AB"))
+	require.False(t, IsValidMapCode("AB "))
+}
+
+func TestNormalizeSemver(t *testing.T) {
+	require.Equal(t, "v1.2.3", NormalizeSemver("1.2.3"))
+	require.Equal(t, "v1.2.3", NormalizeSemver("v1.2.3"))
+	require.Equal(t, "v1.2.3", NormalizeSemver(" 1.2.3 "))
+	require.Equal(t, "", NormalizeSemver("   "))
+}

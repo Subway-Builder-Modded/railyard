@@ -344,10 +344,10 @@ func TestSyncSubscriptions(t *testing.T) {
 			svc, cfg, reg := loadedUserProfilesServiceWithDependencies(t, tc.state)
 			configureConfig(t, cfg)
 			for _, mod := range tc.initialMods {
-				reg.AddInstalledMod(mod.ID, mod.Version)
+				reg.AddInstalledMod(mod.ID, mod.Version, false)
 			}
 			for _, m := range tc.initialMaps {
-				reg.AddInstalledMap(m.ID, m.Version, m.MapConfig)
+				reg.AddInstalledMap(m.ID, m.Version, false, m.MapConfig)
 			}
 			var cleanup func()
 			if tc.prepare != nil {
@@ -358,7 +358,7 @@ func TestSyncSubscriptions(t *testing.T) {
 				defer cleanup()
 			}
 
-			result := svc.SyncSubscriptions(types.DefaultProfileID)
+			result := svc.SyncSubscriptions(types.DefaultProfileID, false)
 			expectedStatus := tc.expectedStatus
 			if expectedStatus == "" {
 				if len(tc.expectedErrors) == 0 {

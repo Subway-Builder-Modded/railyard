@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+import type { types } from '../../../wailsjs/go/models';
+
 interface AssetActionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -20,15 +22,18 @@ interface AssetActionDialogProps {
   iconClassName?: string;
   confirmLabel: string;
   confirmClassName?: string;
-  confirmVariant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost';
+  confirmVariant?: 'default' | 'destructive';
   loading: boolean;
   onConfirm: () => void;
+  conflict?: types.MapCodeConflict;
   children?: ReactNode;
+}
+
+function conflictSourceLabel(conflict: types.MapCodeConflict): string {
+  if (conflict.existingAssetId?.startsWith('vanilla:')) {
+    return 'Vanilla';
+  }
+  return conflict.existingIsLocal ? 'Local' : 'Registry';
 }
 
 export function AssetActionDialog({
@@ -43,6 +48,7 @@ export function AssetActionDialog({
   confirmVariant = 'default',
   loading,
   onConfirm,
+  conflict,
   children,
 }: AssetActionDialogProps) {
   return (
@@ -54,6 +60,22 @@ export function AssetActionDialog({
             {title}
           </DialogTitle>
           <DialogDescription>{description}</DialogDescription>
+          {conflict ? (
+            <div className="mt-1 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground">
+                Conflicting City Code: {conflict.cityCode}
+              </p>
+              <p className="mt-1">
+                Existing Asset: {conflict.existingAssetId} (
+                {conflictSourceLabel(conflict)})
+              </p>
+              {conflict.existingVersion ? (
+                <p className="mt-1">
+                  Existing Version: {conflict.existingVersion}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           {children}
         </DialogHeader>
         <DialogFooter>

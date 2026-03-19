@@ -7,7 +7,11 @@ const UPDATE_SUBSCRIPTIONS: UpdateSubscriptionsRequestType =
 
 export function activeProfileFixture(
   profileId: string = '__default__',
-  existingSubscriptions: types.Subscriptions = { maps: {}, mods: {} },
+  existingSubscriptions: types.Subscriptions = {
+    maps: {},
+    localMaps: {},
+    mods: {},
+  },
 ): types.UserProfile {
   return new types.UserProfile({
     id: profileId,
@@ -31,7 +35,11 @@ export function activeProfileFixture(
 
 export function activeProfileResultSuccess(
   profileId: string = '__default__',
-  existingSubscriptions: types.Subscriptions = { maps: {}, mods: {} },
+  existingSubscriptions: types.Subscriptions = {
+    maps: {},
+    localMaps: {},
+    mods: {},
+  },
 ): types.UserProfileResult {
   return new types.UserProfileResult({
     status: 'success',

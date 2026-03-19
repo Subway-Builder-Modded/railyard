@@ -40,6 +40,7 @@ type ModsResponse struct {
 type InstalledModInfo struct {
 	ID      string `json:"id"`
 	Version string `json:"version"`
+	IsLocal bool   `json:"isLocal"` // Unused for now
 }
 
 type InstalledModsResponse struct {
@@ -51,6 +52,7 @@ type InstalledModsResponse struct {
 type InstalledMapInfo struct {
 	ID        string     `json:"id"`
 	Version   string     `json:"version"`
+	IsLocal   bool       `json:"isLocal"` // Indicates whether or not the map was installed from a local file rather than downloaded via the registry
 	MapConfig ConfigData `json:"config"`
 }
 

@@ -15,11 +15,13 @@ export type InstalledTaggedItem =
       type: 'mod';
       item: types.ModManifest;
       installedVersion: string;
+      isLocal: boolean;
     }
   | {
       type: 'map';
       item: types.MapManifest;
       installedVersion: string;
+      isLocal: boolean;
     };
 
 interface UseFilteredInstalledParams {

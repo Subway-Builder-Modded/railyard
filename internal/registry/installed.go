@@ -59,18 +59,20 @@ func (r *Registry) getInstalledMapsFromDisk() ([]types.InstalledMapInfo, error) 
 }
 
 // AddInstalledMod adds a mod to the in-memory list of installed mods. Remember to call WriteInstalledToDisk() to persist changes.
-func (r *Registry) AddInstalledMod(modID string, version string) {
+func (r *Registry) AddInstalledMod(modID string, version string, isLocal bool) {
 	r.installedMods = append(r.installedMods, types.InstalledModInfo{
 		ID:      modID,
 		Version: version,
+		IsLocal: isLocal,
 	})
 }
 
 // AddInstalledMap adds a map to the in-memory list of installed maps. Remember to call WriteInstalledToDisk() to persist changes.
-func (r *Registry) AddInstalledMap(mapID string, version string, config types.ConfigData) {
+func (r *Registry) AddInstalledMap(mapID string, version string, isLocal bool, config types.ConfigData) {
 	r.installedMaps = append(r.installedMaps, types.InstalledMapInfo{
 		ID:        mapID,
 		Version:   version,
+		IsLocal:   isLocal,
 		MapConfig: config,
 	})
 }
@@ -111,6 +113,18 @@ func (r *Registry) GetInstalledModsResponse() types.InstalledModsResponse {
 // GetInstalledMaps returns the locally installed maps.
 func (r *Registry) GetInstalledMaps() []types.InstalledMapInfo {
 	return r.installedMaps
+}
+
+// GetRemoteInstalledMaps returns installed maps excluding local imports.
+func (r *Registry) GetRemoteInstalledMaps() []types.InstalledMapInfo {
+	remote := make([]types.InstalledMapInfo, 0, len(r.installedMaps))
+	for _, item := range r.installedMaps {
+		if item.IsLocal {
+			continue
+		}
+		remote = append(remote, item)
+	}
+	return remote
 }
 
 // GetInstalledMapsResponse returns installed maps with status metadata.

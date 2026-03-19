@@ -15,6 +15,7 @@ const {
   mockGetInstalledMapsResponse,
   mockGetActiveProfile,
   mockUpdateSubscriptions,
+  mockImportAsset,
   mockUpdateSubscriptionsToLatest,
   mockInstallMapFiles,
   mockInstallModFiles,
@@ -25,6 +26,7 @@ const {
   mockGetInstalledMapsResponse: vi.fn(),
   mockGetActiveProfile: vi.fn(),
   mockUpdateSubscriptions: vi.fn(),
+  mockImportAsset: vi.fn(),
   mockUpdateSubscriptionsToLatest: vi.fn(),
   mockInstallMapFiles: vi.fn(),
   mockInstallModFiles: vi.fn(),
@@ -40,6 +42,7 @@ vi.mock('../../wailsjs/go/registry/Registry', () => ({
 vi.mock('../../wailsjs/go/profiles/UserProfiles', () => ({
   GetActiveProfile: mockGetActiveProfile,
   UpdateSubscriptions: mockUpdateSubscriptions,
+  ImportAsset: mockImportAsset,
   UpdateSubscriptionsToLatest: mockUpdateSubscriptionsToLatest,
 }));
 

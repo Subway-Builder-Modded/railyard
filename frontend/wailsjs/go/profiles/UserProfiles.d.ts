@@ -6,6 +6,8 @@ export function CreateProfileArchive(arg1:string):Promise<types.GenericResponse>
 
 export function GetActiveProfile():Promise<types.UserProfileResult>;
 
+export function ImportAsset(arg1:types.ImportAssetRequest):Promise<types.UpdateSubscriptionsResult>;
+
 export function LoadProfiles():Promise<types.UserProfileResult>;
 
 export function QuarantineUserProfiles():Promise<boolean|string>;
@@ -14,7 +16,7 @@ export function ResetUserProfiles():Promise<types.UserProfileResult>;
 
 export function RestoreProfileArchive(arg1:string):Promise<types.GenericResponse>;
 
-export function SyncSubscriptions(arg1:string):Promise<types.SyncSubscriptionsResult>;
+export function SyncSubscriptions(arg1:string,arg2:boolean):Promise<types.SyncSubscriptionsResult>;
 
 export function UpdateSubscriptions(arg1:types.UpdateSubscriptionsRequest):Promise<types.UpdateSubscriptionsResult>;
 

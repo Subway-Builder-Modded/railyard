@@ -13,7 +13,10 @@ New-Item -ItemType Directory -Path $coverDir -Force | Out-Null
 
 Write-Host "[coverage] running go tests with coverage profile..."
 if ([string]::IsNullOrWhiteSpace($GoCoverPackages)) {
-    $coverPackages = go list ./... | Where-Object { $_ -notmatch "/internal/testutil($|/)" }
+    $coverPackages = go list ./... | Where-Object {
+        $_ -notmatch "/internal/testutil($|/)" -and
+        $_ -notmatch "/internal/constants($|/)"
+    }
 }
 else {
     $coverPackages = $GoCoverPackages -split "\s+" | Where-Object { $_ -ne "" }

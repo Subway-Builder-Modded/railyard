@@ -2,6 +2,7 @@ import { Inbox, Plus } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 
+import { ImportAssetDialog } from '@/components/dialogs/ImportAssetDialog';
 import { LibraryActionBar } from '@/components/library/LibraryActionBar';
 import { LibrarySidebar } from '@/components/library/LibrarySidebar';
 import { LibraryTable } from '@/components/library/LibraryTable';
@@ -21,6 +22,42 @@ import {
 import { useInstalledStore } from '@/stores/installed-store';
 import { useRegistryStore } from '@/stores/registry-store';
 
+import { types } from '../../wailsjs/go/models';
+
+function localMapManifestFromInstalled(
+  installed: types.InstalledMapInfo,
+): types.MapManifest | null {
+  const config = installed.config;
+  if (!config || !config.code) {
+    return null;
+  }
+
+  return new types.MapManifest({
+    schema_version: 1,
+    id: installed.id,
+    name: config.name,
+    author: config.creator,
+    github_id: 0,
+    last_updated: 0,
+    city_code: config.code,
+    country: config.country,
+    location: '',
+    population: config.population,
+    description: config.description,
+    data_source: '',
+    source_quality: '',
+    level_of_detail: '',
+    special_demand: [],
+    initial_view_state: config.initialViewState || {},
+    tags: [],
+    gallery: [],
+    source: '',
+    update: {
+      type: 'local',
+    },
+  });
+}
+
 export function LibraryPage() {
   const {
     mods,
@@ -29,7 +66,9 @@ export function LibraryPage() {
     mapDownloadTotals,
     ensureDownloadTotals,
   } = useRegistryStore();
-  const { installedMods, installedMaps } = useInstalledStore();
+  const { installedMods, installedMaps, updateInstalledLists } =
+    useInstalledStore();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [pendingUpdatesByKey, setPendingUpdatesByKey] =
     useState<PendingUpdatesByKey>({});
 
@@ -81,10 +120,14 @@ export function LibraryPage() {
 
   const missingInstalledItems = useMemo(() => {
     const missingMods = installedMods
-      .filter((installed) => !modManifestById.has(installed.id))
+      .filter(
+        (installed) => !installed.isLocal && !modManifestById.has(installed.id),
+      )
       .map((installed) => `mod:${installed.id}`);
     const missingMaps = installedMaps
-      .filter((installed) => !mapManifestById.has(installed.id))
+      .filter(
+        (installed) => !installed.isLocal && !mapManifestById.has(installed.id),
+      )
       .map((installed) => `map:${installed.id}`);
 
     return [...missingMods, ...missingMaps];
@@ -99,21 +142,41 @@ export function LibraryPage() {
               type: 'mod' as const,
               item: manifest,
               installedVersion: installed.version,
+              isLocal: installed.isLocal,
             },
           ]
         : [];
     });
     const mapItems = installedMaps.flatMap((installed) => {
       const manifest = mapManifestById.get(installed.id);
-      return manifest
-        ? [
-            {
-              type: 'map' as const,
-              item: manifest,
-              installedVersion: installed.version,
-            },
-          ]
-        : [];
+      if (manifest) {
+        return [
+          {
+            type: 'map' as const,
+            item: manifest,
+            installedVersion: installed.version,
+            isLocal: installed.isLocal,
+          },
+        ];
+      }
+
+      if (!installed.isLocal) {
+        return [];
+      }
+
+      const localManifest = localMapManifestFromInstalled(installed);
+      if (!localManifest) {
+        return [];
+      }
+
+      return [
+        {
+          type: 'map' as const,
+          item: localManifest,
+          installedVersion: installed.version,
+          isLocal: true,
+        },
+      ];
     });
 
     return [...modItems, ...mapItems];
@@ -212,6 +275,14 @@ export function LibraryPage() {
             Install Content
           </Button>
         </Link>
+        <Button
+          variant="outline"
+          className="gap-1.5 shrink-0"
+          onClick={() => setImportDialogOpen(true)}
+        >
+          <Inbox className="h-4 w-4" />
+          Import Asset
+        </Button>
       </div>
 
       {installedItems.length === 0 ? (
@@ -319,6 +390,15 @@ export function LibraryPage() {
           </div>
         </>
       )}
+
+      <ImportAssetDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImportSuccess={() => {
+          void updateInstalledLists();
+          void refreshPendingSubscriptionUpdates();
+        }}
+      />
     </div>
   );
 }

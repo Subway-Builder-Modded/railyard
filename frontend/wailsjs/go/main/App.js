@@ -50,6 +50,10 @@ export function ManuallyCheckForUpdates() {
   return window['go']['main']['App']['ManuallyCheckForUpdates']();
 }
 
+export function OpenImportAssetDialog(arg1) {
+  return window['go']['main']['App']['OpenImportAssetDialog'](arg1);
+}
+
 export function OpenInFileExplorer(arg1) {
   return window['go']['main']['App']['OpenInFileExplorer'](arg1);
 }

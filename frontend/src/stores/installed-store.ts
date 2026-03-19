@@ -7,7 +7,10 @@ import {
 } from '@/lib/subscription-updates';
 
 import { types } from '../../wailsjs/go/models';
-import { UpdateSubscriptions } from '../../wailsjs/go/profiles/UserProfiles';
+import {
+  ImportAsset,
+  UpdateSubscriptions,
+} from '../../wailsjs/go/profiles/UserProfiles';
 import {
   GetInstalledMapsResponse,
   GetInstalledModsResponse,
@@ -30,6 +33,32 @@ export class SubscriptionSyncError extends Error {
   }
 }
 
+export class AssetConflictError extends Error {
+  readonly conflicts: types.MapCodeConflict[];
+  readonly result: types.UpdateSubscriptionsResult;
+
+  constructor(
+    message: string,
+    conflicts: types.MapCodeConflict[],
+    result: types.UpdateSubscriptionsResult,
+  ) {
+    super(message);
+    this.name = 'AssetConflictError';
+    this.conflicts = conflicts;
+    this.result = result;
+  }
+}
+
+export class InvalidMapCodeError extends Error {
+  readonly profileErrors: types.UserProfilesError[];
+
+  constructor(message: string, profileErrors: types.UserProfilesError[]) {
+    super(message);
+    this.name = 'InvalidMapCodeError';
+    this.profileErrors = profileErrors;
+  }
+}
+
 function resolveSubscriptionSyncMessage(
   result: types.UpdateSubscriptionsResult,
   fallback: string,
@@ -44,6 +73,17 @@ function resolveSubscriptionSyncMessage(
   }
 
   return fallback;
+}
+
+function hasInvalidMapCodeError(
+  errors: types.UserProfilesError[] | undefined,
+): boolean {
+  if (!errors) {
+    return false;
+  }
+  return errors.some(
+    (error) => error.downloaderErrorType === 'install_invalid_map_code',
+  );
 }
 
 interface InstalledState {
@@ -64,6 +104,7 @@ interface InstalledState {
   installMap: (
     id: string,
     version: string,
+    replaceOnConflict?: boolean,
   ) => Promise<types.UpdateSubscriptionsResult>;
   uninstallMod: (id: string) => Promise<types.UpdateSubscriptionsResult>;
   uninstallMap: (id: string) => Promise<types.UpdateSubscriptionsResult>;
@@ -72,6 +113,10 @@ interface InstalledState {
   ) => Promise<types.UpdateSubscriptionsResult>;
   updateAssetsToLatest: (
     assets: Array<{ id: string; type: AssetType }>,
+  ) => Promise<types.UpdateSubscriptionsResult>;
+  importMapFromZip: (
+    zipPath: string,
+    replaceOnConflict?: boolean,
   ) => Promise<types.UpdateSubscriptionsResult>;
   cancelPendingInstall: (
     type: AssetType,
@@ -145,6 +190,7 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
   const applySubscriptionMutation = async (
     assets: Record<string, types.SubscriptionUpdateItem>,
     action: 'subscribe' | 'unsubscribe',
+    replaceOnConflict = false,
   ) => {
     if (Object.keys(assets).length === 0) {
       throw new Error('No assets provided for subscription update');
@@ -156,8 +202,16 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
       assets,
       action,
       forceSync: true,
+      replaceOnConflict: replaceOnConflict,
     });
     const result = await UpdateSubscriptions(request);
+    if (result.status === 'warn' && (result.conflicts?.length ?? 0) > 0) {
+      throw new AssetConflictError(
+        resolveSubscriptionSyncMessage(result, 'Asset conflict detected'),
+        result.conflicts ?? [],
+        result,
+      );
+    }
     if (result.status === 'error') {
       throw new SubscriptionSyncError(
         resolveSubscriptionSyncMessage(result, 'Subscription update failed'),
@@ -172,6 +226,7 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     id: string,
     version: string,
     assetType: AssetType,
+    replaceOnConflict = false,
   ) => {
     useDownloadQueueStore.getState().enqueue();
     set((state) => ({
@@ -192,6 +247,7 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
           }),
         },
         'subscribe',
+        replaceOnConflict,
       );
       set({ ...(await getInstalledLists()) });
       return response;
@@ -288,6 +344,51 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     }
   };
 
+  const importMapFromZip = async (
+    zipPath: string,
+    replaceOnConflict = false,
+  ) => {
+    const profileID = await resolveActiveProfileID();
+    set({ error: null });
+
+    try {
+      const result = await ImportAsset(
+        new types.ImportAssetRequest({
+          profileId: profileID,
+          assetType: 'map',
+          zipPath,
+          replaceOnConflict,
+        }),
+      );
+      if (result.status === 'warn' && (result.conflicts?.length ?? 0) > 0) {
+        throw new AssetConflictError(
+          resolveSubscriptionSyncMessage(result, 'Asset conflict detected'),
+          result.conflicts ?? [],
+          result,
+        );
+      }
+      if (result.status === 'error') {
+        if (hasInvalidMapCodeError(result.errors)) {
+          throw new InvalidMapCodeError(
+            resolveSubscriptionSyncMessage(result, 'Invalid map code'),
+            result.errors ?? [],
+          );
+        }
+        throw new SubscriptionSyncError(
+          resolveSubscriptionSyncMessage(result, 'Asset import failed'),
+          result.status,
+          result.errors ?? [],
+        );
+      }
+
+      set({ ...(await getInstalledLists()) });
+      return result;
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : String(err) });
+      throw err;
+    }
+  };
+
   return {
     installedMods: [],
     installedMaps: [],
@@ -330,8 +431,8 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     installMod: (id: string, version: string) =>
       installAsset(id, version, 'mod'),
 
-    installMap: (id: string, version: string) =>
-      installAsset(id, version, 'map'),
+    installMap: (id: string, version: string, replaceOnConflict = false) =>
+      installAsset(id, version, 'map', replaceOnConflict),
 
     uninstallMod: (id: string) => uninstallAssets([{ id, type: 'mod' }]),
 
@@ -340,6 +441,8 @@ export const useInstalledStore = create<InstalledState>((set, get) => {
     uninstallAssets,
 
     updateAssetsToLatest,
+
+    importMapFromZip,
 
     cancelPendingInstall: async (type: AssetType, id: string) => {
       return uninstallAssets([{ id, type }]);

@@ -64,8 +64,9 @@ type Favorites struct {
 
 // Subscriptions represents the maps/mods and their respective versions that a user is subscribed to.
 type Subscriptions struct {
-	Maps map[string]string `json:"maps"`
-	Mods map[string]string `json:"mods"`
+	Maps      map[string]string `json:"maps"`
+	LocalMaps map[string]string `json:"localMaps"`
+	Mods      map[string]string `json:"mods"`
 }
 
 type SubscriptionAction string
@@ -87,13 +88,22 @@ func IsValidSubscriptionAction(action SubscriptionAction) bool {
 type SubscriptionUpdateItem struct {
 	Version Version   `json:"version"`
 	Type    AssetType `json:"type"`
+	IsLocal bool      `json:"isLocal,omitempty"`
 }
 
 type UpdateSubscriptionsRequest struct {
-	ProfileID string                            `json:"profileId"`
-	Assets    map[string]SubscriptionUpdateItem `json:"assets"`
-	Action    SubscriptionAction                `json:"action"`
-	ForceSync bool                              `json:"forceSync"`
+	ProfileID         string                            `json:"profileId"`
+	Assets            map[string]SubscriptionUpdateItem `json:"assets"`
+	Action            SubscriptionAction                `json:"action"`
+	ForceSync         bool                              `json:"forceSync"`
+	ReplaceOnConflict bool                              `json:"replaceOnConflict"`
+}
+
+type ImportAssetRequest struct {
+	ProfileID         string    `json:"profileId"`
+	AssetType         AssetType `json:"assetType"`
+	ZipPath           string    `json:"zipPath"`
+	ReplaceOnConflict bool      `json:"replaceOnConflict"`
 }
 
 type UpdateSubscriptionsToLatestRequest struct {
@@ -108,6 +118,7 @@ const (
 	UpdateSubscriptions UpdateSubscriptionRequestType = "update_subscriptions"
 	LatestCheck         UpdateSubscriptionRequestType = "latest_check"
 	LatestApply         UpdateSubscriptionRequestType = "latest_apply"
+	ImportAsset         UpdateSubscriptionRequestType = "import_asset"
 )
 
 type SubscriptionOperation struct {
@@ -178,6 +189,7 @@ type UpdateSubscriptionsResult struct {
 	Persisted      bool                          `json:"persisted"`      // whether the updated profile state was persisted to disk (if applicable)
 	Operations     []SubscriptionOperation       `json:"operations"`     // the list of subscription operations that were performed (if any)
 	Errors         []UserProfilesError           `json:"errors"`         // errors that were encountered during the subscription update process
+	Conflicts      []MapCodeConflict             `json:"conflicts"`      // map code conflicts that require explicit confirmation to replace
 }
 
 type SyncSubscriptionsResult struct {
@@ -236,8 +248,9 @@ func defaultFavorites() Favorites {
 
 func defaultSubscriptions() Subscriptions {
 	return Subscriptions{
-		Maps: map[string]string{},
-		Mods: map[string]string{},
+		Maps:      map[string]string{},
+		LocalMaps: map[string]string{},
+		Mods:      map[string]string{},
 	}
 }
 
@@ -360,6 +373,9 @@ func ValidateState(s UserProfilesState) (UserProfilesState, error) {
 		// Collections must be present (non-nil).
 		if p.Subscriptions.Maps == nil || p.Subscriptions.Mods == nil {
 			return UserProfilesState{}, fmt.Errorf("%w: profiles[%q] subscriptions maps/mods must be present", ErrMalformedProfile, key)
+		}
+		if p.Subscriptions.LocalMaps == nil {
+			p.Subscriptions.LocalMaps = map[string]string{}
 		}
 		if p.Favorites.Authors == nil || p.Favorites.Maps == nil || p.Favorites.Mods == nil {
 			return UserProfilesState{}, fmt.Errorf("%w: profiles[%q] favorites authors/maps/mods must be present", ErrMalformedProfile, key)

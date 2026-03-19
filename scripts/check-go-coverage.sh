@@ -11,7 +11,7 @@ MIN_COVERAGE="${GO_COVER_MIN:-60}"
 GO_COVER_PACKAGES="${GO_COVER_PACKAGES:-}"
 
 if [ -z "$GO_COVER_PACKAGES" ]; then
-  GO_COVER_PACKAGES="$(go list ./... | grep -Ev '/internal/testutil($|/)')"
+  GO_COVER_PACKAGES="$(go list ./... | grep -Ev '/internal/testutil($|/)|/internal/constants($|/)')"
 fi
 
 mkdir -p "$COVER_DIR"

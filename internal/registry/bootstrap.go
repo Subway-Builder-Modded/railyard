@@ -79,28 +79,149 @@ func (r *Registry) bootstrapInstalledMods(subscriptions types.Subscriptions, mod
 func (r *Registry) bootstrapInstalledMaps(subscriptions types.Subscriptions, mapInstallRoot string) []types.InstalledMapInfo {
 	r.logger.Info("Bootstrapping installed maps from subscriptions", "subscriptions", subscriptions.Maps)
 
-	installedMaps := make([]types.InstalledMapInfo, 0, len(subscriptions.Maps))
+	installedMaps := make([]types.InstalledMapInfo, 0, len(subscriptions.Maps)+len(subscriptions.LocalMaps))
+	existingRemoteByID := make(map[string]types.InstalledMapInfo, len(r.installedMaps))
+	manifestByCityCode := make(map[string]*types.MapManifest, len(r.maps))
+	for i := range r.maps {
+		manifest := &r.maps[i]
+		cityCode := strings.TrimSpace(manifest.CityCode)
+		if cityCode == "" {
+			continue
+		}
+		manifestByCityCode[cityCode] = manifest
+	}
+
+	for _, installed := range r.installedMaps {
+		if installed.IsLocal {
+			continue
+		}
+		existingRemoteByID[installed.ID] = installed
+	}
 
 	for mapID, version := range subscriptions.Maps {
 		manifest, err := r.GetMap(mapID)
-		// Map version is not stored in the manifest, so we only rely on the file's presence to determine if the map is installed.
-		if err != nil {
-			r.logger.Warn("Skipping subscribed map during installed-state bootstrap: missing manifest", "map_id", mapID, "error", err)
-			continue
-		}
-		cityCode := strings.TrimSpace(manifest.CityCode)
-		if cityCode == "" {
-			r.logger.Warn("Skipping subscribed map during installed-state bootstrap: missing city_code", "map_id", mapID)
-			continue
-		}
-		if !r.hasAssetMarker(types.AssetTypeMap, mapID, mapInstallRoot, cityCode) {
+		existing, hasExisting := existingRemoteByID[mapID]
+
+		if err != nil && !hasExisting {
+			r.logger.Warn("Skipping subscribed map during installed-state bootstrap: missing manifest and no previous installed entry", "map_id", mapID, "error", err)
 			continue
 		}
 
-		installedMaps = append(installedMaps, installedMapInfoFromManifest(mapID, version, manifest))
+		cityCode := ""
+		if manifest != nil {
+			cityCode = strings.TrimSpace(manifest.CityCode)
+		}
+		if cityCode == "" && hasExisting {
+			cityCode = strings.TrimSpace(existing.MapConfig.Code)
+		}
+		if cityCode == "" {
+			r.logger.Warn("Skipping subscribed map during installed-state bootstrap: missing city_code", "map_id", mapID, "has_existing", hasExisting)
+			continue
+		}
+		if _, ok := r.validateBootstrappedMapData(mapID, mapInstallRoot, cityCode, false); !ok {
+			continue
+		}
+
+		if manifest != nil {
+			manifestInstalled := installedMapInfoFromManifest(mapID, version, manifest)
+			if hasExisting {
+				manifestInstalled.MapConfig = bootstrapPreserveMapConfig(existing.MapConfig, manifestInstalled.MapConfig)
+			}
+			installedMaps = append(installedMaps, manifestInstalled)
+			continue
+		}
+
+		if hasExisting {
+			existing.Version = version
+			existing.IsLocal = false
+			if strings.TrimSpace(existing.MapConfig.Code) == "" {
+				existing.MapConfig.Code = cityCode
+			}
+			if strings.TrimSpace(existing.MapConfig.Version) == "" {
+				existing.MapConfig.Version = version
+			}
+			installedMaps = append(installedMaps, existing)
+			continue
+		}
+
+		installedMaps = append(installedMaps, types.InstalledMapInfo{
+			ID:      mapID,
+			Version: version,
+			IsLocal: false,
+			MapConfig: types.ConfigData{
+				Code:    cityCode,
+				Version: version,
+			},
+		})
+	}
+
+	for localMapID, version := range subscriptions.LocalMaps {
+		cityCode, ok := types.LocalMapCodeFromAssetID(localMapID)
+		if !ok {
+			r.logger.Warn("Skipping local map subscription during installed-state bootstrap: invalid local map id", "map_id", localMapID)
+			continue
+		}
+
+		configFromDisk, ok := r.validateBootstrappedMapData(localMapID, mapInstallRoot, cityCode, true)
+		if !ok {
+			continue
+		}
+
+		config := configFromDisk
+		if strings.TrimSpace(config.Code) == "" {
+			config.Code = cityCode
+		}
+		config.Version = version
+		if config.Country == nil || *config.Country == "" {
+			if manifest, ok := manifestByCityCode[cityCode]; ok {
+				config.Country = nonEmptyCountryPointer(manifest.Country)
+			}
+		}
+
+		installedMaps = append(installedMaps, types.InstalledMapInfo{
+			ID:        localMapID,
+			Version:   version,
+			IsLocal:   true,
+			MapConfig: config,
+		})
 	}
 
 	return installedMaps
+}
+
+func (r *Registry) validateBootstrappedMapData(assetID string, mapInstallRoot string, cityCode string, isLocal bool) (types.ConfigData, bool) {
+	if !r.hasAssetMarker(types.AssetTypeMap, assetID, mapInstallRoot, cityCode) {
+		return types.ConfigData{}, false
+	}
+
+	if isLocal {
+		configFromDisk, errorType, validationErr := files.ValidateInstalledLocalMapData(mapInstallRoot, cityCode)
+		if validationErr != nil {
+			r.logger.Warn(
+				"Skipping local map subscription during installed-state bootstrap: missing required local map files",
+				"map_id", assetID,
+				"map_code", cityCode,
+				"error_type", errorType,
+				"error", validationErr,
+			)
+			return types.ConfigData{}, false
+		}
+		return configFromDisk, true
+	}
+
+	errorType, validationErr := files.ValidateInstalledDownloadedMapData(mapInstallRoot, cityCode)
+	if validationErr != nil {
+		r.logger.Warn(
+			"Skipping subscribed map during installed-state bootstrap: missing downloaded map data files",
+			"map_id", assetID,
+			"map_code", cityCode,
+			"error_type", errorType,
+			"error", validationErr,
+		)
+		return types.ConfigData{}, false
+	}
+
+	return types.ConfigData{}, true
 }
 
 // modManifestVersionMatches checks if the manifest.json in the given mod path exists and has a version field matching the expected version (from profile state)
@@ -132,4 +253,25 @@ func (r *Registry) hasAssetMarker(assetType types.AssetType, assetID string, ins
 	}
 	r.logger.Warn("Skipping subscribed asset during installed-state bootstrap: missing marker", attrs...)
 	return false
+}
+
+func bootstrapPreserveMapConfig(existing types.ConfigData, manifestConfig types.ConfigData) types.ConfigData {
+	config := existing
+
+	config.Code = manifestConfig.Code
+	config.Version = manifestConfig.Version
+
+	if config.Country == nil || *config.Country == "" {
+		config.Country = manifestConfig.Country
+	}
+
+	return config
+}
+
+func nonEmptyCountryPointer(country string) *string {
+	if country == "" {
+		return nil
+	}
+	value := country
+	return &value
 }

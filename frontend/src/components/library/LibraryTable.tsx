@@ -207,6 +207,7 @@ function LibraryTableRow({
   );
   const isMap = entry.type === 'map';
   const map = isMap ? (entry.item as types.MapManifest) : null;
+  const isLocalEntry = entry.isLocal;
   const mapBadges = map
     ? [
         map.location,
@@ -218,11 +219,13 @@ function LibraryTableRow({
   const badges = isMap ? mapBadges : (entry.item.tags ?? []);
   const mapCountry = map?.country?.trim().toUpperCase() ?? '';
   const CountryFlag = isMap ? getCountryFlagIcon(mapCountry) : null;
-  const pendingUpdate = getPendingSubscriptionUpdate(
-    pendingUpdatesByKey,
-    entry.type,
-    entry.item.id,
-  );
+  const pendingUpdate = isLocalEntry
+    ? undefined
+    : getPendingSubscriptionUpdate(
+        pendingUpdatesByKey,
+        entry.type,
+        entry.item.id,
+      );
 
   const resolveInstallFolderPath = (): string | null => {
     if (!metroMakerDataPath) return null;
@@ -286,7 +289,19 @@ function LibraryTableRow({
                 </p>
               </div>
 
-              {badges.length > 0 && (
+              {/* Show a large LOCAL badge for entries not downloaded from the registry */}
+              {isLocalEntry ? (
+                <div className="shrink-0 flex items-center">
+                  <Badge
+                    variant="secondary"
+                    className="text-sm font-semibold uppercase tracking-wide px-2.5 py-0.5"
+                  >
+                    Local
+                  </Badge>
+                </div>
+              ) : null}
+
+              {!isLocalEntry && badges.length > 0 && (
                 <div
                   className={cn(
                     'shrink-0 flex items-center gap-1 self-center justify-start text-left',

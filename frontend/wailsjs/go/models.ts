@@ -77,6 +77,26 @@ export namespace types {
 	        this.counts = source["counts"];
 	    }
 	}
+	export class MapCodeConflict {
+	    existingAssetId: string;
+	    existingAssetType: string;
+	    existingVersion: string;
+	    existingIsLocal: boolean;
+	    cityCode: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MapCodeConflict(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.existingAssetId = source["existingAssetId"];
+	        this.existingAssetType = source["existingAssetType"];
+	        this.existingVersion = source["existingVersion"];
+	        this.existingIsLocal = source["existingIsLocal"];
+	        this.cityCode = source["cityCode"];
+	    }
+	}
 	export class ConfigData {
 	    name: string;
 	    code: string;
@@ -134,6 +154,7 @@ export namespace types {
 	    version: string;
 	    config?: ConfigData;
 	    errorType?: string;
+	    mapCodeConflict?: MapCodeConflict;
 	
 	    static createFrom(source: any = {}) {
 	        return new AssetInstallResponse(source);
@@ -148,6 +169,7 @@ export namespace types {
 	        this.version = source["version"];
 	        this.config = this.convertValues(source["config"], ConfigData);
 	        this.errorType = source["errorType"];
+	        this.mapCodeConflict = this.convertValues(source["mapCodeConflict"], MapCodeConflict);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -366,9 +388,107 @@ export namespace types {
 	        this.valid = source["valid"];
 	    }
 	}
+	export class ImportAssetDialogResponse {
+	    status: string;
+	    message: string;
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImportAssetDialogResponse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.status = source["status"];
+	        this.message = source["message"];
+	        this.path = source["path"];
+	    }
+	}
+	export class ImportAssetRequest {
+	    profileId: string;
+	    assetType: string;
+	    zipPath: string;
+	    replaceOnConflict: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImportAssetRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.profileId = source["profileId"];
+	        this.assetType = source["assetType"];
+	        this.zipPath = source["zipPath"];
+	        this.replaceOnConflict = source["replaceOnConflict"];
+	    }
+	}
+	export class ModInstallOptions {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new ModInstallOptions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+	export class MapInstallOptions {
+	    replaceOnConflict: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new MapInstallOptions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.replaceOnConflict = source["replaceOnConflict"];
+	    }
+	}
+	export class InstallAssetRequest {
+	    assetType: string;
+	    assetId: string;
+	    version: string;
+	    map?: MapInstallOptions;
+	    // Go type: ModInstallOptions
+	    mod?: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new InstallAssetRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.assetType = source["assetType"];
+	        this.assetId = source["assetId"];
+	        this.version = source["version"];
+	        this.map = this.convertValues(source["map"], MapInstallOptions);
+	        this.mod = this.convertValues(source["mod"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class InstalledMapInfo {
 	    id: string;
 	    version: string;
+	    isLocal: boolean;
 	    config: ConfigData;
 	
 	    static createFrom(source: any = {}) {
@@ -379,6 +499,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
 	        this.version = source["version"];
+	        this.isLocal = source["isLocal"];
 	        this.config = this.convertValues(source["config"], ConfigData);
 	    }
 	
@@ -437,6 +558,7 @@ export namespace types {
 	export class InstalledModInfo {
 	    id: string;
 	    version: string;
+	    isLocal: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new InstalledModInfo(source);
@@ -446,6 +568,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.id = source["id"];
 	        this.version = source["version"];
+	        this.isLocal = source["isLocal"];
 	    }
 	}
 	export class InstalledModsResponse {
@@ -584,6 +707,8 @@ export namespace types {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	export class UpdateConfig {
@@ -1097,6 +1222,7 @@ export namespace types {
 	export class SubscriptionUpdateItem {
 	    version: string;
 	    type: string;
+	    isLocal?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new SubscriptionUpdateItem(source);
@@ -1106,6 +1232,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.version = source["version"];
 	        this.type = source["type"];
+	        this.isLocal = source["isLocal"];
 	    }
 	}
 	export class SubscriptionUpdateTarget {
@@ -1124,6 +1251,7 @@ export namespace types {
 	}
 	export class Subscriptions {
 	    maps: Record<string, string>;
+	    localMaps: Record<string, string>;
 	    mods: Record<string, string>;
 	
 	    static createFrom(source: any = {}) {
@@ -1133,6 +1261,7 @@ export namespace types {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.maps = source["maps"];
+	        this.localMaps = source["localMaps"];
 	        this.mods = source["mods"];
 	    }
 	}
@@ -1234,6 +1363,7 @@ export namespace types {
 	    assets: Record<string, SubscriptionUpdateItem>;
 	    action: string;
 	    forceSync: boolean;
+	    replaceOnConflict: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new UpdateSubscriptionsRequest(source);
@@ -1245,6 +1375,7 @@ export namespace types {
 	        this.assets = this.convertValues(source["assets"], SubscriptionUpdateItem, true);
 	        this.action = source["action"];
 	        this.forceSync = source["forceSync"];
+	        this.replaceOnConflict = source["replaceOnConflict"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1319,6 +1450,7 @@ export namespace types {
 	    persisted: boolean;
 	    operations: SubscriptionOperation[];
 	    errors: UserProfilesError[];
+	    conflicts: MapCodeConflict[];
 	
 	    static createFrom(source: any = {}) {
 	        return new UpdateSubscriptionsResult(source);
@@ -1337,6 +1469,7 @@ export namespace types {
 	        this.persisted = source["persisted"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
 	        this.errors = this.convertValues(source["errors"], UserProfilesError);
+	        this.conflicts = this.convertValues(source["conflicts"], MapCodeConflict);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

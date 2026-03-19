@@ -27,6 +27,8 @@ export function LaunchGame():Promise<types.GenericResponse>;
 
 export function ManuallyCheckForUpdates():Promise<types.GenericResponse>;
 
+export function OpenImportAssetDialog(arg1:types.AssetType):Promise<types.ImportAssetDialogResponse>;
+
 export function OpenInFileExplorer(arg1:string):Promise<types.GenericResponse>;
 
 export function SandboxIsInstalled():Promise<types.SandboxStatusResponse>;

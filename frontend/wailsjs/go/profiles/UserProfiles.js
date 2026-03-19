@@ -10,6 +10,10 @@ export function GetActiveProfile() {
   return window['go']['profiles']['UserProfiles']['GetActiveProfile']();
 }
 
+export function ImportAsset(arg1) {
+  return window['go']['profiles']['UserProfiles']['ImportAsset'](arg1);
+}
+
 export function LoadProfiles() {
   return window['go']['profiles']['UserProfiles']['LoadProfiles']();
 }
@@ -26,8 +30,8 @@ export function RestoreProfileArchive(arg1) {
   return window['go']['profiles']['UserProfiles']['RestoreProfileArchive'](arg1);
 }
 
-export function SyncSubscriptions(arg1) {
-  return window['go']['profiles']['UserProfiles']['SyncSubscriptions'](arg1);
+export function SyncSubscriptions(arg1, arg2) {
+  return window['go']['profiles']['UserProfiles']['SyncSubscriptions'](arg1, arg2);
 }
 
 export function UpdateSubscriptions(arg1) {
