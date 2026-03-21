@@ -314,6 +314,8 @@ func areValidSystemPreferences(prefs SystemPreferences) bool {
 	if prefs.ExtraHeapSize < -1 {
 		return false
 	}
+
+	// Not bracketed to 5/8ths, developers and those who know what they're doing can manually set it higher
 	if err == nil && prefs.ExtraHeapSize >= int(maxVal) {
 		return false
 	}
