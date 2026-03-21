@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/shirou/gopsutil/v4/mem"
 )
 
 // ThemeMode represents the UI theme preference of a user profile.
@@ -308,7 +309,14 @@ func areValidUIPreferences(prefs UIPreferences) bool {
 }
 
 func areValidSystemPreferences(prefs SystemPreferences) bool {
-	// No validation rules for system preferences given all fields are boolean and will default to false if missing on parse
+	ramMax, err := mem.VirtualMemory()
+	maxVal := int(ramMax.Total / (1024 * 1024)) // convert to MB
+	if prefs.ExtraHeapSize < -1 {
+		return false
+	}
+	if err == nil && prefs.ExtraHeapSize >= int(maxVal) {
+		return false
+	}
 	return true
 }
 
