@@ -16,6 +16,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func writeInstalledMapFiles(t *testing.T, mapInstallRoot string, tilesRoot string, code string, config types.ConfigData) {
+	t.Helper()
+	mapDir := paths.JoinLocalPath(mapInstallRoot, code)
+	require.NoError(t, os.MkdirAll(mapDir, 0o755))
+	require.NoError(t, os.MkdirAll(tilesRoot, 0o755))
+
+	require.NoError(t, files.WriteJSON(paths.JoinLocalPath(mapDir, "config.json"), "installed map config", config))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapDir, "demand_data.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapDir, "roads.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapDir, "runways_taxiways.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapDir, "buildings_index.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(tilesRoot, code+".pmtiles"), []byte("tiles"), 0o644))
+}
+
 func TestWriteInstalledToDiskPersistsMapsAndMods(t *testing.T) {
 	testutil.NewHarness(t)
 	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
@@ -189,6 +203,15 @@ func TestBootstrapInstalledStateFromProfileSuccessOnEmptyState(t *testing.T) {
 	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
 	require.NoError(t, os.MkdirAll(mapPath, 0o755))
 	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644)) // Add asset marker
+	writeInstalledMapFiles(t, cfg.Cfg.GetMapsFolderPath(), paths.TilesPath(), "AAA", types.ConfigData{
+		Code:        "AAA",
+		Name:        "Map A",
+		Description: "Map Description",
+		Population:  123456,
+		Creator:     "Author A",
+		Country:     &country,
+		Version:     "2.0.0",
+	})
 
 	profile := types.DefaultProfile()
 	profile.Subscriptions.Mods["mod-a"] = "1.0.0"
@@ -237,4 +260,371 @@ func TestBootstrapInstalledStateFromProfileSuccessOnEmptyState(t *testing.T) {
 	mapsOnDisk, err := files.ReadJSON[[]types.InstalledMapInfo](paths.InstalledMapsPath(), "installed maps file", files.JSONReadOptions{})
 	require.NoError(t, err)
 	require.Equal(t, reg.GetInstalledMaps(), mapsOnDisk)
+}
+
+func TestBootstrapInstalledStateFromProfilePreservesExistingRemoteMapWhenManifestMissing(t *testing.T) {
+	testutil.NewHarness(t)
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	reg.installedMaps = []types.InstalledMapInfo{
+		{
+			ID:      "missing-map",
+			Version: "1.0.0",
+			IsLocal: false,
+			MapConfig: types.ConfigData{
+				Code:    "MIS",
+				Name:    "Missing",
+				Version: "1.0.0",
+				Country: func() *string { value := "US"; return &value }(),
+			},
+		},
+	}
+
+	require.NoError(t, os.MkdirAll(paths.RegistryRepoPath(), 0o755))
+	reg.maps = []types.MapManifest{}
+	mapPath := paths.JoinLocalPath(cfg.Cfg.GetMapsFolderPath(), "MIS")
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	writeInstalledMapFiles(t, cfg.Cfg.GetMapsFolderPath(), paths.TilesPath(), "MIS", types.ConfigData{
+		Code:    "MIS",
+		Name:    "Missing",
+		Version: "1.0.0",
+		Country: func() *string { value := "US"; return &value }(),
+	})
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Maps["missing-map"] = "1.0.0"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+	require.Len(t, reg.GetInstalledMaps(), 1)
+	require.Equal(t, "missing-map", reg.GetInstalledMaps()[0].ID)
+	require.Equal(t, "MIS", reg.GetInstalledMaps()[0].MapConfig.Code)
+}
+
+func TestBootstrapInstalledStateFromProfileHydratesLocalMapConfigFromDisk(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{})
+
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	country := "JP"
+	cityCode := "KCZ"
+	pitch := 35.0
+	configData := types.ConfigData{
+		Code:        cityCode,
+		Name:        "Kochi",
+		Description: "Local imported map",
+		Population:  340000,
+		Creator:     "suscat",
+		Country:     &country,
+		Version:     "0.9.0",
+		InitialViewState: struct {
+			Latitude  float64  `json:"latitude"`
+			Longitude float64  `json:"longitude"`
+			Zoom      float64  `json:"zoom"`
+			Pitch     *float64 `json:"pitch,omitempty"`
+			Bearing   float64  `json:"bearing"`
+		}{
+			Latitude:  33.5597,
+			Longitude: 133.5311,
+			Zoom:      11.5,
+			Pitch:     &pitch,
+			Bearing:   12,
+		},
+	}
+	mapPath := paths.JoinLocalPath(cfg.Cfg.GetMapsFolderPath(), cityCode)
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	writeInstalledMapFiles(t, cfg.Cfg.GetMapsFolderPath(), paths.TilesPath(), cityCode, configData)
+	localMapID := cityCode
+	reg.installedMaps = []types.InstalledMapInfo{
+		{
+			ID:        localMapID,
+			Version:   "1.0.0",
+			IsLocal:   true,
+			MapConfig: configData,
+		},
+	}
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.LocalMaps[localMapID] = "1.2.3"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+
+	installedMaps := reg.GetInstalledMaps()
+	require.Len(t, installedMaps, 1)
+	require.Equal(t, localMapID, installedMaps[0].ID)
+	require.True(t, installedMaps[0].IsLocal)
+	require.Equal(t, "1.2.3", installedMaps[0].Version)
+	require.Equal(t, "1.2.3", installedMaps[0].MapConfig.Version)
+	require.Equal(t, cityCode, installedMaps[0].MapConfig.Code)
+	require.Equal(t, configData.Name, installedMaps[0].MapConfig.Name)
+	require.Equal(t, configData.Description, installedMaps[0].MapConfig.Description)
+	require.Equal(t, configData.Population, installedMaps[0].MapConfig.Population)
+	require.Equal(t, configData.Creator, installedMaps[0].MapConfig.Creator)
+	require.Equal(t, configData.Country, installedMaps[0].MapConfig.Country)
+	require.Equal(t, configData.InitialViewState, installedMaps[0].MapConfig.InitialViewState)
+}
+
+func TestBootstrapInstalledStateFromProfileKeepsRemoteMapWhenDownloadedDataFilesExist(t *testing.T) {
+	testutil.NewHarness(t)
+	country := "IT"
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Maps: []types.MapManifest{
+			{
+				ID:          "map-a",
+				CityCode:    "AAA",
+				Name:        "Map A",
+				Description: "Map Description",
+				Author:      "Author A",
+				Country:     country,
+				Population:  123456,
+			},
+		},
+	})
+
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	mapPath := paths.JoinLocalPath(cfg.Cfg.MetroMakerDataPath, "cities", "data", "AAA")
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "buildings_index.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "demand_data.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "roads.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "runways_taxiways.geojson.gz"), []byte("{}"), 0o644))
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Maps["map-a"] = "2.0.0"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+	require.Len(t, reg.GetInstalledMaps(), 1)
+	require.Equal(t, "map-a", reg.GetInstalledMaps()[0].ID)
+	require.Equal(t, "2.0.0", reg.GetInstalledMaps()[0].Version)
+}
+
+func TestBootstrapInstalledStateFromProfilePreservesExistingRemoteMapConfigAndBackfillsCountry(t *testing.T) {
+	testutil.NewHarness(t)
+	country := "IT"
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{
+		Maps: []types.MapManifest{
+			{
+				ID:          "map-a",
+				CityCode:    "AAA",
+				Name:        "Registry Name",
+				Description: "Registry Description",
+				Author:      "Registry Author",
+				Country:     country,
+				Population:  123456,
+			},
+		},
+	})
+
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	mapPath := paths.JoinLocalPath(cfg.Cfg.GetMapsFolderPath(), "AAA")
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "buildings_index.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "demand_data.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "roads.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "runways_taxiways.geojson.gz"), []byte("{}"), 0o644))
+
+	reg.installedMaps = []types.InstalledMapInfo{
+		{
+			ID:      "map-a",
+			Version: "1.0.0",
+			IsLocal: false,
+			MapConfig: types.ConfigData{
+				Code:        "AAA",
+				Name:        "Existing Name",
+				Description: "Existing Description",
+				Population:  654321,
+				Creator:     "Existing Author",
+				Version:     "1.0.0",
+			},
+		},
+	}
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.Maps["map-a"] = "2.0.0"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+	require.Len(t, reg.GetInstalledMaps(), 1)
+	mapInfo := reg.GetInstalledMaps()[0]
+	require.Equal(t, "map-a", mapInfo.ID)
+	require.False(t, mapInfo.IsLocal)
+	require.Equal(t, "2.0.0", mapInfo.Version)
+	require.Equal(t, "AAA", mapInfo.MapConfig.Code)
+	require.Equal(t, "2.0.0", mapInfo.MapConfig.Version)
+	require.Equal(t, "Existing Name", mapInfo.MapConfig.Name)
+	require.Equal(t, "Existing Description", mapInfo.MapConfig.Description)
+	require.Equal(t, 654321, mapInfo.MapConfig.Population)
+	require.Equal(t, "Existing Author", mapInfo.MapConfig.Creator)
+	require.NotNil(t, mapInfo.MapConfig.Country)
+	require.Equal(t, country, *mapInfo.MapConfig.Country)
+}
+
+func TestBootstrapInstalledStateFromProfileKeepsLocalMap(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{})
+
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	cityCode := "KCZ"
+	mapPath := paths.JoinLocalPath(cfg.Cfg.GetMapsFolderPath(), cityCode)
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "buildings_index.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "demand_data.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "roads.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "runways_taxiways.geojson.gz"), []byte("{}"), 0o644))
+	country := "JP"
+	require.NoError(t, files.WriteJSON(paths.JoinLocalPath(mapPath, "config.json"), "installed map config", types.ConfigData{
+		Code:    cityCode,
+		Name:    "Kochi",
+		Version: "0.0.1",
+		Country: &country,
+	}))
+
+	localMapID := cityCode
+	profile := types.DefaultProfile()
+	profile.Subscriptions.LocalMaps[localMapID] = "1.2.3"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+	installedMaps := reg.GetInstalledMaps()
+	require.Len(t, installedMaps, 1)
+	require.Equal(t, localMapID, installedMaps[0].ID)
+	require.True(t, installedMaps[0].IsLocal)
+	require.Equal(t, cityCode, installedMaps[0].MapConfig.Code)
+	require.Equal(t, "1.2.3", installedMaps[0].MapConfig.Version)
+}
+
+func TestBootstrapInstalledStateFromProfilePrefersExistingInstalledConfigForLocalMap(t *testing.T) {
+	testutil.NewHarness(t)
+	registrytest.WriteFixture(t, registrytest.RepositoryFixture{})
+
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	testutil.SetValidConfigPaths(t, &cfg.Cfg)
+	reg := NewRegistry(testutil.TestLogSink{}, cfg)
+	require.NoError(t, reg.fetchFromDisk())
+
+	cityCode := "KCZ"
+	mapPath := paths.JoinLocalPath(cfg.Cfg.GetMapsFolderPath(), cityCode)
+	require.NoError(t, os.MkdirAll(mapPath, 0o755))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, constants.RailyardAssetMarker), []byte(""), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "buildings_index.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "demand_data.json.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "roads.geojson.gz"), []byte("{}"), 0o644))
+	require.NoError(t, os.WriteFile(paths.JoinLocalPath(mapPath, "runways_taxiways.geojson.gz"), []byte("{}"), 0o644))
+
+	diskCountry := "JP"
+	require.NoError(t, files.WriteJSON(paths.JoinLocalPath(mapPath, "config.json"), "installed map config", types.ConfigData{
+		Code:        cityCode,
+		Name:        "Disk Name",
+		Description: "Disk Description",
+		Population:  100,
+		Creator:     "Disk Author",
+		Version:     "0.0.1",
+		Country:     &diskCountry,
+	}))
+
+	existingCountry := "US"
+	reg.installedMaps = []types.InstalledMapInfo{
+		{
+			ID:      cityCode,
+			Version: "1.0.0",
+			IsLocal: true,
+			MapConfig: types.ConfigData{
+				Code:        cityCode,
+				Name:        "Existing Name",
+				Description: "Existing Description",
+				Population:  999,
+				Creator:     "Existing Author",
+				Version:     "1.0.0",
+				Country:     &existingCountry,
+			},
+		},
+	}
+
+	profile := types.DefaultProfile()
+	profile.Subscriptions.LocalMaps[cityCode] = "1.2.3"
+
+	require.NoError(t, reg.BootstrapInstalledStateFromProfile(profile))
+
+	installedMaps := reg.GetInstalledMaps()
+	require.Len(t, installedMaps, 1)
+	require.Equal(t, cityCode, installedMaps[0].ID)
+	require.True(t, installedMaps[0].IsLocal)
+	require.Equal(t, "Existing Name", installedMaps[0].MapConfig.Name)
+	require.Equal(t, "Existing Description", installedMaps[0].MapConfig.Description)
+	require.Equal(t, 999, installedMaps[0].MapConfig.Population)
+	require.Equal(t, "Existing Author", installedMaps[0].MapConfig.Creator)
+	require.NotNil(t, installedMaps[0].MapConfig.Country)
+	require.Equal(t, existingCountry, *installedMaps[0].MapConfig.Country)
+	require.Equal(t, cityCode, installedMaps[0].MapConfig.Code)
+	require.Equal(t, "1.2.3", installedMaps[0].MapConfig.Version)
+}
+
+func TestInstalledStatePersistsMutations(t *testing.T) {
+	testutil.NewHarness(t)
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
+
+	reg.AddInstalledMod("mod-a", "1.0.0", true)
+	reg.AddInstalledMod("mod-b", "2.0.0", false)
+	reg.AddInstalledMap("map-a", "1.0.0", true, types.ConfigData{Code: "AAA"})
+	reg.AddInstalledMap("map-b", "2.0.0", false, types.ConfigData{Code: "BBB"})
+
+	require.Len(t, reg.GetInstalledMods(), 2)
+	require.Len(t, reg.GetInstalledMaps(), 2)
+	require.ElementsMatch(t, []string{"AAA", "BBB"}, reg.GetInstalledMapCodes())
+
+	modsResp := reg.GetInstalledModsResponse()
+	require.Equal(t, types.ResponseSuccess, modsResp.Status)
+	require.Len(t, modsResp.Mods, 2)
+
+	mapsResp := reg.GetInstalledMapsResponse()
+	require.Equal(t, types.ResponseSuccess, mapsResp.Status)
+	require.Len(t, mapsResp.Maps, 2)
+
+	reg.RemoveInstalledMod("mod-a")
+	reg.RemoveInstalledMap("map-a")
+	require.Equal(t, []types.InstalledModInfo{
+		{ID: "mod-b", Version: "2.0.0", IsLocal: false},
+	}, reg.GetInstalledMods())
+	require.Equal(t, []types.InstalledMapInfo{
+		{ID: "map-b", Version: "2.0.0", IsLocal: false, MapConfig: types.ConfigData{Code: "BBB"}},
+	}, reg.GetInstalledMaps())
+}
+
+func TestGetRemoteInstalledMaps(t *testing.T) {
+	testutil.NewHarness(t)
+	reg := NewRegistry(testutil.TestLogSink{}, config.NewConfig(testutil.TestLogSink{}))
+
+	reg.AddInstalledMap("map-remote", "1.0.0", false, types.ConfigData{Code: "AAA"})
+	reg.AddInstalledMap("map-local", "1.2.0", true, types.ConfigData{Code: "BBB"})
+
+	remote := reg.GetRemoteInstalledMaps()
+	require.Equal(t, []types.InstalledMapInfo{
+		{
+			ID:      "map-remote",
+			Version: "1.0.0",
+			IsLocal: false,
+			MapConfig: types.ConfigData{
+				Code: "AAA",
+			},
+		},
+	}, remote)
 }

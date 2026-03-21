@@ -27,6 +27,7 @@ func installedMapInfoFromManifest(mapID string, version string, manifest *types.
 	return types.InstalledMapInfo{
 		ID:        mapID,
 		Version:   version,
+		IsLocal:   false,
 		MapConfig: mapConfigFromManifest(manifest, version),
 	}
 }
@@ -38,5 +39,6 @@ func installedModInfoFromManifest(modID string, version string, manifest *types.
 	return types.InstalledModInfo{
 		ID:      modID,
 		Version: version,
+		IsLocal: false,
 	}
 }

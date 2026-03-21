@@ -181,3 +181,9 @@ func TestValidateStateRejectsInvalidProfile(t *testing.T) {
 		})
 	}
 }
+
+func TestIsValidSubscriptionAction(t *testing.T) {
+	require.True(t, IsValidSubscriptionAction(SubscriptionActionSubscribe))
+	require.True(t, IsValidSubscriptionAction(SubscriptionActionUnsubscribe))
+	require.False(t, IsValidSubscriptionAction(SubscriptionAction("invalid")))
+}

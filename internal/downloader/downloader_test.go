@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"railyard/internal/config"
+	"railyard/internal/constants"
 	"railyard/internal/logger"
 	"railyard/internal/registry"
 	"railyard/internal/testutil"
@@ -482,7 +483,11 @@ func TestCancelDuringExtractRemovesInstalledFiles(t *testing.T) {
 
 	installDone := make(chan types.AssetInstallResponse, 1)
 	go func() {
-		installDone <- d.InstallAsset(types.AssetTypeMap, "map-a", "1.0.0")
+		installDone <- d.InstallAsset(types.InstallAssetRequest{
+			AssetType: types.AssetTypeMap,
+			AssetID:   "map-a",
+			Version:   "1.0.0",
+		})
 	}()
 
 	select {
@@ -593,7 +598,7 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 		Creator:     "tester",
 		Version:     "1.0.0",
 	}
-	reg.AddInstalledMap("map-a", "1.0.0", expectedConfig)
+	reg.AddInstalledMap("map-a", "1.0.0", false, expectedConfig)
 
 	d := &Downloader{
 		Registry: reg,
@@ -602,7 +607,11 @@ func TestInstallMapForExistingIsNoOp(t *testing.T) {
 	}
 
 	// Validate that no-op response is returned at invocation time
-	response := d.InstallAsset(types.AssetTypeMap, "map-a", "1.0.0")
+	response := d.InstallAsset(types.InstallAssetRequest{
+		AssetType: types.AssetTypeMap,
+		AssetID:   "map-a",
+		Version:   "1.0.0",
+	})
 	require.Equal(t, types.ResponseWarn, response.Status)
 	require.Contains(t, response.Message, "already installed at requested version")
 	require.Equal(t, expectedConfig, response.Config)
@@ -633,12 +642,16 @@ func TestInstallModPreservesNoOpThroughStateMutation(t *testing.T) {
 	responseCh := make(chan types.AssetInstallResponse, 1)
 	// Enqueue an install operation for mod-a
 	go func() {
-		responseCh <- d.InstallAsset(types.AssetTypeMod, "mod-a", "1.0.0")
+		responseCh <- d.InstallAsset(types.InstallAssetRequest{
+			AssetType: types.AssetTypeMod,
+			AssetID:   "mod-a",
+			Version:   "1.0.0",
+		})
 	}()
 
 	waitForPendingOperation(t, d, downloadQueueKey{assetType: types.AssetTypeMod, assetID: "mod-a"})
 	// Mutate registry state to make it appear as though mod-a is already installed while the install operation is still pending
-	reg.AddInstalledMod("mod-a", "1.0.0")
+	reg.AddInstalledMod("mod-a", "1.0.0", false)
 	close(releaseBlocker)
 
 	// Validate that no-op response is returned at execution time
@@ -738,7 +751,11 @@ func TestInstallAssetError(t *testing.T) {
 				defer cleanup()
 			}
 
-			response := d.InstallAsset(tc.assetType, tc.assetID, tc.version)
+			response := d.InstallAsset(types.InstallAssetRequest{
+				AssetType: tc.assetType,
+				AssetID:   tc.assetID,
+				Version:   tc.version,
+			})
 			require.Equal(t, tc.expectedStatus, response.Status)
 			require.Equal(t, tc.expectedErrorCode, response.ErrorType)
 		})
@@ -795,7 +812,11 @@ func TestInstallAssetSuccess(t *testing.T) {
 			cleanup := registrytest.MockRegistryServer(t, reg, tc.fixtures)
 			defer cleanup()
 
-			response := d.InstallAsset(tc.assetType, tc.assetID, tc.version)
+			response := d.InstallAsset(types.InstallAssetRequest{
+				AssetType: tc.assetType,
+				AssetID:   tc.assetID,
+				Version:   tc.version,
+			})
 			require.Equal(t, types.ResponseSuccess, response.Status, response.Message)
 			require.Equal(t, types.DownloaderErrorType(""), response.ErrorType)
 			if tc.expectMapConf {
@@ -805,6 +826,145 @@ func TestInstallAssetSuccess(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestInstallMapWritesDownloadedContractFiles(t *testing.T) {
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
+	configureDownloaderConfig(t, cfg)
+
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+	d.tempPath = t.TempDir()
+	d.mapTilePath = t.TempDir()
+
+	cleanup := registrytest.MockRegistryServer(t, reg, []registrytest.UpdateFixture{
+		{AssetID: "map-a", AssetType: types.AssetTypeMap, Versions: []string{"1.0.0"}, MapCode: "AAA"},
+	})
+	defer cleanup()
+
+	resp := d.InstallAsset(types.InstallAssetRequest{
+		AssetType: types.AssetTypeMap,
+		AssetID:   "map-a",
+		Version:   "1.0.0",
+	})
+	require.Equal(t, types.ResponseSuccess, resp.Status, resp.Message)
+
+	mapDir := filepath.Join(d.getMapDataPath(), "AAA")
+	requiredDownloadedFiles := []string{
+		"config.json",
+		"buildings_index.json.gz",
+		"demand_data.json.gz",
+		"roads.geojson.gz",
+		"runways_taxiways.geojson.gz",
+		constants.RailyardAssetMarker,
+	}
+	for _, name := range requiredDownloadedFiles {
+		_, err := os.Stat(filepath.Join(mapDir, name))
+		require.NoError(t, err, "expected downloaded map file %s", name)
+	}
+
+	_, err := os.Stat(filepath.Join(mapDir, "config.json.gz"))
+	require.True(t, os.IsNotExist(err), "downloaded map should not write config.json.gz")
+	_, err = os.Stat(filepath.Join(d.getMapTilePath(), "AAA.pmtiles"))
+	require.NoError(t, err, "downloaded map should write pmtiles")
+	_, err = os.Stat(filepath.Join(d.getMapThumbnailPath(), "AAA.svg"))
+	require.NoError(t, err, "downloaded map should write thumbnail when present")
+}
+
+func TestImportMapWritesLocalContractFiles(t *testing.T) {
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
+	configureDownloaderConfig(t, cfg)
+
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+	d.tempPath = t.TempDir()
+	d.mapTilePath = t.TempDir()
+
+	zipPath := filepath.Join(t.TempDir(), "local-map.zip")
+	require.NoError(t, os.WriteFile(zipPath, registrytest.MockMapZip(t, "AAA"), 0o644))
+
+	resp := d.ImportAsset(types.AssetTypeMap, zipPath, false)
+	require.Equal(t, types.ResponseSuccess, resp.Status, resp.Message)
+
+	mapDir := filepath.Join(d.getMapDataPath(), "AAA")
+	requiredLocalFiles := []string{
+		"config.json",
+		"buildings_index.json.gz",
+		"demand_data.json.gz",
+		"roads.geojson.gz",
+		"runways_taxiways.geojson.gz",
+		constants.RailyardAssetMarker,
+	}
+	for _, name := range requiredLocalFiles {
+		_, err := os.Stat(filepath.Join(mapDir, name))
+		require.NoError(t, err, "expected local map file %s", name)
+	}
+
+	_, err := os.Stat(filepath.Join(d.getMapTilePath(), "AAA.pmtiles"))
+	require.NoError(t, err, "local map should write pmtiles")
+	_, err = os.Stat(filepath.Join(d.getMapThumbnailPath(), "AAA.svg"))
+	require.NoError(t, err, "local map should write thumbnail when present")
+}
+
+func TestImportAssetWarnsOnLocalToLocalConflict(t *testing.T) {
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
+	configureDownloaderConfig(t, cfg)
+
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+	d.tempPath = t.TempDir()
+	d.mapTilePath = t.TempDir()
+
+	localID := "AAA"
+	reg.AddInstalledMap(localID, "1.0.0", true, types.ConfigData{
+		Code:    "AAA",
+		Version: "1.0.0",
+		Name:    "Local AAA",
+	})
+
+	zipPath := filepath.Join(t.TempDir(), "local-map.zip")
+	require.NoError(t, os.WriteFile(zipPath, registrytest.MockMapZip(t, "AAA"), 0o644))
+
+	resp := d.ImportAsset(types.AssetTypeMap, zipPath, false)
+	require.Equal(t, types.ResponseWarn, resp.Status)
+	require.NotNil(t, resp.MapCodeConflict)
+	require.Equal(t, localID, resp.MapCodeConflict.ExistingAssetID)
+	require.True(t, resp.MapCodeConflict.ExistingIsLocal)
+	require.Equal(t, "AAA", resp.MapCodeConflict.CityCode)
+}
+
+func TestImportAssetRejectsNonUppercaseMapCode(t *testing.T) {
+	cfg := config.NewConfig(testutil.TestLogSink{})
+	reg := registry.NewRegistry(testutil.TestLogSink{}, cfg)
+	configureDownloaderConfig(t, cfg)
+
+	d := &Downloader{
+		Registry: reg,
+		Config:   cfg,
+		Logger:   logger.LoggerAtPath(""),
+	}
+	d.tempPath = t.TempDir()
+	d.mapTilePath = t.TempDir()
+
+	zipPath := filepath.Join(t.TempDir(), "local-map-invalid-code.zip")
+	require.NoError(t, os.WriteFile(zipPath, registrytest.MockMapZip(t, "dca"), 0o644))
+
+	resp := d.ImportAsset(types.AssetTypeMap, zipPath, false)
+	require.Equal(t, types.ResponseError, resp.Status)
+	require.Equal(t, types.InstallErrorInvalidMapCode, resp.ErrorType)
+	require.Contains(t, resp.Message, "invalid map code")
 }
 
 func TestIsValidOperationAction(t *testing.T) {

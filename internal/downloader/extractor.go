@@ -153,82 +153,46 @@ func extractMod(d *Downloader, filePath string, modId string, version string) ty
 	return d.installSuccess(types.AssetTypeMod, modId, version, types.ConfigData{}, "Mod extracted successfully", "file_path", filePath, "assetId", modId)
 }
 
-// extractMap processes the downloaded map zip file, validates required files, extracts them to the appropriate locations.
+// extractMap processes map zip files for downloaded/local installs and writes only the expected city-data artifacts.
 func extractMap(d *Downloader, filePath string, mapId string, version string) types.AssetInstallResponse {
-	configData := types.ConfigData{}
+	configData, errorType, inspectErr := files.ValidateMapArchive(filePath)
+	if inspectErr != nil {
+		return d.installError(types.AssetTypeMap, mapId, version, configData, errorType, "Failed map archive inspection", inspectErr, "file_path", filePath)
+	}
+
 	reader, err := zip.OpenReader(filePath)
 	if err != nil {
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorInvalidArchive, "Failed to open zip file", err, "file_path", filePath)
 	}
 	defer reader.Close()
 
-	filesFound := map[string]types.FileFoundStruct{
-		"config":     {Found: false, FileObject: nil, Required: true},
-		"demandData": {Found: false, FileObject: nil, Required: true},
-		"roads":      {Found: false, FileObject: nil, Required: true},
-		"runways":    {Found: false, FileObject: nil, Required: true},
-		"buildings":  {Found: false, FileObject: nil, Required: true},
-		"tiles":      {Found: false, FileObject: nil, Required: true},
-		"oceanDepth": {Found: false, FileObject: nil, Required: false},
-		"thumbnail":  {Found: false, FileObject: nil, Required: false},
-	}
-
-	for _, file := range reader.File {
-		switch file.Name {
-		case "config.json":
-			filesFound["config"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		case "demand_data.json":
-			filesFound["demandData"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		case "roads.geojson":
-			filesFound["roads"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		case "runways_taxiways.geojson":
-			filesFound["runways"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		case "buildings_index.json":
-			filesFound["buildings"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		case "ocean_depth_index.json":
-			filesFound["oceanDepth"] = types.FileFoundStruct{Found: true, FileObject: file, Required: false}
-		}
-		if path.Ext(file.Name) == ".pmtiles" {
-			filesFound["tiles"] = types.FileFoundStruct{Found: true, FileObject: file, Required: true}
-		}
-		if path.Ext(file.Name) == ".svg" {
-			filesFound["thumbnail"] = types.FileFoundStruct{Found: true, FileObject: file, Required: false}
-		}
-	}
-
-	if !requiredFilesPresent(filesFound) {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorInvalidArchive, "Zip file is missing one or more required files", nil, "file_path", filePath)
-	}
+	filesFound := files.BuildMapArchiveFileIndex(reader.File)
 
 	filesCount := 0
-	for key, fileStruct := range filesFound {
-		if fileStruct.Found && key != "config" {
+	for _, fileStruct := range filesFound {
+		if fileStruct.Found {
+			filesCount++
+		}
+	}
+	if configData.ThumbnailBbox != nil {
+		if fileStruct, ok := filesFound[files.MapArchiveKeyThumbnail]; !ok || !fileStruct.Found {
 			filesCount++
 		}
 	}
 
-	configReader, err := filesFound["config"].FileObject.Open()
-	if err != nil {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorInvalidManifest, "Failed to read config file", err, "file_path", filePath)
-	}
-	defer configReader.Close()
-
-	configBytes, err := io.ReadAll(configReader)
-	if err != nil {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorInvalidManifest, "Failed to read config file", err, "file_path", filePath)
-	}
-
-	configData, err = files.ParseJSON[types.ConfigData](configBytes, "config")
-	if err != nil {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorInvalidManifest, "Failed to parse config file", err, "file_path", filePath)
-	}
-
-	if configData.ThumbnailBbox != nil && !filesFound["thumbnail"].Found {
-		filesCount++
-	}
-
-	if d.isMapCodeTaken(configData.Code) {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorMapCodeConflict, "Cannot install map because its code matches a vanilla map included with the game or an already installed map.", nil, "map_code", configData.Code)
+	if conflict, hasConflict := d.FindMapCodeConflict(mapId, configData.Code, true); hasConflict {
+		return d.installError(
+			types.AssetTypeMap,
+			mapId,
+			version,
+			configData,
+			types.InstallErrorMapCodeConflict,
+			"Cannot install map because its code matches a vanilla map included with the game or an already installed map.",
+			nil,
+			"map_code", conflict.CityCode,
+			"conflicting_asset_id", conflict.ExistingAssetID,
+			"conflicting_is_local", conflict.ExistingIsLocal,
+		)
 	}
 
 	// Create necessary directories first
@@ -236,11 +200,9 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 	if err := os.MkdirAll(destFolder, os.ModePerm); err != nil {
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create destination folder", err, "destination", destFolder)
 	}
-
-	if err := os.MkdirAll(d.mapTilePath, os.ModePerm); err != nil {
-		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create tiles directory", err, "tiles_path", d.mapTilePath)
+	if err := os.MkdirAll(d.getMapTilePath(), os.ModePerm); err != nil {
+		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create tiles directory", err, "tiles_path", d.getMapTilePath())
 	}
-
 	if err := os.MkdirAll(d.getMapThumbnailPath(), os.ModePerm); err != nil {
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorFilesystem, "Failed to create thumbnail directory", err, "thumbnail_path", d.getMapThumbnailPath())
 	}
@@ -249,12 +211,13 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(filesFound))
 
-	extractCount := 0
+	// Use atomic counter to track progress across routines
+	var extractCount atomic.Int64
 	if d.OnExtractProgress != nil {
-		d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
+		d.OnExtractProgress(configData.Code, 0, int64(filesCount))
 	}
 	for key, fileStruct := range filesFound {
-		if !fileStruct.Found || key == "config" {
+		if !fileStruct.Found {
 			continue
 		}
 
@@ -269,27 +232,26 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 			}
 			defer srcFile.Close()
 
+			outputFileName := path.Base(fileStruct.FileObject.Name)
+			destinationPath := paths.JoinLocalPath(destFolder, outputFileName+".gz")
+			shouldArchive := true
+
 			switch key {
-			case "tiles":
-				extractFileMap(paths.JoinLocalPath(d.mapTilePath, configData.Code+".pmtiles"), srcFile, errChan, false)
-				if d.OnExtractProgress != nil {
-					extractCount++
-					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
-				}
+			// Extract out config.json for future bootstrapping from installed state, in particular for local maps
+			case files.MapArchiveKeyConfig:
+				destinationPath = paths.JoinLocalPath(destFolder, files.MapConfigFileName)
+				shouldArchive = false
+			case files.MapArchiveKeyTiles:
+				destinationPath = paths.JoinLocalPath(d.getMapTilePath(), configData.Code+files.MapTileFileExt)
+				shouldArchive = false
+			case files.MapArchiveKeyThumbnail:
+				destinationPath = paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+files.MapThumbnailFileExt)
+				shouldArchive = false
+			}
 
-			case "thumbnail":
-				extractFileMap(paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+".svg"), srcFile, errChan, false)
-				if d.OnExtractProgress != nil {
-					extractCount++
-					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
-				}
-
-			default:
-				extractFileMap(paths.JoinLocalPath(destFolder, path.Base(fileStruct.FileObject.Name)+".gz"), srcFile, errChan, true)
-				if d.OnExtractProgress != nil {
-					extractCount++
-					d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
-				}
+			extractFileMap(destinationPath, srcFile, errChan, shouldArchive)
+			if d.OnExtractProgress != nil {
+				d.OnExtractProgress(configData.Code, extractCount.Add(1), int64(filesCount))
 			}
 		}(key, fileStruct)
 	}
@@ -301,20 +263,19 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 		err := <-errChan
 		return d.installError(types.AssetTypeMap, mapId, version, configData, types.InstallErrorExtractFailed, "Failed to extract file", err, "file_path", filePath)
 	}
-
-	if !filesFound["thumbnail"].Found {
+	if fileStruct, ok := filesFound[files.MapArchiveKeyThumbnail]; (!ok || !fileStruct.Found) && configData.ThumbnailBbox != nil {
 		srv, port, srvErr := utils.StartTempPMTilesServer()
 		if srvErr != nil {
-			return d.installWarn(types.AssetTypeMap, mapId, version, configData, "Failed to start PMTiles server for thumbnail generation, but map was extracted successfully.", "file_path", filePath, "map_code", configData.Code)
+			return d.installWarn(types.AssetTypeMap, mapId, version, configData, nil, "Failed to start PMTiles server for thumbnail generation, but map was extracted successfully.", "file_path", filePath, "map_code", configData.Code)
 		}
 		defer srv.Close()
 
 		thumbnailData, err := utils.GenerateThumbnail(configData.Code, configData, port)
 		if err != nil {
-			return d.installWarn(types.AssetTypeMap, mapId, version, configData, "Failed to generate thumbnail, but map was extracted successfully. You can try generating the thumbnail later from the map details page.", "file_path", filePath, "map_code", configData.Code)
+			return d.installWarn(types.AssetTypeMap, mapId, version, configData, nil, "Failed to generate thumbnail, but map was extracted successfully. You can try generating the thumbnail later from the map details page.", "file_path", filePath, "map_code", configData.Code)
 		}
 
-		thumbnailPath := paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+".svg")
+		thumbnailPath := paths.JoinLocalPath(d.getMapThumbnailPath(), configData.Code+files.MapThumbnailFileExt)
 		if err := files.WriteFilesAtomically([]files.AtomicFileWrite{
 			{
 				Path:  thumbnailPath,
@@ -323,11 +284,10 @@ func extractMap(d *Downloader, filePath string, mapId string, version string) ty
 				Perm:  0o644,
 			},
 		}); err != nil {
-			return d.installWarn(types.AssetTypeMap, mapId, version, configData, "Failed to save generated thumbnail, but map was extracted successfully. You can try generating the thumbnail later from the map details page.", "file_path", filePath, "map_code", configData.Code, "thumbnail_path", thumbnailPath)
+			return d.installWarn(types.AssetTypeMap, mapId, version, configData, nil, "Failed to save generated thumbnail, but map was extracted successfully. You can try generating the thumbnail later from the map details page.", "file_path", filePath, "map_code", configData.Code, "thumbnail_path", thumbnailPath)
 		}
-		extractCount++
 		if d.OnExtractProgress != nil {
-			d.OnExtractProgress(configData.Code, int64(extractCount), int64(filesCount))
+			d.OnExtractProgress(configData.Code, extractCount.Add(1), int64(filesCount))
 		}
 	}
 

@@ -89,3 +89,23 @@ func TestProgressReader(t *testing.T) {
 	require.Equal(t, int64(len(payload)), lastReceived)
 	require.Equal(t, int64(len(payload)), lastTotal)
 }
+
+func TestLocalMapCodePattern(t *testing.T) {
+	require.True(t, LocalMapCodePattern.MatchString("AB"))
+	require.True(t, LocalMapCodePattern.MatchString("ABC"))
+	require.True(t, LocalMapCodePattern.MatchString("ABCD"))
+	require.False(t, LocalMapCodePattern.MatchString("A"))
+	require.False(t, LocalMapCodePattern.MatchString("ABCDE"))
+	require.False(t, LocalMapCodePattern.MatchString("AbC"))
+	require.False(t, LocalMapCodePattern.MatchString("abc"))
+	require.False(t, LocalMapCodePattern.MatchString("AB1"))
+	require.False(t, LocalMapCodePattern.MatchString(" AB"))
+	require.False(t, LocalMapCodePattern.MatchString("AB "))
+}
+
+func TestNormalizeSemver(t *testing.T) {
+	require.Equal(t, "v1.2.3", NormalizeSemver("1.2.3"))
+	require.Equal(t, "v1.2.3", NormalizeSemver("v1.2.3"))
+	require.Equal(t, "v1.2.3", NormalizeSemver(" 1.2.3 "))
+	require.Equal(t, "", NormalizeSemver("   "))
+}

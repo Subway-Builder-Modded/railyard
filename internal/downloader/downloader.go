@@ -10,12 +10,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"slices"
 	"strings"
 	"sync"
 
 	"railyard/internal/config"
 	"railyard/internal/constants"
+	"railyard/internal/files"
 	"railyard/internal/logger"
 	"railyard/internal/paths"
 	"railyard/internal/registry"
@@ -204,6 +204,7 @@ func (d *Downloader) cancelPendingQueuedInstall(assetType types.AssetType, asset
 	pending.completed <- pending.supersededResult
 	close(pending.completed)
 	d.OnCancelled(assetID, assetType, cancelledPhaseQueued)
+
 	return true
 }
 
@@ -316,7 +317,15 @@ func (d *Downloader) toDownloadResponse(base types.GenericResponse, path string)
 	}
 }
 
-func (d *Downloader) installResponse(assetType types.AssetType, assetID string, version string, config types.ConfigData, base types.GenericResponse, errorCode types.DownloaderErrorType) types.AssetInstallResponse {
+func (d *Downloader) installResponse(
+	assetType types.AssetType,
+	assetID string,
+	version string,
+	config types.ConfigData,
+	base types.GenericResponse,
+	errorCode types.DownloaderErrorType,
+	mapCodeConflict *types.MapCodeConflict,
+) types.AssetInstallResponse {
 	return types.AssetInstallResponse{
 		GenericResponse: base,
 		AssetType:       assetType,
@@ -324,19 +333,20 @@ func (d *Downloader) installResponse(assetType types.AssetType, assetID string, 
 		Version:         version,
 		Config:          config,
 		ErrorType:       errorCode,
+		MapCodeConflict: mapCodeConflict,
 	}
 }
 
 func (d *Downloader) installSuccess(assetType types.AssetType, assetID string, version string, config types.ConfigData, message string, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.successResponse(message, attrs...), "")
+	return d.installResponse(assetType, assetID, version, config, d.successResponse(message, attrs...), "", nil)
 }
 
-func (d *Downloader) installWarn(assetType types.AssetType, assetID string, version string, config types.ConfigData, message string, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.warnResponse(message, attrs...), "")
+func (d *Downloader) installWarn(assetType types.AssetType, assetID string, version string, config types.ConfigData, mapCodeConflict *types.MapCodeConflict, message string, attrs ...any) types.AssetInstallResponse {
+	return d.installResponse(assetType, assetID, version, config, d.warnResponse(message, attrs...), "", mapCodeConflict)
 }
 
 func (d *Downloader) installError(assetType types.AssetType, assetID string, version string, config types.ConfigData, errorCode types.DownloaderErrorType, message string, err error, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.throwError(message, err, attrs...), errorCode)
+	return d.installResponse(assetType, assetID, version, config, d.throwError(message, err, attrs...), errorCode, nil)
 }
 
 func (d *Downloader) uninstallResponse(assetType types.AssetType, assetID string, base types.GenericResponse, errorCode types.DownloaderErrorType) types.AssetUninstallResponse {
@@ -346,6 +356,18 @@ func (d *Downloader) uninstallResponse(assetType types.AssetType, assetID string
 		AssetID:         assetID,
 		ErrorType:       errorCode,
 	}
+}
+
+func (d *Downloader) installConfigError(assetType types.AssetType, assetID string, version string) types.AssetInstallResponse {
+	return d.installError(
+		types.AssetTypeMod,
+		assetID,
+		version,
+		types.ConfigData{},
+		types.InstallErrorInvalidConfig,
+		"Cannot install "+string(assetType)+" because app config paths are not properly configured. Please set valid paths in the config before installing.",
+		nil,
+	)
 }
 
 func (d *Downloader) uninstallSuccess(assetType types.AssetType, assetID string, message string, attrs ...any) types.AssetUninstallResponse {
@@ -409,13 +431,127 @@ func (d *Downloader) supersededOperationResult(action operationAction, assetType
 
 	if action == operationActionInstall {
 		return operationResult{
-			assetInstallResponse: d.installResponse(assetType, assetID, version, types.ConfigData{}, base, ""),
+			assetInstallResponse: d.installResponse(assetType, assetID, version, types.ConfigData{}, base, "", nil),
 		}
 	}
 	return operationResult{
 		genericResponse:        base,
 		assetUninstallResponse: d.uninstallResponse(assetType, assetID, base, ""),
 	}
+}
+
+// FindMapCodeConflict resolves whether the provided map city code would collide with an already-installed (local/remote) or vanilla map.
+func (d *Downloader) FindMapCodeConflict(targetAssetID string, cityCode string, ignoreTargetAsset bool) (*types.MapCodeConflict, bool) {
+	if cityCode == "" {
+		return nil, false
+	}
+
+	for _, installedMap := range d.Registry.GetInstalledMaps() {
+		// During normal install flow, ignore the target asset itself when checking for conflicts to allow for updates
+		if ignoreTargetAsset && installedMap.ID == targetAssetID {
+			continue
+		}
+		// Check for map code conflict with installed maps based on the map code in the config
+		if installedMap.MapConfig.Code != cityCode {
+			continue
+		}
+
+		return &types.MapCodeConflict{
+			AssetConflict: types.AssetConflict{
+				ExistingAssetID:   installedMap.ID,
+				ExistingAssetType: types.AssetTypeMap,
+				ExistingVersion:   installedMap.Version,
+				ExistingIsLocal:   installedMap.IsLocal,
+			},
+			CityCode: cityCode,
+		}, true
+	}
+
+	// Vanilla map code conflicts are determined based on the known list of vanilla map codes from latest-cities.yml.
+	// Vanilla map codes will always conflict regardless of the type of install.
+	for _, vanillaCode := range d.getVanillaMapCodes() {
+		if vanillaCode != cityCode {
+			continue
+		}
+
+		return &types.MapCodeConflict{
+			AssetConflict: types.AssetConflict{
+				ExistingAssetID:   "vanilla:" + cityCode,
+				ExistingAssetType: types.AssetTypeMap,
+				ExistingVersion:   "",
+				ExistingIsLocal:   false,
+			},
+			CityCode: cityCode,
+		}, true
+	}
+
+	return nil, false
+}
+
+func (d *Downloader) resolveMapInstallConflict(
+	mapID string,
+	version string,
+	config types.ConfigData,
+	replaceOnConflict bool,
+	ignoreTargetAsset bool,
+	conflictWarnMessage string,
+	conflictUninstallErrorMessage string,
+	baseLogAttrs ...any,
+) (*types.MapCodeConflict, types.AssetInstallResponse, bool) {
+	conflict, hasConflict := d.FindMapCodeConflict(mapID, config.Code, ignoreTargetAsset)
+	if !hasConflict {
+		return nil, types.AssetInstallResponse{}, false
+	}
+
+	warnLogAttrs := append([]any{}, baseLogAttrs...)
+	warnLogAttrs = append(warnLogAttrs,
+		"city_code", conflict.CityCode,
+		"conflicting_asset_id", conflict.ExistingAssetID,
+		"conflicting_is_local", conflict.ExistingIsLocal,
+	)
+
+	if !replaceOnConflict {
+		return conflict, d.installWarn(
+			types.AssetTypeMap,
+			mapID,
+			version,
+			config,
+			conflict,
+			conflictWarnMessage,
+			warnLogAttrs...,
+		), true
+	}
+
+	if strings.HasPrefix(conflict.ExistingAssetID, "vanilla:") {
+		return conflict, d.installError(
+			types.AssetTypeMap,
+			mapID,
+			version,
+			config,
+			types.InstallErrorMapCodeConflict,
+			"Cannot replace a vanilla map city code",
+			nil,
+			warnLogAttrs...,
+		), true
+	}
+
+	uninstallResp := d.uninstallMapNow(conflict.ExistingAssetID)
+	if uninstallResp.Status == types.ResponseError {
+		errAttrs := append([]any{}, baseLogAttrs...)
+		errAttrs = append(errAttrs, "conflicting_asset_id", conflict.ExistingAssetID)
+		return conflict, d.installError(
+			types.AssetTypeMap,
+			mapID,
+			version,
+			config,
+			types.InstallErrorMapCodeConflict,
+			conflictUninstallErrorMessage,
+			nil,
+			errAttrs...,
+		), true
+	}
+
+	return conflict, types.AssetInstallResponse{}, false
 }
 
 // UninstallAsset handles uninstallation for all supported asset types.
@@ -461,6 +597,85 @@ func (d *Downloader) UninstallAsset(assetType types.AssetType, assetID string) t
 		}
 	}, d.supersededOperationResult(operationActionUninstall, assetType, assetID, ""), nil)
 	return result.assetUninstallResponse
+}
+
+func (d *Downloader) ImportAsset(assetType types.AssetType, zipPath string, replaceOnConflict bool) types.AssetInstallResponse {
+
+	// TODO: Remove this and replace with isValidAssetType check once mod support is added
+	if assetType != types.AssetTypeMap {
+		return d.installError(
+			assetType,
+			"",
+			"",
+			types.ConfigData{},
+			types.InstallErrorInvalidAssetType,
+			"ImportAsset currently supports map assets only",
+			nil,
+			"asset_type", assetType,
+		)
+	}
+
+	if !d.Config.GetConfig().Validation.IsValid() {
+		return d.installConfigError(assetType, zipPath, "Local")
+	}
+
+	key := d.operationKey(operationActionInstall, assetType, zipPath, "import")
+	assetKey := downloadQueueKey{assetType: assetType, assetID: zipPath}
+	result := d.enqueueOperation(operationActionInstall, assetKey, key, func() operationResult {
+		// TODO: Add support for local mods/other assets
+		return operationResult{assetInstallResponse: d.importMapNow(zipPath, replaceOnConflict)}
+	}, d.supersededOperationResult(operationActionInstall, assetType, zipPath, "import"), nil)
+	return result.assetInstallResponse
+}
+
+func (d *Downloader) importMapNow(zipPath string, replaceOnConflict bool) types.AssetInstallResponse {
+	configData, configErrType, configErr := files.ValidateMapArchive(zipPath)
+	if configErr != nil {
+		return d.installError(types.AssetTypeMap, "", "", types.ConfigData{}, configErrType, "Failed to inspect map archive", configErr, "zip_path", zipPath)
+	}
+
+	mapID := configData.Code
+	version := strings.TrimSpace(configData.Version)
+	if version == "" {
+		version = "0.0.0"
+	}
+
+	// For local imports, detect conflicts even when the existing installed asset has the same local asset ID (e.g. same city code maps) so that local->local replacements use the standard warn-first override flow.
+	conflict, conflictResp, handled := d.resolveMapInstallConflict(
+		mapID,
+		version,
+		configData,
+		replaceOnConflict,
+		false,
+		"Map import conflicts with an installed map. Confirm replacement to continue.",
+		"Failed to remove conflicting installed map before import",
+		"map_id", mapID,
+		"zip_path", zipPath,
+	)
+	var replacedConflict *types.MapCodeConflict
+	if handled {
+		return conflictResp
+	}
+	if conflict != nil && replaceOnConflict {
+		replacedConflict = conflict
+	}
+
+	extractResp := d.handleMapExtract(zipPath, mapID, version)
+	if extractResp.Status == types.ResponseError {
+		return extractResp
+	}
+
+	d.Registry.AddInstalledMap(mapID, version, true, extractResp.Config)
+	if err := d.Registry.WriteInstalledToDisk(); err != nil {
+		return d.installError(types.AssetTypeMap, mapID, version, extractResp.Config, types.InstallErrorPersistStateFailed, "Failed to persist installed state after importing map", err, "map_id", mapID)
+	}
+
+	response := d.installSuccess(types.AssetTypeMap, mapID, version, extractResp.Config, "Map imported successfully", "map_id", mapID, "zip_path", zipPath)
+	if extractResp.Status == types.ResponseWarn {
+		response = d.installWarn(types.AssetTypeMap, mapID, version, extractResp.Config, replacedConflict, extractResp.Message, "map_id", mapID, "zip_path", zipPath)
+	}
+	response.MapCodeConflict = replacedConflict
+	return response
 }
 
 func (d *Downloader) uninstallModNow(modId string) types.AssetUninstallResponse {
@@ -525,7 +740,7 @@ func (d *Downloader) uninstallMapNow(mapId string) types.AssetUninstallResponse 
 		return d.uninstallError(types.AssetTypeMap, mapId, types.UninstallErrorFilesystem, "Failed to remove map data files", err, "map_id", mapId)
 	}
 	tilePath := paths.JoinLocalPath(d.getMapTilePath(), mapConfig.Code+".pmtiles")
-	if err := os.Remove(tilePath); err != nil {
+	if err := os.Remove(tilePath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return d.uninstallError(types.AssetTypeMap, mapId, types.UninstallErrorFilesystem, "Failed to remove map tile files", err, "map_id", mapId)
 	}
 	os.Remove(paths.JoinLocalPath(d.getMapThumbnailPath(), mapConfig.Code+".svg")) // Doesn't matter if this fails, thumbnail is optional and may not exist
@@ -536,44 +751,45 @@ func (d *Downloader) uninstallMapNow(mapId string) types.AssetUninstallResponse 
 	return d.uninstallSuccess(types.AssetTypeMap, mapId, "Map uninstalled successfully", "map_id", mapId)
 }
 
-// InstallAsset handles installation for all supported asset types.
-func (d *Downloader) InstallAsset(assetType types.AssetType, assetID string, version string) types.AssetInstallResponse {
-	if !types.IsValidAssetType(assetType) {
+// InstallAsset handles installation for all supported asset types using a structured request.
+func (d *Downloader) InstallAsset(req types.InstallAssetRequest) types.AssetInstallResponse {
+	if !types.IsValidAssetType(req.AssetType) {
 		return d.installError(
-			assetType,
-			assetID,
-			version,
+			req.AssetType,
+			req.AssetID,
+			req.Version,
 			types.ConfigData{},
 			types.InstallErrorInvalidAssetType,
 			"Invalid asset type",
 			nil,
-			"asset_type", assetType, "asset_id", assetID, "version", version,
+			"asset_type", req.AssetType, "asset_id", req.AssetID, "version", req.Version,
 		)
 	}
 
-	key := d.operationKey(operationActionInstall, assetType, assetID, version)
-	assetKey := downloadQueueKey{assetType: assetType, assetID: assetID}
+	replaceOnConflict := req.Map != nil && req.Map.ReplaceOnConflict
+	key := d.operationKey(operationActionInstall, req.AssetType, req.AssetID, req.Version)
+	assetKey := downloadQueueKey{assetType: req.AssetType, assetID: req.AssetID}
 	opCtx, cancel := context.WithCancel(context.Background())
 	result := d.enqueueOperation(operationActionInstall, assetKey, key, func() operationResult {
 		defer cancel()
-		switch assetType {
+		switch req.AssetType {
 		case types.AssetTypeMap:
-			return operationResult{assetInstallResponse: d.installMapNow(opCtx, assetID, version)}
+			return operationResult{assetInstallResponse: d.installMapNow(opCtx, req.AssetID, req.Version, replaceOnConflict)}
 		case types.AssetTypeMod:
-			return operationResult{assetInstallResponse: d.installModNow(opCtx, assetID, version)}
+			return operationResult{assetInstallResponse: d.installModNow(opCtx, req.AssetID, req.Version)}
 		default:
 			return operationResult{assetInstallResponse: d.installError(
-				assetType,
-				assetID,
-				version,
+				req.AssetType,
+				req.AssetID,
+				req.Version,
 				types.ConfigData{},
 				types.InstallErrorInvalidAssetType,
 				"Invalid asset type",
 				nil,
-				"asset_type", assetType, "asset_id", assetID, "version", version,
+				"asset_type", req.AssetType, "asset_id", req.AssetID, "version", req.Version,
 			)}
 		}
-	}, d.supersededOperationResult(operationActionInstall, assetType, assetID, version), cancel)
+	}, d.supersededOperationResult(operationActionInstall, req.AssetType, req.AssetID, req.Version), cancel)
 	return result.assetInstallResponse
 }
 
@@ -586,6 +802,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 			modId,
 			version,
 			types.ConfigData{},
+			nil,
 			fmt.Sprintf("%s already installed at requested version. No action taken.", assetTypeLabels[types.AssetTypeMod]),
 			"asset_type", types.AssetTypeMod,
 			"asset_id", modId,
@@ -593,15 +810,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 		)
 	}
 	if !d.Config.GetConfig().Validation.IsValid() {
-		return d.installError(
-			types.AssetTypeMod,
-			modId,
-			version,
-			types.ConfigData{},
-			types.InstallErrorInvalidConfig,
-			"Cannot install mod because app config paths are not properly configured. Please set valid paths in the config before installing mods.",
-			nil,
-		)
+		return d.installConfigError(types.AssetTypeMod, modId, version)
 	}
 	modInfo, err := d.Registry.GetMod(modId)
 	if err != nil {
@@ -639,7 +848,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 	// Pass in context to the download function so that it can be cancelled if the operation is no longer needed
 	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, modId)
 	if downloadResp.Status == types.ResponseWarn {
-		return d.installWarn(types.AssetTypeMod, modId, version, types.ConfigData{}, downloadResp.Message, "mod_id", modId, "version", version)
+		return d.installWarn(types.AssetTypeMod, modId, version, types.ConfigData{}, nil, downloadResp.Message, "mod_id", modId, "version", version)
 	}
 	if downloadResp.Status != types.ResponseSuccess {
 		os.Remove(downloadResp.Path)
@@ -659,7 +868,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 		return d.installError(types.AssetTypeMod, modId, version, types.ConfigData{}, extractResp.ErrorType, "Failed to extract mod zip: "+extractResp.Message, nil, "mod_id", modId, "version", version)
 	}
 	os.Remove(downloadResp.Path)
-	d.Registry.AddInstalledMod(modId, version)
+	d.Registry.AddInstalledMod(modId, version, false)
 	if err := d.Registry.WriteInstalledToDisk(); err != nil {
 		d.Logger.Warn("Failed to persist installed state after installing mod", "error", err)
 	}
@@ -668,7 +877,7 @@ func (d *Downloader) installModNow(ctx context.Context, modId string, version st
 }
 
 // installMapNow handles the installation of a map given its ID and version, including downloading, extracting, validating files, and updating the registry.
-func (d *Downloader) installMapNow(ctx context.Context, mapId string, version string) types.AssetInstallResponse {
+func (d *Downloader) installMapNow(ctx context.Context, mapId string, version string, replaceOnConflict bool) types.AssetInstallResponse {
 	d.Logger.Info("InstallMap started", "map_id", mapId, "version", version)
 	if state, installed := d.getInstalledState(types.AssetTypeMap, mapId); installed && state.version == version {
 		return d.installWarn(
@@ -676,6 +885,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 			mapId,
 			version,
 			state.mapConfig,
+			nil,
 			fmt.Sprintf("%s already installed at requested version. No action taken.", assetTypeLabels[types.AssetTypeMap]),
 			"asset_type", types.AssetTypeMap,
 			"asset_id", mapId,
@@ -683,7 +893,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 		)
 	}
 	if !d.Config.GetConfig().Validation.IsValid() {
-		return d.installError(types.AssetTypeMap, mapId, version, types.ConfigData{}, types.InstallErrorInvalidConfig, "Invalid configuration", nil, "map_id", mapId, "version", version)
+		return d.installConfigError(types.AssetTypeMap, mapId, version)
 	}
 	mapInfo, err := d.Registry.GetMap(mapId)
 	if err != nil {
@@ -721,7 +931,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 	// Pass in context to the download function so that it can be cancelled if the operation is no longer needed
 	downloadResp := d.downloadTempZip(ctx, versionInfo.DownloadURL, mapId)
 	if downloadResp.Status == types.ResponseWarn {
-		return d.installWarn(types.AssetTypeMap, mapId, version, types.ConfigData{}, downloadResp.Message, "map_id", mapId, "version", version)
+		return d.installWarn(types.AssetTypeMap, mapId, version, types.ConfigData{}, nil, downloadResp.Message, "map_id", mapId, "version", version)
 	}
 	if downloadResp.Status != types.ResponseSuccess {
 		os.Remove(downloadResp.Path)
@@ -733,6 +943,28 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 		return d.installError(types.AssetTypeMap, mapId, version, types.ConfigData{}, types.InstallErrorChecksumFailed, "SHA-256 integrity check failed", err, "map_id", mapId, "version", version)
 	}
 
+	cfg, configErrType, configErr := files.ValidateMapArchive(downloadResp.Path)
+	if configErr != nil {
+		os.Remove(downloadResp.Path)
+		return d.installError(types.AssetTypeMap, mapId, version, types.ConfigData{}, configErrType, "Failed to inspect map archive", configErr, "map_id", mapId, "version", version)
+	}
+
+	_, conflictResp, handled := d.resolveMapInstallConflict(
+		mapId,
+		version,
+		cfg,
+		replaceOnConflict,
+		true,
+		"Map code conflict detected. Confirm replacement to continue.",
+		"Failed to remove conflicting installed map before install",
+		"map_id", mapId,
+		"version", version,
+	)
+	if handled {
+		os.Remove(downloadResp.Path)
+		return conflictResp
+	}
+
 	d.Logger.Info("Extracting map", "map_id", mapId, "version", version, "temp_path", downloadResp.Path)
 	// No context is passed here (for cancellation)
 	extractResp := d.handleMapExtract(downloadResp.Path, mapId, version)
@@ -741,7 +973,7 @@ func (d *Downloader) installMapNow(ctx context.Context, mapId string, version st
 		return d.installError(types.AssetTypeMap, mapId, version, types.ConfigData{}, extractResp.ErrorType, "Failed to extract map zip: "+extractResp.Message, nil, "map_id", mapId, "version", version)
 	}
 	os.Remove(downloadResp.Path)
-	d.Registry.AddInstalledMap(mapId, version, extractResp.Config)
+	d.Registry.AddInstalledMap(mapId, version, false, extractResp.Config)
 	if err := d.Registry.WriteInstalledToDisk(); err != nil {
 		d.Logger.Warn("Failed to persist installed state after installing map", "error", err)
 	}
@@ -867,17 +1099,12 @@ func (d *Downloader) getVanillaMapCodes() []string {
 	return cityCodes
 }
 
-// Used by handleMapExtract to check for vanilla/duplicate map codes
-func (d *Downloader) isMapCodeTaken(code string) bool {
-	return slices.Contains(d.getVanillaMapCodes(), code) || slices.Contains(d.Registry.GetInstalledMapCodes(), code)
-}
-
 // handleModExtract processes the downloaded mod zip file, extracts it to the appropriate location, and returns a success or error message.
 func (d *Downloader) handleModExtract(filePath string, modId string, version string) types.AssetInstallResponse {
 	return extractMod(d, filePath, modId, version)
 }
 
-// handleMapExtract processes the downloaded map zip file, validates required files, extracts them to the appropriate locations, and returns the map config or an error message.
+// handleMapExtract processes map zip files and extracts the contract-specific files for local or downloaded assets.
 func (d *Downloader) handleMapExtract(filePath string, mapId string, version string) types.AssetInstallResponse {
 	return extractMap(d, filePath, mapId, version)
 }

@@ -51,7 +51,7 @@ func TestUpdateSubscriptionsForceSyncPersistsStateAndSyncs(t *testing.T) {
 
 	svc, cfg, reg := loadedUserProfilesServiceWithDependencies(t, state)
 	cfg.Cfg.MetroMakerDataPath = t.TempDir()
-	reg.AddInstalledMod("mod-a", "2.0.0")
+	reg.AddInstalledMod("mod-a", "2.0.0", false)
 	materializeInstalledAssets(t, cfg, []types.InstalledModInfo{{ID: "mod-a", Version: "2.0.0"}}, nil)
 
 	req := types.UpdateSubscriptionsRequest{
@@ -383,7 +383,7 @@ func TestUpdateSubscriptionsToLatest(t *testing.T) {
 			setup: func(t *testing.T, cfg *config.Config, reg *registry.Registry) func() {
 				t.Helper()
 				configureConfig(t, cfg)
-				reg.AddInstalledMod("mod-missing", "1.0.0")
+				reg.AddInstalledMod("mod-missing", "1.0.0", false)
 				// Previously installed mod is now missing from registry (causing a lookup warning)
 				return mockRegistry(t, reg, []registryFixture{
 					{

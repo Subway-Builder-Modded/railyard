@@ -155,7 +155,11 @@ func (s *UserProfiles) buildMapSyncArgs(profile types.UserProfile, isStale func(
 			getVersionsFn:  s.Registry.GetVersions,
 		},
 		install: func(assetID string, version string) types.AssetInstallResponse {
-			return s.Downloader.InstallAsset(types.AssetTypeMap, assetID, version)
+			return s.Downloader.InstallAsset(types.InstallAssetRequest{
+				AssetType: types.AssetTypeMap,
+				AssetID:   assetID,
+				Version:   version,
+			})
 		},
 		uninstall: func(assetID string) types.AssetUninstallResponse {
 			return s.Downloader.UninstallAsset(types.AssetTypeMap, assetID)
@@ -181,7 +185,11 @@ func (s *UserProfiles) buildModSyncArgs(profile types.UserProfile, isStale func(
 			getVersionsFn:  s.Registry.GetVersions,
 		},
 		install: func(assetID string, version string) types.AssetInstallResponse {
-			return s.Downloader.InstallAsset(types.AssetTypeMod, assetID, version)
+			return s.Downloader.InstallAsset(types.InstallAssetRequest{
+				AssetType: types.AssetTypeMod,
+				AssetID:   assetID,
+				Version:   version,
+			})
 		},
 		uninstall: func(assetID string) types.AssetUninstallResponse {
 			return s.Downloader.UninstallAsset(types.AssetTypeMod, assetID)

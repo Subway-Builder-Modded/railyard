@@ -2,6 +2,7 @@ package types
 
 import (
 	"io"
+	"regexp"
 	"strings"
 	"time"
 
@@ -30,11 +31,24 @@ type DownloadTempResponse struct {
 	Path string `json:"path,omitempty"`
 }
 
+type AssetConflict struct {
+	ExistingAssetID   string    `json:"existingAssetId"`
+	ExistingAssetType AssetType `json:"existingAssetType"`
+	ExistingVersion   string    `json:"existingVersion"`
+	ExistingIsLocal   bool      `json:"existingIsLocal"`
+}
+
+type MapCodeConflict struct {
+	AssetConflict
+	CityCode string `json:"cityCode"`
+}
+
 type DownloaderErrorType string
 
 const (
 	InstallErrorInvalidAssetType   DownloaderErrorType = "install_invalid_asset_type"
 	InstallErrorInvalidConfig      DownloaderErrorType = "install_invalid_config"
+	InstallErrorInvalidMapCode     DownloaderErrorType = "install_invalid_map_code"
 	InstallErrorRegistryLookup     DownloaderErrorType = "install_registry_lookup_failed"
 	InstallErrorVersionLookup      DownloaderErrorType = "install_version_lookup_failed"
 	InstallErrorVersionNotFound    DownloaderErrorType = "install_version_not_found"
@@ -67,11 +81,27 @@ func AutoPurgeDownloadErrors(err DownloaderErrorType) bool {
 
 type AssetInstallResponse struct {
 	GenericResponse
-	AssetType AssetType           `json:"assetType"`
-	AssetID   string              `json:"assetId"`
-	Version   string              `json:"version"`
-	Config    ConfigData          `json:"config,omitempty"`
-	ErrorType DownloaderErrorType `json:"errorType,omitempty"`
+	AssetType       AssetType           `json:"assetType"`
+	AssetID         string              `json:"assetId"`
+	Version         string              `json:"version"`
+	Config          ConfigData          `json:"config,omitempty"`
+	ErrorType       DownloaderErrorType `json:"errorType,omitempty"`
+	MapCodeConflict *MapCodeConflict    `json:"mapCodeConflict,omitempty"`
+}
+
+type MapInstallOptions struct {
+	ReplaceOnConflict bool `json:"replaceOnConflict"`
+}
+
+// Reserved for future mod-specific install options.
+type ModInstallOptions struct{}
+
+type InstallAssetRequest struct {
+	AssetType AssetType          `json:"assetType"`
+	AssetID   string             `json:"assetId"`
+	Version   string             `json:"version"`
+	Map       *MapInstallOptions `json:"map,omitempty"`
+	Mod       *ModInstallOptions `json:"mod,omitempty"`
 }
 
 type AssetUninstallResponse struct {
@@ -111,6 +141,8 @@ const (
 	AssetTypeMap AssetType = "map"
 	AssetTypeMod AssetType = "mod"
 )
+
+var LocalMapCodePattern = regexp.MustCompile(`^[A-Z]{2,4}$`)
 
 func IsValidAssetType(assetType AssetType) bool {
 	switch assetType {
