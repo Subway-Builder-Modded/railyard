@@ -40,6 +40,8 @@ import {
   isSearchViewMode,
   normalizeSearchViewMode,
 } from '@/lib/search-view-mode';
+import { apiErrorMessage } from '@/lib/api-error';
+import { GITHUB_TOKEN_DOCS_URL } from '@/lib/constants';
 import { useConfigStore } from '@/stores/config-store';
 import { useProfileStore } from '@/stores/profile-store';
 
@@ -122,7 +124,9 @@ export function SettingsPage() {
     if (req.status === 200) {
       toast.success('GitHub token is valid!');
     } else {
-      toast.error('GitHub token is invalid. Please check and try again.');
+      toast.error(
+        `GitHub token is invalid or rate-limited. See: ${GITHUB_TOKEN_DOCS_URL}`,
+      );
     }
   };
 
@@ -169,12 +173,20 @@ export function SettingsPage() {
   const handleUpdatesCheck = async () => {
     try {
       const response = await ManuallyCheckForUpdates();
+      const typedMessage = apiErrorMessage({
+        apiErrorType: response.apiErrorType,
+        apiErrorSource: response.apiErrorSource,
+      });
       if (response.status === 'error') {
-        throw new Error(response.message || 'Failed to check for updates');
+        throw new Error(
+          typedMessage || response.message || 'Failed to check for updates',
+        );
       }
       toast.success('No updates found, or installation was cancelled.');
-    } catch {
-      toast.error('Failed to check for updates.');
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : 'Failed to check for updates.',
+      );
     }
   };
 

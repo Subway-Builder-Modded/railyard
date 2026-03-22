@@ -22,9 +22,25 @@ const RequestUserAgent = "Railyard-Desktop-App"
 const GitHubAPIBaseURL = "https://api.github.com"
 const GitHubTokenDocsURL = "https://subwaybuildermodded.com/railyard/docs/latest/players/github-token"
 
+type APIErrorType string
+
+const (
+	APIErrorTypeAuth   APIErrorType = "api_auth_error"
+	APIErrorTypeFetch  APIErrorType = "api_fetch_error"
+	APIErrorTypeStatus APIErrorType = "api_status_error"
+)
+
+type APIErrorSource string
+
+const (
+	APIErrorSourceGitHub APIErrorSource = "Github"
+)
+
 type GenericResponse struct {
-	Status  Status `json:"status"`
-	Message string `json:"message"`
+	Status         Status         `json:"status"`
+	Message        string         `json:"message"`
+	APIErrorType   APIErrorType   `json:"apiErrorType,omitempty"`
+	APIErrorSource APIErrorSource `json:"apiErrorSource,omitempty"`
 }
 
 type DownloadTempResponse struct {

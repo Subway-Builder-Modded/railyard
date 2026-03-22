@@ -1,16 +1,17 @@
 package requests
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
 	"railyard/internal/types"
 )
 
-type APISource string
+type APISource = types.APIErrorSource
 
 const (
-	APISourceGitHub APISource = "Github"
+	APISourceGitHub APISource = types.APIErrorSourceGitHub
 	// TODO: Add other external sources as needed
 )
 
@@ -64,4 +65,21 @@ func NewAPIFetchError(source APISource, subject string, cause error) error {
 
 func IsAuthStatus(statusCode int) bool {
 	return statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden
+}
+
+func ResolveAPIError(err error) (types.APIErrorType, types.APIErrorSource, bool) {
+	var statusErr APIStatusError
+	if errors.As(err, &statusErr) {
+		if IsAuthStatus(statusErr.StatusCode) {
+			return types.APIErrorTypeAuth, statusErr.Source, true
+		}
+		return types.APIErrorTypeStatus, statusErr.Source, true
+	}
+
+	var fetchErr APIFetchError
+	if errors.As(err, &fetchErr) {
+		return types.APIErrorTypeFetch, fetchErr.Source, true
+	}
+
+	return "", "", false
 }

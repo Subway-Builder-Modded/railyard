@@ -23,6 +23,7 @@ import (
 	"railyard/internal/paths"
 	"railyard/internal/profiles"
 	"railyard/internal/registry"
+	"railyard/internal/requests"
 	"railyard/internal/types"
 	"railyard/internal/updater"
 	"railyard/internal/utils"
@@ -477,7 +478,14 @@ func (a *App) StopGame() types.GenericResponse {
 
 func (a *App) ManuallyCheckForUpdates() types.GenericResponse {
 	a.Logger.Info("Manually checking for updates")
-	updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
+	if err := updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken()); err != nil {
+		response := types.ErrorResponse(err.Error())
+		if apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err); ok {
+			response.APIErrorType = apiErrorType
+			response.APIErrorSource = apiErrorSource
+		}
+		return response
+	}
 	return types.SuccessResponse("Update check started")
 }
 

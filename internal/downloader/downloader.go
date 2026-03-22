@@ -324,8 +324,13 @@ func (d *Downloader) installResponse(
 	config types.ConfigData,
 	base types.GenericResponse,
 	errorCode types.DownloaderErrorType,
+	apiErrorType types.APIErrorType,
+	apiErrorSource types.APIErrorSource,
 	mapCodeConflict *types.MapCodeConflict,
 ) types.AssetInstallResponse {
+	base.APIErrorType = apiErrorType
+	base.APIErrorSource = apiErrorSource
+
 	return types.AssetInstallResponse{
 		GenericResponse: base,
 		AssetType:       assetType,
@@ -338,15 +343,30 @@ func (d *Downloader) installResponse(
 }
 
 func (d *Downloader) installSuccess(assetType types.AssetType, assetID string, version string, config types.ConfigData, message string, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.successResponse(message, attrs...), "", nil)
+	return d.installResponse(assetType, assetID, version, config, d.successResponse(message, attrs...), "", "", "", nil)
 }
 
 func (d *Downloader) installWarn(assetType types.AssetType, assetID string, version string, config types.ConfigData, mapCodeConflict *types.MapCodeConflict, message string, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.warnResponse(message, attrs...), "", mapCodeConflict)
+	return d.installResponse(assetType, assetID, version, config, d.warnResponse(message, attrs...), "", "", "", mapCodeConflict)
 }
 
 func (d *Downloader) installError(assetType types.AssetType, assetID string, version string, config types.ConfigData, errorCode types.DownloaderErrorType, message string, err error, attrs ...any) types.AssetInstallResponse {
-	return d.installResponse(assetType, assetID, version, config, d.throwError(message, err, attrs...), errorCode, nil)
+	apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err)
+	if !ok {
+		apiErrorType = ""
+		apiErrorSource = ""
+	}
+	return d.installResponse(
+		assetType,
+		assetID,
+		version,
+		config,
+		d.throwError(message, err, attrs...),
+		errorCode,
+		apiErrorType,
+		apiErrorSource,
+		nil,
+	)
 }
 
 func (d *Downloader) uninstallResponse(assetType types.AssetType, assetID string, base types.GenericResponse, errorCode types.DownloaderErrorType) types.AssetUninstallResponse {
@@ -431,7 +451,7 @@ func (d *Downloader) supersededOperationResult(action operationAction, assetType
 
 	if action == operationActionInstall {
 		return operationResult{
-			assetInstallResponse: d.installResponse(assetType, assetID, version, types.ConfigData{}, base, "", nil),
+			assetInstallResponse: d.installResponse(assetType, assetID, version, types.ConfigData{}, base, "", "", "", nil),
 		}
 	}
 	return operationResult{

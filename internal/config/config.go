@@ -254,8 +254,13 @@ func (s *Config) IsGithubTokenValid() types.GithubTokenValidResponse {
 
 	if err != nil {
 		s.logger.Error("Failed to validate GitHub token", err)
+		errorResponse := types.ErrorResponse(fmt.Sprintf("failed to validate GitHub token: %v", err))
+		if apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err); ok {
+			errorResponse.APIErrorType = apiErrorType
+			errorResponse.APIErrorSource = apiErrorSource
+		}
 		return types.GithubTokenValidResponse{
-			GenericResponse: types.ErrorResponse(fmt.Sprintf("failed to validate GitHub token: %v", err)),
+			GenericResponse: errorResponse,
 			Valid:           false,
 		}
 	}

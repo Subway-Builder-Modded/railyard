@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { GITHUB_TOKEN_DOCS_URL } from '@/lib/constants';
 import { useConfigStore } from '@/stores/config-store';
 
 export function SetupScreen() {
@@ -47,7 +48,9 @@ export function SetupScreen() {
     if (req.status === 200) {
       toast.success('GitHub token is valid!');
     } else {
-      toast.error('GitHub token is invalid. Please check and try again.');
+      toast.error(
+        `GitHub token is invalid or rate-limited. See: ${GITHUB_TOKEN_DOCS_URL}`,
+      );
     }
   };
 

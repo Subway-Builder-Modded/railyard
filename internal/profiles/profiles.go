@@ -55,14 +55,16 @@ func updateResultBase(
 	message string,
 ) types.UpdateSubscriptionsResult {
 	return types.UpdateSubscriptionsResult{
-		GenericResponse: types.GenericResponse{
-			Status:  status,
-			Message: message,
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.GenericResponse{
+				Status:  status,
+				Message: message,
+			},
+			Errors: []types.UserProfilesError{},
 		},
 		RequestType:    requestType,
 		PendingUpdates: []types.PendingSubscriptionUpdate{},
 		Operations:     []types.SubscriptionOperation{},
-		Errors:         []types.UserProfilesError{},
 		Conflicts:      []types.MapCodeConflict{},
 	}
 }
@@ -73,13 +75,15 @@ func syncResultBase(
 	profileID string,
 ) types.SyncSubscriptionsResult {
 	return types.SyncSubscriptionsResult{
-		GenericResponse: types.GenericResponse{
-			Status:  status,
-			Message: message,
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.GenericResponse{
+				Status:  status,
+				Message: message,
+			},
+			Errors: []types.UserProfilesError{},
 		},
 		ProfileID:  profileID,
 		Operations: []types.SubscriptionOperation{},
-		Errors:     []types.UserProfilesError{},
 	}
 }
 
@@ -171,7 +175,7 @@ func syncInstallFailedError(profileID, assetID string, assetType types.AssetType
 	if response.ErrorType == "" { // Programmer error; we should always have some sort of ErrorCode
 		panic(fmt.Sprintf("syncInstallFailedError received empty install error code for %s %q", assetType, assetID))
 	}
-	return userProfilesError(
+	profileError := userProfilesError(
 		profileID,
 		assetID,
 		assetType,
@@ -179,6 +183,9 @@ func syncInstallFailedError(profileID, assetID string, assetType types.AssetType
 		response.ErrorType,
 		fmt.Sprintf("Failed sync action: %v", err),
 	)
+	profileError.APIErrorType = response.APIErrorType
+	profileError.APIErrorSource = response.APIErrorSource
+	return profileError
 }
 
 func syncUninstallFailedError(profileID, assetID string, assetType types.AssetType, response types.AssetUninstallResponse, err error) types.UserProfilesError {

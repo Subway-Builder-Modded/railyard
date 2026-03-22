@@ -36,9 +36,11 @@ func (s *UserProfiles) LoadProfiles() types.UserProfileResult {
 	state, err := ReadUserProfilesState()
 	if err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("failed to load profiles state"),
-			Errors: []types.UserProfilesError{
-				userProfilesError("", "", "", types.ErrorUnknown, "", "Failed to load profiles state: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("failed to load profiles state"),
+				Errors: []types.UserProfilesError{
+					userProfilesError("", "", "", types.ErrorUnknown, "", "Failed to load profiles state: "+err.Error()),
+				},
 			},
 		}
 	}
@@ -49,11 +51,13 @@ func (s *UserProfiles) LoadProfiles() types.UserProfileResult {
 		bootstrapped := types.InitialProfilesState()
 		if err := WriteUserProfilesState(bootstrapped); err != nil {
 			return types.UserProfileResult{
-				GenericResponse: types.ErrorResponse("Failed to bootstrap default profiles"),
-				Profile:         types.DefaultProfile(),
-				Errors: []types.UserProfilesError{
-					userProfilesError(types.DefaultProfileID, "", "", types.ErrorPersistFailed, "", "Failed to bootstrap default profiles: "+err.Error()),
+				UserProfilesResult: types.UserProfilesResult{
+					GenericResponse: types.ErrorResponse("Failed to bootstrap default profiles"),
+					Errors: []types.UserProfilesError{
+						userProfilesError(types.DefaultProfileID, "", "", types.ErrorPersistFailed, "", "Failed to bootstrap default profiles: "+err.Error()),
+					},
 				},
+				Profile: types.DefaultProfile(),
 			}
 		}
 		s.setState(bootstrapped)
@@ -63,9 +67,11 @@ func (s *UserProfiles) LoadProfiles() types.UserProfileResult {
 	validatedState, err := types.ValidateState(state)
 	if err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Profiles state validation failed"),
-			Errors: []types.UserProfilesError{
-				userProfilesError("", "", "", types.ErrorUnknown, "", "Profiles state validation failed: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Profiles state validation failed"),
+				Errors: []types.UserProfilesError{
+					userProfilesError("", "", "", types.ErrorUnknown, "", "Profiles state validation failed: "+err.Error()),
+				},
 			},
 		}
 	}
@@ -102,26 +108,32 @@ func (s *UserProfiles) GetActiveProfile() types.UserProfileResult {
 func (s *UserProfiles) resolveActiveProfile() types.UserProfileResult {
 	if !s.loaded {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Profiles state not loaded"),
-			Errors: []types.UserProfilesError{
-				userProfilesError("", "", "", types.ErrorProfilesNotLoaded, "", "Profiles state not loaded"),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Profiles state not loaded"),
+				Errors: []types.UserProfilesError{
+					userProfilesError("", "", "", types.ErrorProfilesNotLoaded, "", "Profiles state not loaded"),
+				},
 			},
 		}
 	}
 	profile, ok := s.state.Profiles[s.state.ActiveProfileID]
 	if !ok {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Active profile missing from loaded state"),
-			Errors: []types.UserProfilesError{
-				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorProfileNotFound, "", `Active profile missing from loaded state: "`+s.state.ActiveProfileID+`"`),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Active profile missing from loaded state"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorProfileNotFound, "", `Active profile missing from loaded state: "`+s.state.ActiveProfileID+`"`),
+				},
 			},
 		}
 	}
 
 	return types.UserProfileResult{
-		GenericResponse: types.SuccessResponse("Active profile resolved"),
-		Profile:         profile,
-		Errors:          []types.UserProfilesError{},
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.SuccessResponse("Active profile resolved"),
+			Errors:          []types.UserProfilesError{},
+		},
+		Profile: profile,
 	}
 }
 
@@ -138,17 +150,21 @@ func (s *UserProfiles) ResetUserProfiles() types.UserProfileResult {
 	active := defaultState.Profiles[defaultState.ActiveProfileID]
 	if err := WriteUserProfilesState(defaultState); err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Failed to persist reset profiles state"),
-			Profile:         active,
-			Errors: []types.UserProfilesError{
-				userProfilesError(active.ID, "", "", types.ErrorPersistFailed, "", "Failed to persist reset profiles state: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Failed to persist reset profiles state"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(active.ID, "", "", types.ErrorPersistFailed, "", "Failed to persist reset profiles state: "+err.Error()),
+				},
 			},
+			Profile: active,
 		}
 	}
 	return types.UserProfileResult{
-		GenericResponse: types.SuccessResponse("Profiles reset to defaults"),
-		Profile:         active,
-		Errors:          []types.UserProfilesError{},
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.SuccessResponse("Profiles reset to defaults"),
+			Errors:          []types.UserProfilesError{},
+		},
+		Profile: active,
 	}
 }
 
@@ -172,11 +188,13 @@ func (s *UserProfiles) UpdateSystemPreferences(prefs types.SystemPreferences) ty
 	validatedState, err := types.ValidateState(nextState)
 	if err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Invalid system preferences"),
-			Profile:         s.state.Profiles[s.state.ActiveProfileID],
-			Errors: []types.UserProfilesError{
-				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "", "Invalid system preferences: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Invalid system preferences"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "", "Invalid system preferences: "+err.Error()),
+				},
 			},
+			Profile: s.state.Profiles[s.state.ActiveProfileID],
 		}
 	}
 
@@ -184,18 +202,22 @@ func (s *UserProfiles) UpdateSystemPreferences(prefs types.SystemPreferences) ty
 
 	if err := WriteUserProfilesState(validatedState); err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Failed to persist system preferences"),
-			Profile:         validatedState.Profiles[s.state.ActiveProfileID],
-			Errors: []types.UserProfilesError{
-				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "", "Failed to persist system preferences: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Failed to persist system preferences"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "", "Failed to persist system preferences: "+err.Error()),
+				},
 			},
+			Profile: validatedState.Profiles[s.state.ActiveProfileID],
 		}
 	}
 
 	return types.UserProfileResult{
-		GenericResponse: types.SuccessResponse("System preferences updated"),
-		Profile:         validatedState.Profiles[s.state.ActiveProfileID],
-		Errors:          []types.UserProfilesError{},
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.SuccessResponse("System preferences updated"),
+			Errors:          []types.UserProfilesError{},
+		},
+		Profile: validatedState.Profiles[s.state.ActiveProfileID],
 	}
 }
 
@@ -222,11 +244,13 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 	validatedState, err := types.ValidateState(nextState)
 	if err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Invalid UI preferences"),
-			Profile:         s.state.Profiles[s.state.ActiveProfileID],
-			Errors: []types.UserProfilesError{
-				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "", "Invalid UI preferences: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Invalid UI preferences"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorUnknown, "", "Invalid UI preferences: "+err.Error()),
+				},
 			},
+			Profile: s.state.Profiles[s.state.ActiveProfileID],
 		}
 	}
 
@@ -234,18 +258,22 @@ func (s *UserProfiles) UpdateUIPreferences(uiPrefs types.UIPreferences) types.Us
 
 	if err := WriteUserProfilesState(validatedState); err != nil {
 		return types.UserProfileResult{
-			GenericResponse: types.ErrorResponse("Failed to persist UI preferences"),
-			Profile:         validatedState.Profiles[s.state.ActiveProfileID],
-			Errors: []types.UserProfilesError{
-				userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "", "Failed to persist UI preferences: "+err.Error()),
+			UserProfilesResult: types.UserProfilesResult{
+				GenericResponse: types.ErrorResponse("Failed to persist UI preferences"),
+				Errors: []types.UserProfilesError{
+					userProfilesError(s.state.ActiveProfileID, "", "", types.ErrorPersistFailed, "", "Failed to persist UI preferences: "+err.Error()),
+				},
 			},
+			Profile: validatedState.Profiles[s.state.ActiveProfileID],
 		}
 	}
 
 	return types.UserProfileResult{
-		GenericResponse: types.SuccessResponse("UI preferences updated"),
-		Profile:         validatedState.Profiles[s.state.ActiveProfileID],
-		Errors:          []types.UserProfilesError{},
+		UserProfilesResult: types.UserProfilesResult{
+			GenericResponse: types.SuccessResponse("UI preferences updated"),
+			Errors:          []types.UserProfilesError{},
+		},
+		Profile: validatedState.Profiles[s.state.ActiveProfileID],
 	}
 }
 

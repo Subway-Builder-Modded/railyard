@@ -61,8 +61,13 @@ func (r *Registry) GetVersions(updateType string, repoOrURL string) ([]types.Ver
 func (r *Registry) GetVersionsResponse(updateType string, repoOrURL string) types.VersionsResponse {
 	versions, err := r.GetVersions(updateType, repoOrURL)
 	if err != nil {
+		errorResponse := types.ErrorResponse(err.Error())
+		if apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err); ok {
+			errorResponse.APIErrorType = apiErrorType
+			errorResponse.APIErrorSource = apiErrorSource
+		}
 		return types.VersionsResponse{
-			GenericResponse: types.ErrorResponse(err.Error()),
+			GenericResponse: errorResponse,
 			Versions:        []types.VersionInfo{},
 			ErrorType:       versionsErrorType(err),
 		}
