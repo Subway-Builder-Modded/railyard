@@ -1,11 +1,12 @@
 import { CheckCircle, Download, MapPin, Package, Users } from 'lucide-react';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'wouter';
 
 import { Badge } from '@/components/ui/badge';
 import { type AssetType, assetTypeToListingPath } from '@/lib/asset-types';
 import { getCountryFlagIcon } from '@/lib/flags';
 import { formatSourceQuality } from '@/lib/map-filter-values';
+import { MAX_CARD_BADGES } from '@/lib/search';
 import type { SearchViewMode } from '@/lib/search-view-mode';
 import { cn } from '@/lib/utils';
 
@@ -149,164 +150,52 @@ function ItemBadges({
   align = 'right',
   compact = false,
   wrap = false,
-  fixedVisibleCount,
-  maxWidthPercentage = 1,
 }: {
   badges: string[];
   align?: 'left' | 'right';
   compact?: boolean;
   wrap?: boolean;
-  fixedVisibleCount?: number;
-  maxWidthPercentage?: number;
 }) {
   if (badges.length === 0) return null;
-
-  const maxBadgeCount =
-    fixedVisibleCount === undefined ? badges.length : Math.max(1, fixedVisibleCount);
-  const visibleBadges = badges.slice(0, maxBadgeCount);
 
   const justifyClass = align === 'left' ? 'justify-start' : 'justify-end';
   const badgeClassName = compact
     ? 'text-[11px] px-1.5 py-0 h-5'
     : 'text-xs px-1.5 py-0';
-  const clampedMaxWidthPercent = Math.min(1, Math.max(0, maxWidthPercentage)) * 100;
-  const maxWidthStyle =
-    clampedMaxWidthPercent < 100
-      ? { maxWidth: `${clampedMaxWidthPercent}%` }
-      : undefined;
+
+  const badgesLimited = useMemo(
+    () => badges.slice(0, MAX_CARD_BADGES),
+    [badges],
+  );
+  const baseOverflowCount = Math.max(0, badges.length - badgesLimited.length);
+
+  const baseBadges = badgesLimited.map((badge) => (
+    <Badge key={badge} variant="secondary" className={badgeClassName}>
+      {badge}
+    </Badge>
+  ));
+
+  const overflowBadge =
+    baseOverflowCount > 0 ? (
+      <Badge variant="outline" className={badgeClassName}>
+        +{baseOverflowCount}
+      </Badge>
+    ) : null;
 
   if (wrap) {
-    const overflowCount = Math.max(0, badges.length - visibleBadges.length);
     return (
-      <div className={cn('flex flex-wrap gap-1', justifyClass)} style={maxWidthStyle}>
-        {visibleBadges.map((badge) => (
-          <Badge key={badge} variant="secondary" className={badgeClassName}>
-            {badge}
-          </Badge>
-        ))}
-        {overflowCount > 0 && (
-          <Badge variant="outline" className={badgeClassName}>
-            +{overflowCount}
-          </Badge>
-        )}
+      <div className={cn('flex flex-wrap gap-1', justifyClass)}>
+        {baseBadges}
+        {overflowBadge}
       </div>
     );
   }
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const measureRef = useRef<HTMLDivElement | null>(null);
-  const [visibleCount, setVisibleCount] = useState(visibleBadges.length);
-
-  useLayoutEffect(() => {
-    if (fixedVisibleCount !== undefined) {
-      setVisibleCount(visibleBadges.length);
-      return;
-    }
-
-    const container = containerRef.current;
-    const measure = measureRef.current;
-    if (!container || !measure) return;
-
-    const update = () => {
-      const availableWidth = container.clientWidth;
-      const gap = Number.parseFloat(getComputedStyle(container).columnGap) || 0;
-      const badgeEls = Array.from(
-        measure.querySelectorAll('[data-measure="badge"]'),
-      ) as HTMLElement[];
-      const badgeWidths = badgeEls.map(
-        (el) => el.getBoundingClientRect().width,
-      );
-
-      const overflowEl = measure.querySelector<HTMLElement>(
-        '[data-measure="overflow"]',
-      );
-
-      const measureOverflowWidth = (count: number) => {
-        if (!overflowEl) return 0;
-        overflowEl.textContent = `+${count}`;
-        return overflowEl.getBoundingClientRect().width;
-      };
-
-      const widthForBadges = (count: number) =>
-        badgeWidths.slice(0, count).reduce((sum, width) => sum + width, 0) +
-        Math.max(0, count - 1) * gap;
-
-      const fits = (count: number) => {
-        const clamped = Math.max(0, Math.min(badgeWidths.length, count));
-        const overflowCount = Math.max(0, badges.length - clamped);
-        const overflowWidth =
-          overflowCount > 0 ? measureOverflowWidth(overflowCount) : 0;
-        const hasOverflow = overflowCount > 0;
-
-        const totalWidth =
-          widthForBadges(clamped) +
-          (hasOverflow ? (clamped > 0 ? gap : 0) + overflowWidth : 0);
-
-        return totalWidth <= availableWidth;
-      };
-
-      for (let count = badgeWidths.length; count >= 0; count -= 1) {
-        if (fits(count)) {
-          setVisibleCount(count);
-          return;
-        }
-      }
-
-      setVisibleCount(0);
-    };
-
-    update();
-
-    const ro = new ResizeObserver(() => update());
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, [badges.length, fixedVisibleCount, visibleBadges]);
-
-  const overflowCount = Math.max(0, badges.length - visibleCount);
-
   return (
-    <>
-      <div
-        ref={containerRef}
-        className={cn('flex flex-nowrap gap-1 overflow-hidden', justifyClass)}
-        style={maxWidthStyle}
-      >
-        {visibleBadges.slice(0, visibleCount).map((badge) => (
-          <Badge key={badge} variant="secondary" className={badgeClassName}>
-            {badge}
-          </Badge>
-        ))}
-        {overflowCount > 0 && (
-          <Badge variant="outline" className={badgeClassName}>
-            +{overflowCount}
-          </Badge>
-        )}
-      </div>
-
-      <div
-        ref={measureRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-[99999px] -top-[99999px] flex gap-1 opacity-0"
-      >
-        {visibleBadges.map((badge) => (
-          <Badge
-            key={badge}
-            data-measure="badge"
-            variant="secondary"
-            className={badgeClassName}
-          >
-            {badge}
-          </Badge>
-        ))}
-        <Badge
-          data-measure="overflow"
-          variant="outline"
-          className={badgeClassName}
-        >
-          +{badges.length}
-        </Badge>
-      </div>
-    </>
+    <div className={cn('flex flex-nowrap gap-1 overflow-hidden', justifyClass)}>
+      {baseBadges}
+      {overflowBadge}
+    </div>
   );
 }
 
@@ -393,7 +282,6 @@ export function ItemCard({
                   badges={presentation.badges}
                   align="left"
                   wrap={false}
-                  fixedVisibleCount={3}
                 />
               </div>
             </div>
@@ -570,7 +458,7 @@ export function ItemCard({
               showDownloads={presentation.showDownloads}
               totalDownloads={totalDownloads}
             />
-            <ItemBadges badges={presentation.badges} maxWidthPercentage={0.65} />
+            <ItemBadges badges={presentation.badges} />
           </div>
         </div>
       </article>
