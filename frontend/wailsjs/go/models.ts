@@ -1384,9 +1384,9 @@ export namespace types {
 	    message: string;
 	    apiErrorType?: string;
 	    apiErrorSource?: string;
-	    errors: UserProfilesError[];
 	    profileId: string;
 	    operations: SubscriptionOperation[];
+	    errors: UserProfilesError[];
 	
 	    static createFrom(source: any = {}) {
 	        return new SyncSubscriptionsResult(source);
@@ -1398,9 +1398,9 @@ export namespace types {
 	        this.message = source["message"];
 	        this.apiErrorType = source["apiErrorType"];
 	        this.apiErrorSource = source["apiErrorSource"];
-	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	        this.profileId = source["profileId"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1539,7 +1539,6 @@ export namespace types {
 	    message: string;
 	    apiErrorType?: string;
 	    apiErrorSource?: string;
-	    errors: UserProfilesError[];
 	    requestType: string;
 	    hasUpdates: boolean;
 	    pendingCount: number;
@@ -1548,6 +1547,7 @@ export namespace types {
 	    profile: UserProfile;
 	    persisted: boolean;
 	    operations: SubscriptionOperation[];
+	    errors: UserProfilesError[];
 	    conflicts: MapCodeConflict[];
 	
 	    static createFrom(source: any = {}) {
@@ -1560,7 +1560,6 @@ export namespace types {
 	        this.message = source["message"];
 	        this.apiErrorType = source["apiErrorType"];
 	        this.apiErrorSource = source["apiErrorSource"];
-	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	        this.requestType = source["requestType"];
 	        this.hasUpdates = source["hasUpdates"];
 	        this.pendingCount = source["pendingCount"];
@@ -1569,6 +1568,7 @@ export namespace types {
 	        this.profile = this.convertValues(source["profile"], UserProfile);
 	        this.persisted = source["persisted"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	        this.conflicts = this.convertValues(source["conflicts"], MapCodeConflict);
 	    }
 	
@@ -1630,8 +1630,8 @@ export namespace types {
 	    message: string;
 	    apiErrorType?: string;
 	    apiErrorSource?: string;
-	    errors: UserProfilesError[];
 	    profile: UserProfile;
+	    errors: UserProfilesError[];
 	
 	    static createFrom(source: any = {}) {
 	        return new UserProfileResult(source);
@@ -1643,8 +1643,8 @@ export namespace types {
 	        this.message = source["message"];
 	        this.apiErrorType = source["apiErrorType"];
 	        this.apiErrorSource = source["apiErrorSource"];
-	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	        this.profile = this.convertValues(source["profile"], UserProfile);
+	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1665,6 +1665,7 @@ export namespace types {
 		    return a;
 		}
 	}
+	
 	export class VersionInfo {
 	    version: string;
 	    name: string;

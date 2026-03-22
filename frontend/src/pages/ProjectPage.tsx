@@ -15,8 +15,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { listingPathToAssetType } from '@/lib/asset-types';
 import { apiErrorMessage } from '@/lib/api-error';
+import { listingPathToAssetType } from '@/lib/asset-types';
 import { isCompatible } from '@/lib/semver';
 import {
   mergeVersionDownloads,

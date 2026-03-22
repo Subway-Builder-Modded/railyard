@@ -174,18 +174,14 @@ func (e UserProfilesError) Error() string {
 	return string(e.ErrorType)
 }
 
-type UserProfilesResult struct {
-	GenericResponse
-	Errors []UserProfilesError `json:"errors"`
-}
-
 type UserProfileResult struct {
-	UserProfilesResult
-	Profile UserProfile `json:"profile"`
+	GenericResponse
+	Profile UserProfile         `json:"profile"`
+	Errors  []UserProfilesError `json:"errors"`
 }
 
 type UpdateSubscriptionsResult struct {
-	UserProfilesResult
+	GenericResponse
 	RequestType    UpdateSubscriptionRequestType `json:"requestType"`
 	HasUpdates     bool                          `json:"hasUpdates"`     // whether there are updates to apply based on the profile's subscriptions and the registry state at the time of the request
 	PendingCount   int                           `json:"pendingCount"`   // number of pending updates (only relevant for latest_check and latest_apply request types)
@@ -194,13 +190,15 @@ type UpdateSubscriptionsResult struct {
 	Profile        UserProfile                   `json:"profile"`        // the updated profile after applying subscription changes (if applicable)
 	Persisted      bool                          `json:"persisted"`      // whether the updated profile state was persisted to disk (if applicable)
 	Operations     []SubscriptionOperation       `json:"operations"`     // the list of subscription operations that were performed (if any)
+	Errors         []UserProfilesError           `json:"errors"`         // errors that were encountered during the subscription update process
 	Conflicts      []MapCodeConflict             `json:"conflicts"`      // map code conflicts that require explicit confirmation to replace
 }
 
 type SyncSubscriptionsResult struct {
-	UserProfilesResult
+	GenericResponse
 	ProfileID  string                  `json:"profileId"`
 	Operations []SubscriptionOperation `json:"operations"` // the list of subscription operations that were performed (if any)
+	Errors     []UserProfilesError     `json:"errors"`     // errors that were encountered during the subscription sync process
 }
 
 // UserProfile represents a profile within the application.

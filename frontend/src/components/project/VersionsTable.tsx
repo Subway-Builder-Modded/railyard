@@ -112,7 +112,8 @@ export function VersionsTable({
         } else if (!hasOnlySilentSyncWarnings(result.errors)) {
           toast.warning(
             syncMessageWithAPIFallback(
-              result.message || `Install for ${itemName} completed with warnings.`,
+              result.message ||
+                `Install for ${itemName} completed with warnings.`,
               result.errors,
             ),
           );

@@ -1,5 +1,5 @@
-import { SubscriptionSyncError } from '@/stores/installed-store';
 import { firstAPIErrorMessage } from '@/lib/api-error';
+import { SubscriptionSyncError } from '@/stores/installed-store';
 
 import type { types } from '../../wailsjs/go/models';
 

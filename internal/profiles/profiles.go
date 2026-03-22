@@ -55,16 +55,14 @@ func updateResultBase(
 	message string,
 ) types.UpdateSubscriptionsResult {
 	return types.UpdateSubscriptionsResult{
-		UserProfilesResult: types.UserProfilesResult{
-			GenericResponse: types.GenericResponse{
-				Status:  status,
-				Message: message,
-			},
-			Errors: []types.UserProfilesError{},
+		GenericResponse: types.GenericResponse{
+			Status:  status,
+			Message: message,
 		},
 		RequestType:    requestType,
 		PendingUpdates: []types.PendingSubscriptionUpdate{},
 		Operations:     []types.SubscriptionOperation{},
+		Errors:         []types.UserProfilesError{},
 		Conflicts:      []types.MapCodeConflict{},
 	}
 }
@@ -75,15 +73,13 @@ func syncResultBase(
 	profileID string,
 ) types.SyncSubscriptionsResult {
 	return types.SyncSubscriptionsResult{
-		UserProfilesResult: types.UserProfilesResult{
-			GenericResponse: types.GenericResponse{
-				Status:  status,
-				Message: message,
-			},
-			Errors: []types.UserProfilesError{},
+		GenericResponse: types.GenericResponse{
+			Status:  status,
+			Message: message,
 		},
 		ProfileID:  profileID,
 		Operations: []types.SubscriptionOperation{},
+		Errors:     []types.UserProfilesError{},
 	}
 }
 

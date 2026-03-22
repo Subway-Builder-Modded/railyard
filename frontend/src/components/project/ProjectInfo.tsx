@@ -133,7 +133,8 @@ export function ProjectInfo({
         } else if (!hasOnlySilentSyncWarnings(result.errors)) {
           toast.warning(
             syncMessageWithAPIFallback(
-              result.message || `Install for ${item.name} completed with warnings.`,
+              result.message ||
+                `Install for ${item.name} completed with warnings.`,
               result.errors,
             ),
           );

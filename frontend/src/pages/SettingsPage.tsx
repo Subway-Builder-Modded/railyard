@@ -36,12 +36,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { apiErrorMessage } from '@/lib/api-error';
+import { GITHUB_TOKEN_DOCS_URL } from '@/lib/constants';
 import {
   isSearchViewMode,
   normalizeSearchViewMode,
 } from '@/lib/search-view-mode';
-import { apiErrorMessage } from '@/lib/api-error';
-import { GITHUB_TOKEN_DOCS_URL } from '@/lib/constants';
 import { useConfigStore } from '@/stores/config-store';
 import { useProfileStore } from '@/stores/profile-store';
 
