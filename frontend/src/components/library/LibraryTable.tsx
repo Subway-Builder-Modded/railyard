@@ -233,6 +233,7 @@ function LibraryTableRow({
   const isMap = entry.type === 'map';
   const map = isMap ? (entry.item as types.MapManifest) : null;
   const isLocalEntry = entry.isLocal;
+  const isLocalMap = isMap && isLocalEntry;
   const mapBadges = map
     ? [
         map.location,
@@ -302,12 +303,18 @@ function LibraryTableRow({
           <div className="min-w-0">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <Link
-                  href={`/project/${assetTypeToListingPath(entry.type)}/${entry.item.id}`}
-                  className="font-medium text-sm text-foreground hover:underline truncate"
-                >
-                  {entry.item.name}
-                </Link>
+                {isLocalMap ? (
+                  <span className="font-medium text-sm text-foreground truncate">
+                    {entry.item.name}
+                  </span>
+                ) : (
+                  <Link
+                    href={`/project/${assetTypeToListingPath(entry.type)}/${entry.item.id}`}
+                    className="font-medium text-sm text-foreground hover:underline truncate"
+                  >
+                    {entry.item.name}
+                  </Link>
+                )}
               </div>
               <p className="text-xs text-muted-foreground truncate">
                 by {entry.item.author}
