@@ -162,9 +162,7 @@ type UserProfilesError struct {
 	AssetType           AssetType             `json:"assetType"`
 	ErrorType           UserProfilesErrorType `json:"errorType"`
 	DownloaderErrorType DownloaderErrorType   `json:"downloaderErrorType,omitempty"`
-	APIErrorType        APIErrorType          `json:"apiErrorType,omitempty"`
-	APIErrorSource      APIErrorSource        `json:"apiErrorSource,omitempty"`
-	APIStatusCode       int                   `json:"apiStatusCode,omitempty"`
+	APIError            *APIError             `json:"apiError,omitempty"`
 	Message             string                `json:"message"`
 }
 

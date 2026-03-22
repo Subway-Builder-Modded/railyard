@@ -93,11 +93,7 @@ export function ProjectPage() {
       .then(async (response) => {
         if (cancelled) return;
         if (response.status !== 'success') {
-          const typedMessage = apiErrorMessage({
-            apiErrorType: response.apiErrorType,
-            apiErrorSource: response.apiErrorSource,
-            apiStatusCode: response.apiStatusCode,
-          });
+          const typedMessage = apiErrorMessage(response.apiError);
           setVersionsError(
             typedMessage ?? response.message ?? 'Failed to load versions',
           );

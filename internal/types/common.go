@@ -1,7 +1,9 @@
 package types
 
 import (
+	"fmt"
 	"io"
+	"net/http"
 	"regexp"
 	"strings"
 	"time"
@@ -43,12 +45,37 @@ const (
 	APIErrorSourceGitHub APIErrorSource = "Github"
 )
 
+type APIError struct {
+	Type       APIErrorType   `json:"type,omitempty"`
+	Source     APIErrorSource `json:"source,omitempty"`
+	StatusCode int            `json:"statusCode,omitempty"`
+	Subject    string         `json:"subject,omitempty"`
+	Cause      error          `json:"-"`
+}
+
+func (e APIError) Error() string {
+	if e.StatusCode > 0 {
+		base := fmt.Sprintf("%s API returned status %d for %q", e.Source, e.StatusCode, e.Subject)
+		if e.StatusCode == http.StatusUnauthorized || e.StatusCode == http.StatusForbidden {
+			return fmt.Sprintf("%s. Add a GitHub token: %s", base, GitHubTokenDocsURL)
+		}
+		return base
+	}
+
+	if e.Cause != nil {
+		return fmt.Sprintf("failed to fetch %s data for %q: %v", e.Source, e.Subject, e.Cause)
+	}
+	return fmt.Sprintf("%s API error for %q", e.Source, e.Subject)
+}
+
+func (e APIError) Unwrap() error {
+	return e.Cause
+}
+
 type GenericResponse struct {
-	Status         Status         `json:"status"`
-	Message        string         `json:"message"`
-	APIErrorType   APIErrorType   `json:"apiErrorType,omitempty"`
-	APIErrorSource APIErrorSource `json:"apiErrorSource,omitempty"`
-	APIStatusCode  int            `json:"apiStatusCode,omitempty"`
+	Status   Status    `json:"status"`
+	Message  string    `json:"message"`
+	APIError *APIError `json:"apiError,omitempty"`
 }
 
 type DownloadTempResponse struct {

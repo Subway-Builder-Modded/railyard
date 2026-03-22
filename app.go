@@ -128,11 +128,20 @@ func (a *App) startup(ctx context.Context) {
 	if a.Config.Cfg.CheckForUpdatesOnLaunch {
 		res := updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
 		if res.Status == types.ResponseError {
+			apiErrorType := ""
+			apiErrorSource := ""
+			apiStatusCode := 0
+			if res.APIError != nil {
+				apiErrorType = string(res.APIError.Type)
+				apiErrorSource = string(res.APIError.Source)
+				apiStatusCode = res.APIError.StatusCode
+			}
 			a.Logger.Warn(
 				"Startup update check failed",
 				"message", res.Message,
-				"api_error_type", res.APIErrorType,
-				"api_error_source", res.APIErrorSource,
+				"api_error_type", apiErrorType,
+				"api_error_source", apiErrorSource,
+				"api_status_code", apiStatusCode,
 			)
 		}
 	}

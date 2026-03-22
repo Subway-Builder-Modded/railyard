@@ -473,9 +473,7 @@ func (s *UserProfiles) ImportAsset(req types.ImportAssetRequest) types.UpdateSub
 			importResp.ErrorType,
 			importResp.Message,
 		)
-		err.APIErrorType = importResp.APIErrorType
-		err.APIErrorSource = importResp.APIErrorSource
-		err.APIStatusCode = importResp.APIStatusCode
+		err.APIError = importResp.APIError
 		result := updateResultBase(types.ImportAsset, types.ResponseError, importResp.Message)
 		result.Profile = profile
 		result.Errors = []types.UserProfilesError{err}

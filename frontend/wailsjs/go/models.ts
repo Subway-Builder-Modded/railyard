@@ -19,6 +19,24 @@ export namespace deeplink {
 
 export namespace types {
 	
+	export class APIError {
+	    type?: string;
+	    source?: string;
+	    statusCode?: number;
+	    subject?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new APIError(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.type = source["type"];
+	        this.source = source["source"];
+	        this.statusCode = source["statusCode"];
+	        this.subject = source["subject"];
+	    }
+	}
 	export class AppConfig {
 	    metroMakerDataPath?: string;
 	    executablePath?: string;
@@ -44,9 +62,7 @@ export namespace types {
 	export class AppVersionResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    version: string;
 	
 	    static createFrom(source: any = {}) {
@@ -57,18 +73,32 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.version = source["version"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class AssetDownloadCountsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    assetType: string;
 	    assetId: string;
 	    counts: Record<string, number>;
@@ -81,13 +111,29 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.assetType = source["assetType"];
 	        this.assetId = source["assetId"];
 	        this.counts = source["counts"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class MapCodeConflict {
 	    existingAssetId: string;
@@ -161,9 +207,7 @@ export namespace types {
 	export class AssetInstallResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    assetType: string;
 	    assetId: string;
 	    version: string;
@@ -179,9 +223,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.assetType = source["assetType"];
 	        this.assetId = source["assetId"];
 	        this.version = source["version"];
@@ -211,9 +253,7 @@ export namespace types {
 	export class AssetUninstallResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    assetType: string;
 	    assetId: string;
 	    errorType?: string;
@@ -226,13 +266,29 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.assetType = source["assetType"];
 	        this.assetId = source["assetId"];
 	        this.errorType = source["errorType"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	
 	export class ConfigPathValidation {
@@ -268,9 +324,7 @@ export namespace types {
 	export class DeepLinkResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    target?: DeepLinkTarget;
 	
 	    static createFrom(source: any = {}) {
@@ -281,9 +335,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.target = this.convertValues(source["target"], DeepLinkTarget);
 	    }
 	
@@ -309,9 +361,7 @@ export namespace types {
 	export class DownloadCountsByAssetTypeResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    assetType: string;
 	    counts: Record<string, any>;
 	
@@ -323,12 +373,28 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.assetType = source["assetType"];
 	        this.counts = source["counts"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Favorites {
 	    authors: string[];
@@ -349,9 +415,7 @@ export namespace types {
 	export class GalleryImageResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    imageUrl: string;
 	
 	    static createFrom(source: any = {}) {
@@ -362,18 +426,32 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.imageUrl = source["imageUrl"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class GameRunningResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    running: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -384,18 +462,32 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.running = source["running"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class GameVersionResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    version: string;
 	
 	    static createFrom(source: any = {}) {
@@ -406,18 +498,32 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.version = source["version"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class GenericResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	
 	    static createFrom(source: any = {}) {
 	        return new GenericResponse(source);
@@ -427,17 +533,31 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class GithubTokenValidResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    valid: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -448,18 +568,32 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.valid = source["valid"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class ImportAssetDialogResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    path: string;
 	
 	    static createFrom(source: any = {}) {
@@ -470,11 +604,27 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.path = source["path"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class ImportAssetRequest {
 	    profileId: string;
@@ -596,9 +746,7 @@ export namespace types {
 	export class InstalledMapsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    maps: InstalledMapInfo[];
 	
 	    static createFrom(source: any = {}) {
@@ -609,9 +757,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.maps = this.convertValues(source["maps"], InstalledMapInfo);
 	    }
 	
@@ -652,9 +798,7 @@ export namespace types {
 	export class InstalledModsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    mods: InstalledModInfo[];
 	
 	    static createFrom(source: any = {}) {
@@ -665,9 +809,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.mods = this.convertValues(source["mods"], InstalledModInfo);
 	    }
 	
@@ -883,9 +1025,7 @@ export namespace types {
 	export class MapsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    maps: MapManifest[];
 	
 	    static createFrom(source: any = {}) {
@@ -896,9 +1036,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.maps = this.convertValues(source["maps"], MapManifest);
 	    }
 	
@@ -973,9 +1111,7 @@ export namespace types {
 	export class ModsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    mods: ModManifest[];
 	
 	    static createFrom(source: any = {}) {
@@ -986,9 +1122,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.mods = this.convertValues(source["mods"], ModManifest);
 	    }
 	
@@ -1031,9 +1165,7 @@ export namespace types {
 	export class PlatformResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    platform: string;
 	
 	    static createFrom(source: any = {}) {
@@ -1044,11 +1176,27 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.platform = source["platform"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class RegistryIntegrityReport {
 	    schema_version: number;
@@ -1087,9 +1235,7 @@ export namespace types {
 	export class RegistryIntegrityReportResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    report: RegistryIntegrityReport;
 	
 	    static createFrom(source: any = {}) {
@@ -1100,9 +1246,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.report = this.convertValues(source["report"], RegistryIntegrityReport);
 	    }
 	
@@ -1127,9 +1271,7 @@ export namespace types {
 	export class ResolveConfigResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    config: AppConfig;
 	    validation: ConfigPathValidation;
 	    hasGithubToken: boolean;
@@ -1142,9 +1284,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.config = this.convertValues(source["config"], AppConfig);
 	        this.validation = this.convertValues(source["validation"], ConfigPathValidation);
 	        this.hasGithubToken = source["hasGithubToken"];
@@ -1205,9 +1345,7 @@ export namespace types {
 	export class SandboxStatusResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    installed: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -1218,11 +1356,27 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.installed = source["installed"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class SetConfigPathOptions {
 	    allowAutoDetect: boolean;
@@ -1273,9 +1427,7 @@ export namespace types {
 	export class SetConfigPathResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    result: SetConfigPathResult;
 	
 	    static createFrom(source: any = {}) {
@@ -1286,9 +1438,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.result = this.convertValues(source["result"], SetConfigPathResult);
 	    }
 	
@@ -1314,9 +1464,7 @@ export namespace types {
 	export class StartupReadyResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    ready: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -1327,11 +1475,27 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.ready = source["ready"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class SubscriptionOperation {
 	    assetId: string;
@@ -1403,9 +1567,7 @@ export namespace types {
 	    assetType: string;
 	    errorType: string;
 	    downloaderErrorType?: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    message: string;
 	
 	    static createFrom(source: any = {}) {
@@ -1419,18 +1581,32 @@ export namespace types {
 	        this.assetType = source["assetType"];
 	        this.errorType = source["errorType"];
 	        this.downloaderErrorType = source["downloaderErrorType"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.message = source["message"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class SyncSubscriptionsResult {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    profileId: string;
 	    operations: SubscriptionOperation[];
 	    errors: UserProfilesError[];
@@ -1443,9 +1619,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.profileId = source["profileId"];
 	        this.operations = this.convertValues(source["operations"], SubscriptionOperation);
 	        this.errors = this.convertValues(source["errors"], UserProfilesError);
@@ -1585,9 +1759,7 @@ export namespace types {
 	export class UpdateSubscriptionsResult {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    requestType: string;
 	    hasUpdates: boolean;
 	    pendingCount: number;
@@ -1607,9 +1779,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.requestType = source["requestType"];
 	        this.hasUpdates = source["hasUpdates"];
 	        this.pendingCount = source["pendingCount"];
@@ -1678,9 +1848,7 @@ export namespace types {
 	export class UserProfileResult {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    profile: UserProfile;
 	    errors: UserProfilesError[];
 	
@@ -1692,9 +1860,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.profile = this.convertValues(source["profile"], UserProfile);
 	        this.errors = this.convertValues(source["errors"], UserProfilesError);
 	    }
@@ -1751,9 +1917,7 @@ export namespace types {
 	export class VersionsResponse {
 	    status: string;
 	    message: string;
-	    apiErrorType?: string;
-	    apiErrorSource?: string;
-	    apiStatusCode?: number;
+	    apiError?: APIError;
 	    versions: VersionInfo[];
 	    errorType?: string;
 	
@@ -1765,9 +1929,7 @@ export namespace types {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.status = source["status"];
 	        this.message = source["message"];
-	        this.apiErrorType = source["apiErrorType"];
-	        this.apiErrorSource = source["apiErrorSource"];
-	        this.apiStatusCode = source["apiStatusCode"];
+	        this.apiError = this.convertValues(source["apiError"], APIError);
 	        this.versions = this.convertValues(source["versions"], VersionInfo);
 	        this.errorType = source["errorType"];
 	    }

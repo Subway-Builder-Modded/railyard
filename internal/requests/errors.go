@@ -3,7 +3,6 @@ package requests
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"net/http"
 	neturl "net/url"
@@ -12,41 +11,12 @@ import (
 )
 
 type APISource = types.APIErrorSource
+type APIError = types.APIError
 
 const (
 	APISourceGitHub APISource = types.APIErrorSourceGitHub
 	// TODO: Add other external sources as needed
 )
-
-type APIError struct {
-	Source     APISource
-	StatusCode int
-	Subject    string
-	Cause      error
-}
-
-func (e APIError) Error() string {
-	if e.StatusCode > 0 {
-		base := fmt.Sprintf("%s API returned status %d for %q", e.Source, e.StatusCode, e.Subject)
-		if IsAuthStatus(e.StatusCode) {
-			return fmt.Sprintf(
-				"%s. Add a GitHub token: %s",
-				base,
-				types.GitHubTokenDocsURL,
-			)
-		}
-		return base
-	}
-
-	if e.Cause != nil {
-		return fmt.Sprintf("failed to fetch %s data for %q: %v", e.Source, e.Subject, e.Cause)
-	}
-	return fmt.Sprintf("%s API error for %q", e.Source, e.Subject)
-}
-
-func (e APIError) Unwrap() error {
-	return e.Cause
-}
 
 func IsAuthStatus(statusCode int) bool {
 	return statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden
@@ -107,16 +77,35 @@ func classifyAPICause(cause error) types.APIErrorType {
 	return types.APIErrorTypeFetch
 }
 
-func ResolveAPIError(err error) (types.APIErrorType, types.APIErrorSource, int, bool) {
+func toResponseAPIError(err APIError) (types.APIError, bool) {
+	resolvedType := err.Type
+	if resolvedType == "" {
+		switch {
+		case err.StatusCode > 0:
+			resolvedType = classifyAPIStatus(err.StatusCode)
+		case err.Cause != nil:
+			resolvedType = classifyAPICause(err.Cause)
+		}
+	}
+	if resolvedType == "" {
+		return types.APIError{}, false
+	}
+	return types.APIError{
+		Type:       resolvedType,
+		Source:     err.Source,
+		StatusCode: err.StatusCode,
+		Subject:    err.Subject,
+	}, true
+}
+
+func ResolveAPIError(err error) (*types.APIError, bool) {
 	var apiErr APIError
 	if errors.As(err, &apiErr) {
-		if apiErr.StatusCode > 0 {
-			return classifyAPIStatus(apiErr.StatusCode), apiErr.Source, apiErr.StatusCode, true
-		}
-		if apiErr.Cause != nil {
-			return classifyAPICause(apiErr.Cause), apiErr.Source, 0, true
+		responseError, ok := toResponseAPIError(apiErr)
+		if ok {
+			return &responseError, true
 		}
 	}
 
-	return "", "", 0, false
+	return nil, false
 }

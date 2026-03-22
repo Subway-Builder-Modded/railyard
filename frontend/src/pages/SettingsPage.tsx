@@ -173,11 +173,7 @@ export function SettingsPage() {
   const handleUpdatesCheck = async () => {
     try {
       const response = await ManuallyCheckForUpdates();
-      const typedMessage = apiErrorMessage({
-        apiErrorType: response.apiErrorType,
-        apiErrorSource: response.apiErrorSource,
-        apiStatusCode: response.apiStatusCode,
-      });
+      const typedMessage = apiErrorMessage(response.apiError);
       if (response.status === 'error') {
         throw new Error(
           typedMessage || response.message || 'Failed to check for updates',

@@ -179,9 +179,7 @@ func syncInstallFailedError(profileID, assetID string, assetType types.AssetType
 		response.ErrorType,
 		fmt.Sprintf("Failed sync action: %v", err),
 	)
-	profileError.APIErrorType = response.APIErrorType
-	profileError.APIErrorSource = response.APIErrorSource
-	profileError.APIStatusCode = response.APIStatusCode
+	profileError.APIError = response.APIError
 	return profileError
 }
 

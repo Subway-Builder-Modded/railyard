@@ -1,27 +1,28 @@
 import { GITHUB_TOKEN_DOCS_URL } from '@/lib/constants';
 
-interface APIError {
-  apiErrorType?: string;
-  apiErrorSource?: string;
-  apiStatusCode?: number;
+interface APIErrorPayload {
+  type?: string;
+  source?: string;
+  statusCode?: number;
+  subject?: string;
 }
 
 function isGitHubSource(source: string | undefined): boolean {
   return (source ?? '').toLowerCase() === 'github';
 }
 
-export function apiErrorMessage(error: APIError): string | null {
-  if (!isGitHubSource(error.apiErrorSource)) {
+export function apiErrorMessage(error: APIErrorPayload | null | undefined): string | null {
+  if (!error || !isGitHubSource(error.source)) {
     // TODO: If we add more API sources, we'll want to handle them here as well
     return null;
   }
 
   const statusMessage =
-    typeof error.apiStatusCode === 'number' && error.apiStatusCode > 0
-      ? ` with status ${error.apiStatusCode}`
+    typeof error.statusCode === 'number' && error.statusCode > 0
+      ? ` with status ${error.statusCode}`
       : '';
 
-  switch (error.apiErrorType) {
+  switch (error.type) {
     case 'api_auth_invalid_token':
       return `GitHub API token is invalid or unauthorized. Add or update your token: ${GITHUB_TOKEN_DOCS_URL}`;
     case 'api_rate_limited':
@@ -65,22 +66,40 @@ export function apiErrorMessages(
   return messages;
 }
 
-function toAPIError(value: unknown): APIError {
+function toAPIError(value: unknown): APIErrorPayload {
   if (typeof value !== 'object' || value === null) {
     return {};
   }
 
   const record = value as Record<string, unknown>;
+  const nested =
+    typeof record.apiError === 'object' && record.apiError !== null
+      ? (record.apiError as Record<string, unknown>)
+      : null;
+  const sourceRecord = nested ?? record;
+
   return {
-    apiErrorType:
-      typeof record.apiErrorType === 'string' ? record.apiErrorType : undefined,
-    apiErrorSource:
-      typeof record.apiErrorSource === 'string'
-        ? record.apiErrorSource
-        : undefined,
-    apiStatusCode:
-      typeof record.apiStatusCode === 'number'
-        ? record.apiStatusCode
+    type:
+      typeof sourceRecord.type === 'string'
+        ? sourceRecord.type
+        : typeof sourceRecord.apiErrorType === 'string'
+          ? sourceRecord.apiErrorType
+          : undefined,
+    source:
+      typeof sourceRecord.source === 'string'
+        ? sourceRecord.source
+        : typeof sourceRecord.apiErrorSource === 'string'
+          ? sourceRecord.apiErrorSource
+          : undefined,
+    statusCode:
+      typeof sourceRecord.statusCode === 'number'
+        ? sourceRecord.statusCode
+        : typeof sourceRecord.apiStatusCode === 'number'
+          ? sourceRecord.apiStatusCode
+          : undefined,
+    subject:
+      typeof sourceRecord.subject === 'string'
+        ? sourceRecord.subject
         : undefined,
   };
 }
