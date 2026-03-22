@@ -36,7 +36,7 @@ import {
   hasCancellationSyncErrors,
   hasOnlySilentSyncWarnings,
   isCancellationSyncError,
-  syncMessageWithAPIFallback,
+  formatMessageWithAPIResponses,
   toSubscriptionSyncErrorState,
 } from '@/lib/subscription-sync-error';
 import { useDownloadQueueStore } from '@/stores/download-queue-store';
@@ -132,7 +132,7 @@ export function ProjectInfo({
           });
         } else if (!hasOnlySilentSyncWarnings(result.errors)) {
           toast.warning(
-            syncMessageWithAPIFallback(
+            formatMessageWithAPIResponses(
               result.message ||
                 `Install for ${item.name} completed with warnings.`,
               result.errors,

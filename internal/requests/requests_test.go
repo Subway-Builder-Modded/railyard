@@ -2,6 +2,7 @@ package requests
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"sync"
 	"testing"
@@ -115,3 +116,60 @@ func TestAPIStatusErrorIncludesDocsForGitHubForbidden(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.GitHubTokenDocsURL)
 }
+
+func TestResolveAPIErrorStatusCodes(t *testing.T) {
+	tests := []struct {
+		name     string
+		status   int
+		expected types.APIErrorType
+	}{
+		{name: "unauthorized", status: http.StatusUnauthorized, expected: types.APIErrorTypeAuthInvalidToken},
+		{name: "too many requests", status: http.StatusTooManyRequests, expected: types.APIErrorTypeRateLimited},
+		{name: "forbidden", status: http.StatusForbidden, expected: types.APIErrorTypeForbidden},
+		{name: "not found", status: http.StatusNotFound, expected: types.APIErrorTypeNotFound},
+		{name: "bad request", status: http.StatusBadRequest, expected: types.APIErrorTypeBadRequest},
+		{name: "upstream", status: http.StatusBadGateway, expected: types.APIErrorTypeUpstream5xx},
+		{name: "generic status", status: http.StatusConflict, expected: types.APIErrorTypeStatus},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			apiErr := APIError{
+				Source:     APISourceGitHub,
+				StatusCode: tt.status,
+				Subject:    "owner/repo",
+			}
+			apiErrorType, apiErrorSource, ok := ResolveAPIError(apiErr)
+			require.True(t, ok)
+			require.Equal(t, tt.expected, apiErrorType)
+			require.Equal(t, types.APIErrorSourceGitHub, apiErrorSource)
+		})
+	}
+}
+
+func TestResolveAPIErrorCauses(t *testing.T) {
+	apiErr := APIError{
+		Source:  APISourceGitHub,
+		Subject: "owner/repo",
+		Cause:   context.DeadlineExceeded,
+	}
+	apiErrorType, _, ok := ResolveAPIError(apiErr)
+	require.True(t, ok)
+	require.Equal(t, types.APIErrorTypeTimeout, apiErrorType)
+
+	apiErr.Cause = &timeoutErr{}
+	apiErrorType, _, ok = ResolveAPIError(apiErr)
+	require.True(t, ok)
+	require.Equal(t, types.APIErrorTypeTimeout, apiErrorType)
+
+	apiErr.Cause = errors.New("generic failure")
+	apiErrorType, _, ok = ResolveAPIError(apiErr)
+	require.True(t, ok)
+	require.Equal(t, types.APIErrorTypeFetch, apiErrorType)
+}
+
+type timeoutErr struct{}
+
+func (e *timeoutErr) Error() string   { return "timeout" }
+func (e *timeoutErr) Timeout() bool   { return true }
+func (e *timeoutErr) Temporary() bool { return true }

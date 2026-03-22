@@ -1,9 +1,12 @@
 package requests
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	neturl "net/url"
 
 	"railyard/internal/types"
 )
@@ -49,17 +52,69 @@ func IsAuthStatus(statusCode int) bool {
 	return statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden
 }
 
+func classifyAPIStatus(statusCode int) types.APIErrorType {
+	switch {
+	case statusCode == http.StatusUnauthorized:
+		return types.APIErrorTypeAuthInvalidToken
+	case statusCode == http.StatusTooManyRequests:
+		return types.APIErrorTypeRateLimited
+	case statusCode == http.StatusForbidden:
+		return types.APIErrorTypeForbidden
+	case statusCode == http.StatusBadRequest:
+		return types.APIErrorTypeBadRequest
+	case statusCode == http.StatusNotFound:
+		return types.APIErrorTypeNotFound
+	case statusCode >= 500 && statusCode <= 599:
+		return types.APIErrorTypeUpstream5xx
+	default:
+		return types.APIErrorTypeStatus
+	}
+}
+
+func classifyAPICause(cause error) types.APIErrorType {
+	if cause == nil {
+		return ""
+	}
+	if errors.Is(cause, context.DeadlineExceeded) {
+		return types.APIErrorTypeTimeout
+	}
+
+	var urlErr *neturl.Error
+	if errors.As(cause, &urlErr) {
+		if urlErr.Timeout() {
+			return types.APIErrorTypeTimeout
+		}
+	}
+
+	var netErr net.Error
+	if errors.As(cause, &netErr) {
+		if netErr.Timeout() {
+			return types.APIErrorTypeTimeout
+		}
+		return types.APIErrorTypeNetwork
+	}
+
+	var opErr *net.OpError
+	if errors.As(cause, &opErr) {
+		return types.APIErrorTypeNetwork
+	}
+
+	var dnsErr *net.DNSError
+	if errors.As(cause, &dnsErr) {
+		return types.APIErrorTypeNetwork
+	}
+
+	return types.APIErrorTypeFetch
+}
+
 func ResolveAPIError(err error) (types.APIErrorType, types.APIErrorSource, bool) {
 	var apiErr APIError
 	if errors.As(err, &apiErr) {
 		if apiErr.StatusCode > 0 {
-			if IsAuthStatus(apiErr.StatusCode) {
-				return types.APIErrorTypeAuth, apiErr.Source, true
-			}
-			return types.APIErrorTypeStatus, apiErr.Source, true
+			return classifyAPIStatus(apiErr.StatusCode), apiErr.Source, true
 		}
 		if apiErr.Cause != nil {
-			return types.APIErrorTypeFetch, apiErr.Source, true
+			return classifyAPICause(apiErr.Cause), apiErr.Source, true
 		}
 	}
 

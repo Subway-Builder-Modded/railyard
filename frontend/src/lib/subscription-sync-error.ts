@@ -22,24 +22,24 @@ export function toSubscriptionSyncErrorState(
     return null;
   }
 
-  const typedMessages = apiErrorMessages(err.profileErrors);
+  const apiErrors = apiErrorMessages(err.profileErrors);
   return {
     version,
     message:
-      typedMessages.length > 0 ? typedMessages.join(' ') : (err.message ?? ''),
+      apiErrors.length > 0 ? apiErrors.join(' ') : (err.message ?? ''),
     errors: err.profileErrors,
   };
 }
 
-export function syncMessageWithAPIFallback(
+export function formatMessageWithAPIResponses(
   message: string,
   errors: types.UserProfilesError[] | undefined | null,
 ): string {
-  const typedMessages = apiErrorMessages(errors);
-  if (typedMessages.length === 0) {
+  const apiErrors = apiErrorMessages(errors);
+  if (apiErrors.length === 0) {
     return message;
   }
-  return typedMessages.join(' ');
+  return apiErrors.join(' ');
 }
 
 export function hasCancellationSyncErrors(

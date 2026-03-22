@@ -11,16 +11,31 @@ function isGitHubSource(source: string | undefined): boolean {
 
 export function apiErrorMessage(error: APIErrorLike): string | null {
   if (!isGitHubSource(error.apiErrorSource)) {
+    // TODO: If we add more API sources, we'll want to handle them here as well
     return null;
   }
 
   switch (error.apiErrorType) {
-    case 'api_auth_error':
-      return `GitHub API authentication/rate limit issue. Add a GitHub token: ${GITHUB_TOKEN_DOCS_URL}`;
+    case 'api_auth_invalid_token':
+      return `GitHub API token is invalid or unauthorized. Add or update your token: ${GITHUB_TOKEN_DOCS_URL}`;
+    case 'api_rate_limited':
+      return `GitHub API rate limit reached. Add a GitHub token to increase limits: ${GITHUB_TOKEN_DOCS_URL}`;
+    case 'api_forbidden':
+      return `GitHub API request was forbidden. Check your token scopes/permissions: ${GITHUB_TOKEN_DOCS_URL}`;
+    case 'api_bad_request':
+      return `GitHub API rejected the request (400). Please retry or report this issue if it persists.`;
+    case 'api_not_found':
+      return `GitHub resource was not found (404). The repository or release may no longer exist.`;
+    case 'api_upstream_5xx':
+      return `GitHub API is currently unavailable (5xx). Please try again shortly.`;
+    case 'api_timeout':
+      return `GitHub API request timed out. Check your connection and retry.`;
+    case 'api_network_error':
+      return `Network error while contacting GitHub API. Check your connection and retry.`;
     case 'api_fetch_error':
-      return `Failed to fetch GitHub API data. Check your network connection and try again. If needed, add a GitHub token: ${GITHUB_TOKEN_DOCS_URL}`;
+      return `Failed to fetch GitHub API data. Check your network connection and retry.`;
     case 'api_status_error':
-      return `GitHub API request failed. Check your token/permissions and retry: ${GITHUB_TOKEN_DOCS_URL}`;
+      return `GitHub API request failed. Please retry.`;
     default:
       return null;
   }

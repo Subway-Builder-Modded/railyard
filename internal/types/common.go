@@ -25,9 +25,16 @@ const GitHubTokenDocsURL = "https://subwaybuildermodded.com/railyard/docs/latest
 type APIErrorType string
 
 const (
-	APIErrorTypeAuth   APIErrorType = "api_auth_error"
-	APIErrorTypeFetch  APIErrorType = "api_fetch_error"
-	APIErrorTypeStatus APIErrorType = "api_status_error"
+	APIErrorTypeAuthInvalidToken APIErrorType = "api_auth_invalid_token"
+	APIErrorTypeRateLimited      APIErrorType = "api_rate_limited"
+	APIErrorTypeForbidden        APIErrorType = "api_forbidden"
+	APIErrorTypeNotFound         APIErrorType = "api_not_found"
+	APIErrorTypeBadRequest       APIErrorType = "api_bad_request"
+	APIErrorTypeUpstream5xx      APIErrorType = "api_upstream_5xx"
+	APIErrorTypeStatus           APIErrorType = "api_status_error"
+	APIErrorTypeTimeout          APIErrorType = "api_timeout"
+	APIErrorTypeNetwork          APIErrorType = "api_network_error"
+	APIErrorTypeFetch            APIErrorType = "api_fetch_error"
 )
 
 type APIErrorSource string
