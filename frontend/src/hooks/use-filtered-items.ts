@@ -46,10 +46,23 @@ function normalizeForSearch(value: string): string {
     .trim();
 }
 
+const wordSegmenter = new Intl.Segmenter(undefined, {
+  granularity: 'word',
+});
+
 function tokenizeForSearch(value: string): string[] {
-  return normalizeForSearch(value)
-    .split(/[^a-z0-9]+/)
-    .filter(Boolean);
+  const normalized = normalizeForSearch(value);
+  if (!normalized) {
+    return [];
+  }
+
+  const tokens: string[] = [];
+  for (const segment of wordSegmenter.segment(normalized)) {
+    if (segment.isWordLike) {
+      tokens.push(segment.segment);
+    }
+  }
+  return tokens;
 }
 
 function buildSearchTokens(item: TaggedItem): string[] {
