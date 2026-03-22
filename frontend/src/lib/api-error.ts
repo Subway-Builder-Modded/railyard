@@ -26,17 +26,22 @@ export function apiErrorMessage(error: APIErrorLike): string | null {
   }
 }
 
-export function firstAPIErrorMessage(
+export function apiErrorMessages(
   errors: unknown[] | undefined | null,
-): string | null {
+): string[] {
+  const messages: string[] = [];
+  const seen = new Set<string>();
+
   for (const error of errors ?? []) {
     const candidate = toAPIErrorLike(error);
     const message = apiErrorMessage(candidate);
-    if (message) {
-      return message;
+    if (!message || seen.has(message)) {
+      continue;
     }
+    seen.add(message);
+    messages.push(message);
   }
-  return null;
+  return messages;
 }
 
 function toAPIErrorLike(value: unknown): APIErrorLike {

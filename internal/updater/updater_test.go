@@ -224,8 +224,8 @@ func TestCheckForUpdatesNoNewVersionReturnsNil(t *testing.T) {
 	})
 
 	log := logger.LoggerAtPath(filepath.Join(t.TempDir(), "updater_check.log"))
-	err := CheckForUpdates(context.Background(), nil, log, "")
-	require.NoError(t, err)
+	response := CheckForUpdates(context.Background(), nil, log, "")
+	require.Equal(t, types.ResponseSuccess, response.Status)
 }
 
 func TestPullReleasesPropagatesFetchError(t *testing.T) {

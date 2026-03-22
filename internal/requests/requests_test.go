@@ -107,7 +107,11 @@ func TestGetWithGithubTokenSkipsAuthForNonGitHubHostWhenNotForced(t *testing.T) 
 }
 
 func TestAPIStatusErrorIncludesDocsForGitHubForbidden(t *testing.T) {
-	err := NewAPIStatusError(APISourceGitHub, http.StatusForbidden, "owner/repo")
+	err := APIError{
+		Source:     APISourceGitHub,
+		StatusCode: http.StatusForbidden,
+		Subject:    "owner/repo",
+	}
 	require.Error(t, err)
 	require.Contains(t, err.Error(), types.GitHubTokenDocsURL)
 }

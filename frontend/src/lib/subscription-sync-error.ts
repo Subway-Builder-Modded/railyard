@@ -1,4 +1,4 @@
-import { firstAPIErrorMessage } from '@/lib/api-error';
+import { apiErrorMessages } from '@/lib/api-error';
 import { SubscriptionSyncError } from '@/stores/installed-store';
 
 import type { types } from '../../wailsjs/go/models';
@@ -22,10 +22,11 @@ export function toSubscriptionSyncErrorState(
     return null;
   }
 
-  const typedMessage = firstAPIErrorMessage(err.profileErrors);
+  const typedMessages = apiErrorMessages(err.profileErrors);
   return {
     version,
-    message: typedMessage ?? err.message,
+    message:
+      typedMessages.length > 0 ? typedMessages.join(' ') : (err.message ?? ''),
     errors: err.profileErrors,
   };
 }
@@ -34,7 +35,11 @@ export function syncMessageWithAPIFallback(
   message: string,
   errors: types.UserProfilesError[] | undefined | null,
 ): string {
-  return firstAPIErrorMessage(errors) ?? message;
+  const typedMessages = apiErrorMessages(errors);
+  if (typedMessages.length === 0) {
+    return message;
+  }
+  return typedMessages.join(' ');
 }
 
 export function hasCancellationSyncErrors(

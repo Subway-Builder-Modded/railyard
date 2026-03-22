@@ -100,13 +100,21 @@ func (r *Registry) getGitHubVersions(repo string) ([]types.VersionInfo, error) {
 		},
 	})
 	if err != nil {
-		return nil, requests.NewAPIFetchError(requests.APISourceGitHub, repo, err)
+		return nil, requests.APIError{
+			Source:  requests.APISourceGitHub,
+			Subject: repo,
+			Cause:   err,
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		status := resp.StatusCode
 		resp.Body.Close()
-		return nil, requests.NewAPIStatusError(requests.APISourceGitHub, status, repo)
+		return nil, requests.APIError{
+			Source:     requests.APISourceGitHub,
+			StatusCode: status,
+			Subject:    repo,
+		}
 	}
 	defer resp.Body.Close()
 
@@ -255,16 +263,19 @@ func cloneVersionInfos(input []types.VersionInfo) []types.VersionInfo {
 }
 
 func versionsErrorType(err error) types.VersionsErrorType {
-	var statusErr requests.APIStatusError
-	if errors.As(err, &statusErr) && statusErr.Source == requests.APISourceGitHub {
-		if requests.IsAuthStatus(statusErr.StatusCode) {
+	var apiErr requests.APIError
+	if !errors.As(err, &apiErr) || apiErr.Source != requests.APISourceGitHub {
+		return ""
+	}
+
+	if apiErr.StatusCode > 0 {
+		if requests.IsAuthStatus(apiErr.StatusCode) {
 			return types.VersionsErrorGitHubAuth
 		}
 		return ""
 	}
 
-	var fetchErr requests.APIFetchError
-	if errors.As(err, &fetchErr) && fetchErr.Source == requests.APISourceGitHub {
+	if apiErr.Cause != nil {
 		return types.VersionsErrorGitHubFetch
 	}
 	return ""

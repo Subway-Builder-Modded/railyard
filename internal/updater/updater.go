@@ -41,7 +41,16 @@ func deleteOldTempInstallers() error {
 	return nil
 }
 
-func CheckForUpdates(ctx context.Context, progressFunc types.ProgressFunc, log logger.Logger, githubToken string) error {
+func updaterErrorResponse(err error) types.GenericResponse {
+	response := types.ErrorResponse(err.Error())
+	if apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err); ok {
+		response.APIErrorType = apiErrorType
+		response.APIErrorSource = apiErrorSource
+	}
+	return response
+}
+
+func CheckForUpdates(ctx context.Context, progressFunc types.ProgressFunc, log logger.Logger, githubToken string) types.GenericResponse {
 	err := deleteOldTempInstallers()
 	if err != nil {
 		fmt.Printf("Error cleaning up old installers: %v\n", err)
@@ -49,7 +58,7 @@ func CheckForUpdates(ctx context.Context, progressFunc types.ProgressFunc, log l
 	versions, err := pullReleases(log, githubToken)
 	if err != nil {
 		fmt.Printf("Error checking for updates: %v\n", err)
-		return err
+		return updaterErrorResponse(err)
 	}
 
 	for _, v := range versions {
@@ -63,7 +72,7 @@ func CheckForUpdates(ctx context.Context, progressFunc types.ProgressFunc, log l
 			})
 			if err != nil {
 				fmt.Printf("Error showing update dialog: %v\n", err)
-				return err
+				return updaterErrorResponse(err)
 			}
 			if result == "Yes" {
 				var downloadURL string
@@ -82,18 +91,18 @@ func CheckForUpdates(ctx context.Context, progressFunc types.ProgressFunc, log l
 				}
 				if downloadURL == "" {
 					fmt.Printf("No suitable installer found for this platform in version %s\n", v.Version)
-					return fmt.Errorf("no suitable installer found for this platform in version %s", v.Version)
+					return updaterErrorResponse(fmt.Errorf("no suitable installer found for this platform in version %s", v.Version))
 				}
 				err = downloadAndRunInstaller(downloadURL, ctx, progressFunc)
 				if err != nil {
 					fmt.Printf("Error downloading or running installer: %v\n", err)
-					return err
+					return updaterErrorResponse(err)
 				}
 			}
 			break
 		}
 	}
-	return nil
+	return types.SuccessResponse("Update check completed")
 }
 
 func downloadAndRunInstaller(downloadURL string, ctx context.Context, downloadProgress types.ProgressFunc) error {
@@ -214,12 +223,20 @@ func pullReleases(log logger.Logger, githubToken string) ([]types.RailyardVersio
 		},
 	})
 	if err != nil {
-		return nil, requests.NewAPIFetchError(requests.APISourceGitHub, constants.RAILYARD_REPO, err)
+		return nil, requests.APIError{
+			Source:  requests.APISourceGitHub,
+			Subject: constants.RAILYARD_REPO,
+			Cause:   err,
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		return nil, requests.NewAPIStatusError(requests.APISourceGitHub, resp.StatusCode, constants.RAILYARD_REPO)
+		return nil, requests.APIError{
+			Source:     requests.APISourceGitHub,
+			StatusCode: resp.StatusCode,
+			Subject:    constants.RAILYARD_REPO,
+		}
 	}
 	defer resp.Body.Close()
 

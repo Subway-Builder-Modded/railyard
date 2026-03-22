@@ -23,7 +23,6 @@ import (
 	"railyard/internal/paths"
 	"railyard/internal/profiles"
 	"railyard/internal/registry"
-	"railyard/internal/requests"
 	"railyard/internal/types"
 	"railyard/internal/updater"
 	"railyard/internal/utils"
@@ -127,7 +126,15 @@ func (a *App) startup(ctx context.Context) {
 		a.Logger.Warn("Failed to add salts to existing assets on first run", "error", err)
 	}
 	if a.Config.Cfg.CheckForUpdatesOnLaunch {
-		updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
+		res := updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
+		if res.Status == types.ResponseError {
+			a.Logger.Warn(
+				"Startup update check failed",
+				"message", res.Message,
+				"api_error_type", res.APIErrorType,
+				"api_error_source", res.APIErrorSource,
+			)
+		}
 	}
 
 	// Registry must be initialized + startup profile ready so that initial Frontend state is viable.
@@ -478,15 +485,7 @@ func (a *App) StopGame() types.GenericResponse {
 
 func (a *App) ManuallyCheckForUpdates() types.GenericResponse {
 	a.Logger.Info("Manually checking for updates")
-	if err := updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken()); err != nil {
-		response := types.ErrorResponse(err.Error())
-		if apiErrorType, apiErrorSource, ok := requests.ResolveAPIError(err); ok {
-			response.APIErrorType = apiErrorType
-			response.APIErrorSource = apiErrorSource
-		}
-		return response
-	}
-	return types.SuccessResponse("Update check started")
+	return updater.CheckForUpdates(a.ctx, a.Downloader.OnProgress, a.Logger, a.Config.GetGithubToken())
 }
 
 func (a *App) GetCurrentVersion() types.AppVersionResponse {
