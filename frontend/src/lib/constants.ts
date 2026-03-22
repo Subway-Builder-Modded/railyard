@@ -12,6 +12,7 @@ export type SortField =
   | 'downloads'
   | 'last_updated'
   | 'random';
+// Union type of valid sort directions
 export type SortDirection = 'asc' | 'desc';
 export type SortKey = `${SortField}:${SortDirection}`;
 
