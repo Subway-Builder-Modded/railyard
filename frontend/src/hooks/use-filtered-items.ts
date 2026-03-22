@@ -42,21 +42,14 @@ export function buildSearchText(item: TaggedItem): string {
   const base = item.item;
   const values: string[] = [
     base.name ?? '',
-    base.author ?? '',
-    base.description ?? '',
+    base.author ?? ''
   ];
 
-  if (item.type === 'mod') {
-    values.push(...(base.tags ?? []));
-  } else {
+  if (item.type === 'map') {
     const map = base as types.MapManifest;
     values.push(
       map.city_code ?? '',
-      map.country ?? '',
-      map.location ?? '',
-      map.source_quality ?? '',
-      map.level_of_detail ?? '',
-      ...(map.special_demand ?? []),
+      map.country ?? ''
     );
   }
 
@@ -179,9 +172,9 @@ export function useFilteredItems({
       prev.perPage === defaultPerPage
         ? prev
         : {
-            ...prev,
-            perPage: defaultPerPage,
-          },
+          ...prev,
+          perPage: defaultPerPage,
+        },
     );
   }, [defaultPerPage, setFilters]);
 
