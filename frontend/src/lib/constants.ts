@@ -56,26 +56,22 @@ function directionsForField(field: SortField): readonly SortDirection[] {
 function sortOptionLabel(field: SortField, direction: SortDirection): string {
   switch (field) {
     case 'name':
-      return direction === 'asc' ? 'Name (A-Z)' : 'Name (Z-A)';
+      return 'Name';
     case 'city_code':
-      return direction === 'asc' ? 'City Code (A-Z)' : 'City Code (Z-A)';
+      return 'City Code';
     case 'country':
-      return direction === 'asc' ? 'Country (A-Z)' : 'Country (Z-A)';
+      return 'Country';
     case 'author':
-      return direction === 'asc' ? 'Author (A-Z)' : 'Author (Z-A)';
+      return 'Author';
     case 'population':
-      return direction === 'asc' ? 'Population \u2191' : 'Population \u2193';
+      return 'Population';
     case 'downloads':
-      return direction === 'asc'
-        ? 'Total Downloads \u2191'
-        : 'Total Downloads \u2193';
+      return 'Downloads';
     case 'last_updated':
-      return direction === 'asc'
-        ? 'Last Updated \u2191'
-        : 'Last Updated \u2193';
+      return 'Last Updated';
     case 'random':
       return 'Random';
-    default: // Default case to ensure all fields are handled. Programmer error if this is ever reached
+    default:
       throw new Error(`Unhandled sort field: ${String(field)}`);
   }
 }

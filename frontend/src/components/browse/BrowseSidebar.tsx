@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { SidebarFilters } from '@/components/search/SidebarFilters';
+import { SidebarFilters } from '@/components/browse/SidebarFilters';
 import type { AssetType } from '@/lib/asset-types';
 import { cn } from '@/lib/utils';
 import type { SearchFilterState } from '@/stores/search-store';

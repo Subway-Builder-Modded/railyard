@@ -1,10 +1,10 @@
 import { Compass, SearchX } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { BrowseSidebar, SIDEBAR_CONTENT_OFFSET } from '@/components/search/BrowseSidebar';
+import { BrowseSidebar, SIDEBAR_CONTENT_OFFSET } from '@/components/browse/BrowseSidebar';
+import { SortSelect } from '@/components/browse/SortSelect';
+import { ViewModeToggle } from '@/components/browse/ViewModeToggle';
 import { SearchBar } from '@/components/search/SearchBar';
-import { SortSelect } from '@/components/search/SortSelect';
-import { ViewModeToggle } from '@/components/search/ViewModeToggle';
 import { CardSkeletonGrid } from '@/components/shared/CardSkeletonGrid';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ErrorBanner } from '@/components/shared/ErrorBanner';
@@ -21,7 +21,7 @@ import { useProfileStore } from '@/stores/profile-store';
 import { useRegistryStore } from '@/stores/registry-store';
 import { createRandomSeed, useSearchStore } from '@/stores/search-store';
 
-export function SearchPage() {
+export function BrowsePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const viewMode = useSearchStore((s) => s.viewMode);
