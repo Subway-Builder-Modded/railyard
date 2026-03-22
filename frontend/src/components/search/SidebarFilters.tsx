@@ -1,14 +1,20 @@
 import {
   BadgeCheck,
+  ChevronDown,
   GraduationCap,
   Layers3,
   MapPin,
   Package,
   Tag,
+  X,
 } from 'lucide-react';
-import { type ComponentType, type Dispatch, type SetStateAction } from 'react';
+import {
+  type ComponentType,
+  type Dispatch,
+  type SetStateAction,
+  useState,
+} from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import type { AssetType } from '@/lib/asset-types';
@@ -23,9 +29,12 @@ import { SEARCH_FILTER_EMPTY_LABELS } from '@/lib/search';
 import { cn } from '@/lib/utils';
 import { type SearchFilterState } from '@/stores/search-store';
 
+// Shared class for filter section title text (used both in static and
+// collapsible headers — only the text/icon style, no layout).
 const FILTER_SECTION_TITLE_CLASS =
-  'text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2 px-1';
-const FILTER_SECTION_CLEAR_CLASS = 'mt-2';
+  'text-xs font-semibold uppercase tracking-widest text-muted-foreground';
+const FILTER_COUNT_BADGE_CLASS =
+  'inline-flex h-5 min-w-5 items-center justify-center rounded-full border border-border/65 bg-muted/45 px-1.5 text-[0.65rem] font-semibold tabular-nums text-muted-foreground transition-colors';
 
 interface SidebarFiltersProps {
   filters: SearchFilterState;
@@ -61,47 +70,64 @@ export function SidebarFilters({
   modCount,
   mapCount,
 }: SidebarFiltersProps) {
-  const counts: Record<AssetType, number> = {
-    mod: modCount,
-    map: mapCount,
-  };
+  const counts: Record<AssetType, number> = { mod: modCount, map: mapCount };
 
   return (
     <div className="space-y-5">
       {/* Type filter */}
       <div>
-        <FilterSectionTitle title="Type" />
+        {/* Static section title — vertically padded to match collapsible headers */}
+        <p className={cn(FILTER_SECTION_TITLE_CLASS, 'mb-1 px-1 py-1.5')} aria-hidden>
+          Type
+        </p>
         <nav className="space-y-0.5" aria-label="Content type filter">
-          {typeOptions.map(({ value, label, icon: Icon }) => (
-            <Button
-              key={value}
-              onClick={() => onTypeChange(value)}
-              intent="plain"
-              size="sm"
-              className={cn(
-                'w-full justify-between font-medium',
-                filters.type === value
-                  ? 'bg-muted/70 text-foreground border-border/70'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-              aria-current={filters.type === value ? 'true' : undefined}
-            >
-              <span className="flex items-center gap-2">
-                <Icon className="h-3.5 w-3.5 shrink-0" />
-                {label}
-              </span>
-              <span
-                className={cn(
-                  'text-xs tabular-nums',
-                  filters.type === value
-                    ? 'text-foreground'
-                    : 'text-muted-foreground',
-                )}
+          {typeOptions.map(({ value, label, icon: Icon }) => {
+            const isCurrent = filters.type === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => onTypeChange(value)}
+                aria-current={isCurrent ? 'true' : undefined}
+                className="group relative w-full text-left"
               >
-                {counts[value]}
-              </span>
-            </Button>
-          ))}
+                <span
+                  className={cn(
+                    // Reserve a gutter for the current-indicator so it never gets clipped.
+                    'mr-3 flex items-center gap-2 rounded-lg px-2',
+                    'py-[clamp(0.38rem,0.8vw,0.52rem)]',
+                    'text-[clamp(0.78rem,0.9vw,0.86rem)] font-semibold',
+                    'transition-all duration-150',
+                    // Hover — green text + bg on all items (matches navbar hover)
+                    'group-hover:bg-accent/45 group-hover:text-primary',
+                    // Current — same green treatment even without hover
+                    isCurrent ? 'bg-accent/45 text-primary' : 'text-muted-foreground',
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0 transition-colors" />
+                  <span className="flex-1">{label}</span>
+                  <span
+                    className={cn(
+                      FILTER_COUNT_BADGE_CLASS,
+                      isCurrent
+                        ? 'border-primary/35 bg-accent/45 text-primary'
+                        : 'group-hover:border-primary/35 group-hover:bg-accent/45 group-hover:text-primary',
+                    )}
+                  >
+                    {counts[value]}
+                  </span>
+                </span>
+
+                {/* Right-edge indicator — mirrors navbar's current-page pill */}
+                {isCurrent && (
+                  <span
+                    aria-hidden
+                    className="absolute right-1 top-0 h-full w-[5px] rounded-full bg-primary"
+                  />
+                )}
+              </button>
+            );
+          })}
         </nav>
       </div>
 
@@ -115,10 +141,7 @@ export function SidebarFilters({
             counts={modTagCounts}
             selected={filters.mod.tags}
             onChange={(values) =>
-              onFiltersChange((prev) => ({
-                ...prev,
-                mod: { ...prev.mod, tags: values },
-              }))
+              onFiltersChange((prev) => ({ ...prev, mod: { ...prev.mod, tags: values } }))
             }
             emptyLabel={SEARCH_FILTER_EMPTY_LABELS.tags}
           />
@@ -135,10 +158,7 @@ export function SidebarFilters({
             counts={mapLocationCounts}
             selected={filters.map.locations}
             onChange={(values) =>
-              onFiltersChange((prev) => ({
-                ...prev,
-                map: { ...prev.map, locations: values },
-              }))
+              onFiltersChange((prev) => ({ ...prev, map: { ...prev.map, locations: values } }))
             }
           />
           <ChecklistFilterSection
@@ -209,6 +229,7 @@ function ChecklistFilterSection({
   emptyLabel = SEARCH_FILTER_EMPTY_LABELS.generic,
   formatValue = (value) => value,
 }: FilterSectionProperties) {
+  const [open, setOpen] = useState(true);
   const visibleValues = filterVisibleListingValues(values, counts, selected);
 
   const toggle = (value: string) => {
@@ -221,71 +242,101 @@ function ChecklistFilterSection({
 
   return (
     <div>
-      <FilterSectionTitle title={title} icon={Icon} />
-      {visibleValues.length === 0 ? (
-        <p className="text-xs text-muted-foreground px-1">{emptyLabel}</p>
-      ) : (
-        <div className="space-y-1">
-          {visibleValues.map((value) => (
-            <Button
-              key={value}
-              type="button"
-              onClick={() => toggle(value)}
-              intent="plain"
-              size="xs"
-              className={cn(
-                'w-full justify-between px-2 font-normal text-sm',
-                selected.includes(value)
-                  ? 'bg-muted/60 text-foreground border-border/60'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              <span className="flex items-center gap-2">
-                <Checkbox
-                  checked={selected.includes(value)}
-                  aria-hidden="true"
-                />
-                <span>{formatValue(value)}</span>
-              </span>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                {counts[value] ?? 0}
-              </span>
-            </Button>
-          ))}
+      <CollapsibleFilterHeader
+        title={title}
+        icon={Icon}
+        open={open}
+        onToggle={() => setOpen((prev) => !prev)}
+      />
+      <div
+        className={cn(
+          'grid transition-all duration-200 ease-out',
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+        )}
+      >
+        <div className="min-h-0 overflow-hidden">
+          {visibleValues.length === 0 ? (
+            <p className="px-1 py-1 text-xs text-muted-foreground">{emptyLabel}</p>
+          ) : (
+            <div className="space-y-1 pt-1">
+              {visibleValues.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggle(value)}
+                  className={cn(
+                    'flex w-full items-center justify-between rounded-md px-2 py-1 text-sm font-normal',
+                    'transition-colors',
+                    selected.includes(value)
+                      ? 'bg-muted/60 text-foreground'
+                      : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <Checkbox checked={selected.includes(value)} aria-hidden="true" />
+                    <span>{formatValue(value)}</span>
+                  </span>
+                  <span className={FILTER_COUNT_BADGE_CLASS}>
+                    {counts[value] ?? 0}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Clear selection — styled as a subtle removable chip */}
+          {selected.length > 0 && (
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => onChange([])}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 px-2 py-0.5 text-[0.68rem] font-medium leading-none text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+              >
+                <X className="h-2.5 w-2.5 shrink-0" />
+                <span>Clear</span>
+              </button>
+            </div>
+          )}
         </div>
-      )}
-      {selected.length > 0 && (
-        <div className={FILTER_SECTION_CLEAR_CLASS}>
-          <Button
-            type="button"
-            intent="link"
-            size="xs"
-            onClick={() => onChange([])}
-            className="h-auto min-h-0 px-0 py-0 text-xs font-medium text-muted-foreground hover:text-foreground"
-          >
-            Clear {title.toLowerCase()}
-          </Button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
 
-interface TitleProperties {
+interface CollapsibleFilterHeaderProps {
   title: string;
-  icon?: ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
+  open: boolean;
+  onToggle: () => void;
 }
 
-function FilterSectionTitle({ title, icon: Icon }: TitleProperties) {
+function CollapsibleFilterHeader({
+  title,
+  icon: Icon,
+  open,
+  onToggle,
+}: CollapsibleFilterHeaderProps) {
   return (
-    <p
-      className={cn(
-        FILTER_SECTION_TITLE_CLASS,
-        Icon && 'flex items-center gap-1.5',
-      )}
+    <button
+      type="button"
+      onClick={onToggle}
+      className="group mb-1 flex w-full items-center gap-1.5 rounded-md px-1 py-1.5 transition-colors hover:bg-accent/45"
     >
-      {Icon && <Icon className="h-3.5 w-3.5" />}
-      {title}
-    </p>
+      <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+      <span
+        className={cn(
+          FILTER_SECTION_TITLE_CLASS,
+          'flex-1 text-left transition-colors group-hover:text-primary',
+        )}
+      >
+        {title}
+      </span>
+      <ChevronDown
+        className={cn(
+          'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-200 group-hover:text-primary',
+          !open && '-rotate-90',
+        )}
+      />
+    </button>
   );
 }

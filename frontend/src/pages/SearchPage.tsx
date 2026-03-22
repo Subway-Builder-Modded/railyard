@@ -1,8 +1,8 @@
 import { Compass, SearchX } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { BrowseSidebar, SIDEBAR_CONTENT_OFFSET } from '@/components/search/BrowseSidebar';
 import { SearchBar } from '@/components/search/SearchBar';
-import { SidebarFilters } from '@/components/search/SidebarFilters';
 import { SortSelect } from '@/components/search/SortSelect';
 import { ViewModeToggle } from '@/components/search/ViewModeToggle';
 import { CardSkeletonGrid } from '@/components/shared/CardSkeletonGrid';
@@ -19,10 +19,11 @@ import { buildSpecialDemandValues } from '@/lib/map-filter-values';
 import { useInstalledStore } from '@/stores/installed-store';
 import { useProfileStore } from '@/stores/profile-store';
 import { useRegistryStore } from '@/stores/registry-store';
-import { createRandomSeed } from '@/stores/search-store';
-import { useSearchStore } from '@/stores/search-store';
+import { createRandomSeed, useSearchStore } from '@/stores/search-store';
 
 export function SearchPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const viewMode = useSearchStore((s) => s.viewMode);
   const setViewMode = useSearchStore((s) => s.setViewMode);
   const initializeViewMode = useSearchStore((s) => s.initializeViewMode);
@@ -38,6 +39,7 @@ export function SearchPage() {
     ensureDownloadTotals,
   } = useRegistryStore();
   const { installedMaps, installedMods } = useInstalledStore();
+
   const installedItems = useMemo(() => {
     const items: Array<{
       type: AssetType;
@@ -47,42 +49,27 @@ export function SearchPage() {
     for (const installed of installedMods) {
       const manifest = mods.find((m) => m.id === installed.id);
       if (manifest)
-        items.push({
-          type: 'mod',
-          item: manifest,
-          installedVersion: installed.version,
-        });
+        items.push({ type: 'mod', item: manifest, installedVersion: installed.version });
     }
     for (const installed of installedMaps) {
       const manifest = maps.find((m) => m.id === installed.id);
       if (manifest)
-        items.push({
-          type: 'map',
-          item: manifest,
-          installedVersion: installed.version,
-        });
+        items.push({ type: 'map', item: manifest, installedVersion: installed.version });
     }
     return items;
   }, [mods, maps, installedMods, installedMaps]);
 
-  const installedVersionByItemKey = useMemo(() => {
-    return new Map(
-      installedItems.map((entry) => [
-        `${entry.type}-${entry.item.id}`,
-        entry.installedVersion,
-      ]),
-    );
-  }, [installedItems]);
+  const installedVersionByItemKey = useMemo(
+    () => new Map(installedItems.map((e) => [`${e.type}-${e.item.id}`, e.installedVersion])),
+    [installedItems],
+  );
 
   const allTags = useMemo(() => {
     const modTags = mods.flatMap((m) => m.tags ?? []);
     return [...new Set(modTags)].sort();
   }, [mods]);
 
-  const availableSpecialDemand = useMemo(
-    () => buildSpecialDemandValues(maps),
-    [maps],
-  );
+  const availableSpecialDemand = useMemo(() => buildSpecialDemandValues(maps), [maps]);
 
   const {
     modTagCounts,
@@ -100,24 +87,8 @@ export function SearchPage() {
     initializeViewMode(defaultSearchViewMode);
   }, [defaultSearchViewMode, initializeViewMode]);
 
-  const {
-    items,
-    page,
-    totalPages,
-    totalResults,
-    filters,
-    setFilters,
-    setType,
-    setPage,
-  } = useFilteredItems({
-    mods,
-    maps,
-    modDownloadTotals,
-    mapDownloadTotals,
-  });
-
-  const modCount = mods.length;
-  const mapCount = maps.length;
+  const { items, page, totalPages, totalResults, filters, setFilters, setType, setPage } =
+    useFilteredItems({ mods, maps, modDownloadTotals, mapDownloadTotals });
 
   const cardGridPreset = useMemo(
     () => (viewMode === 'compact' ? 'compact' : 'default'),
@@ -125,55 +96,57 @@ export function SearchPage() {
   );
 
   return (
-    <div className="space-y-5">
-      <PageHeading
-        icon={Compass}
-        title="Browse"
-        description="Discover and install maps and mods for Subway Builder."
+    <>
+      <BrowseSidebar
+        open={sidebarOpen}
+        onToggle={() => setSidebarOpen((p) => !p)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onTypeChange={setType}
+        availableTags={allTags}
+        availableSpecialDemand={availableSpecialDemand}
+        modTagCounts={modTagCounts}
+        mapLocationCounts={mapLocationCounts}
+        mapSourceQualityCounts={mapSourceQualityCounts}
+        mapLevelOfDetailCounts={mapLevelOfDetailCounts}
+        mapSpecialDemandCounts={mapSpecialDemandCounts}
+        modCount={mods.length}
+        mapCount={maps.length}
       />
 
-      {error && <ErrorBanner message={error} />}
+      {/* Content area — shifts right when sidebar is open.
+          minHeight keeps the footer below the initial viewport so the sidebar
+          never snaps into absolute mode just because filters reduced results. */}
+      <div
+        className="space-y-5"
+        style={{
+          paddingLeft: sidebarOpen ? SIDEBAR_CONTENT_OFFSET : '0px',
+          transition: 'padding-left 200ms ease-out',
+          minHeight: 'calc(100vh - var(--app-navbar-offset))',
+        }}
+      >
+        <PageHeading
+          icon={Compass}
+          title="Browse"
+          description="Discover and install maps and mods for Subway Builder."
+        />
 
-      {/* Search bar - full width at top */}
-      <SearchBar
-        query={filters.query}
-        onQueryChange={(value) =>
-          setFilters((prev) => ({ ...prev, query: value }))
-        }
-      />
+        {error && <ErrorBanner message={error} />}
 
-      {/* Two-column layout: sidebar + results */}
-      <div className="flex gap-6 items-start">
-        {/* Sidebar */}
-        <aside className="w-52 shrink-0">
-          <SidebarFilters
-            filters={filters}
-            onFiltersChange={setFilters}
-            onTypeChange={setType}
-            availableTags={allTags}
-            availableSpecialDemand={availableSpecialDemand}
-            modTagCounts={modTagCounts}
-            mapLocationCounts={mapLocationCounts}
-            mapSourceQualityCounts={mapSourceQualityCounts}
-            mapLevelOfDetailCounts={mapLevelOfDetailCounts}
-            mapSpecialDemandCounts={mapSpecialDemandCounts}
-            modCount={modCount}
-            mapCount={mapCount}
-          />
-        </aside>
+        <SearchBar
+          query={filters.query}
+          onQueryChange={(value) => setFilters((prev) => ({ ...prev, query: value }))}
+        />
 
-        {/* Main results area */}
-        <div className="flex-1 min-w-0 space-y-4">
+        <div className="space-y-4">
           {/* Results toolbar */}
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
               {loading ? (
-                <span className="inline-block h-4 w-24 bg-muted rounded animate-pulse" />
+                <span className="inline-block h-4 w-24 animate-pulse rounded bg-muted" />
               ) : (
                 <>
-                  <span className="font-medium text-foreground">
-                    {totalResults}
-                  </span>{' '}
+                  <span className="font-medium text-foreground">{totalResults}</span>{' '}
                   result{totalResults !== 1 ? 's' : ''}
                   {filters.query && (
                     <span className="ml-1">
@@ -192,9 +165,7 @@ export function SearchPage() {
                     ...prev,
                     sort: value,
                     randomSeed:
-                      value.field === 'random'
-                        ? createRandomSeed()
-                        : prev.randomSeed,
+                      value.field === 'random' ? createRandomSeed() : prev.randomSeed,
                   }))
                 }
                 tab={filters.type}
@@ -225,9 +196,7 @@ export function SearchPage() {
                       type={itemType}
                       item={item}
                       viewMode={viewMode}
-                      installedVersion={installedVersionByItemKey.get(
-                        `${itemType}-${item.id}`,
-                      )}
+                      installedVersion={installedVersionByItemKey.get(`${itemType}-${item.id}`)}
                       totalDownloads={
                         itemType === 'mod'
                           ? (modDownloadTotals[item.id] ?? 0)
@@ -244,9 +213,7 @@ export function SearchPage() {
                       type={itemType}
                       item={item}
                       viewMode={viewMode}
-                      installedVersion={installedVersionByItemKey.get(
-                        `${itemType}-${item.id}`,
-                      )}
+                      installedVersion={installedVersionByItemKey.get(`${itemType}-${item.id}`)}
                       totalDownloads={
                         itemType === 'mod'
                           ? (modDownloadTotals[item.id] ?? 0)
@@ -270,6 +237,6 @@ export function SearchPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
