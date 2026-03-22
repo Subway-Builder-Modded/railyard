@@ -13,22 +13,46 @@ interface UseFilteredItemsParams {
   maps: types.MapManifest[];
 }
 
+function normalizeForSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function tokenize(value: string): string[] {
+  return normalizeForSearch(value)
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+function includesTokenPrefix(tokens: string[], queryToken: string): boolean {
+  return tokens.some((token) => token.startsWith(queryToken));
+}
+
 function matchesQuery(item: TaggedItem, query: string): boolean {
-  const q = query.toLowerCase();
+  const queryTokens = tokenize(query);
+  if (queryTokens.length === 0) {
+    return true;
+  }
 
   const base = item.item;
-  if (base.name?.toLowerCase().includes(q)) return true;
-  if (base.author?.toLowerCase().includes(q)) return true;
-  if (base.description?.toLowerCase().includes(q)) return true;
-  if (base.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+  const searchTokens = [
+    ...tokenize(base.name ?? ""),
+    ...tokenize(base.author ?? ""),
+    ...tokenize(base.description ?? ""),
+  ];
 
   if (item.type === "maps") {
     const map = item.item as types.MapManifest;
-    if (map.city_code?.toLowerCase().includes(q)) return true;
-    if (map.country?.toLowerCase().includes(q)) return true;
+    searchTokens.push(...tokenize(map.city_code ?? ""));
+    searchTokens.push(...tokenize(map.country ?? ""));
   }
 
-  return false;
+  return queryTokens.every((queryToken) =>
+    includesTokenPrefix(searchTokens, queryToken)
+  );
 }
 
 function matchesTags(item: TaggedItem, selectedTags: string[]): boolean {
