@@ -44,7 +44,7 @@ function getNavbarOffsetPx(): number {
       getComputedStyle(document.documentElement).getPropertyValue(
         '--app-navbar-offset',
       ),
-    ) || 72
+    ) - 48 || 72
   );
 }
 
@@ -68,7 +68,6 @@ export function BrowseSidebar({
     const mainEl = document.querySelector<HTMLElement>('main');
     const footerEl = document.querySelector<HTMLElement>('footer');
 
-    // Left alignment: tracks <main>'s content left edge.
     const updateLeft = () => {
       if (!mainEl) return;
       const { left: l } = mainEl.getBoundingClientRect();
@@ -84,10 +83,7 @@ export function BrowseSidebar({
       const vh = window.innerHeight;
       const navOffset = getNavbarOffsetPx();
 
-      const idealTop = Math.max(
-        navOffset - 12,
-        (navOffset + vh - sH) / 2,
-      );
+      const idealTop = navOffset + EDGE_GAP_PX;
 
       const maxH = vh - idealTop - EDGE_GAP_PX;
 
