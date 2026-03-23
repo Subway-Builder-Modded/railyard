@@ -28,35 +28,35 @@ interface BrowseViewModeStoreState {
   initializeViewMode: (viewMode: SearchViewMode) => void;
 }
 
-export const useBrowseStore = create<BrowseFilterStoreState & BrowseViewModeStoreState>(
-  (set, get) => ({
-    filters: cloneFilterState(defaultSearchFilters),
-    page: 1,
-    scopedByType: createFilterByAssetType(defaultSearchFilters, 1),
-    viewMode: 'full',
-    viewModeInitialized: false,
-    setFilters: (updater) =>
-      set((state) => {
-        const nextFilters =
-          typeof updater === 'function' ? updater(state.filters) : updater;
-        return {
-          filters: nextFilters,
-          scopedByType: syncFilter(state.scopedByType, nextFilters, state.page),
-        };
-      }),
-    setType: (type) =>
-      set((state) =>
-        switchFilter(state.filters, state.page, state.scopedByType, type),
-      ),
-    setPage: (page) =>
-      set((state) => ({
-        page,
-        scopedByType: syncFilter(state.scopedByType, state.filters, page),
-      })),
-    setViewMode: (viewMode) => set({ viewMode, viewModeInitialized: true }),
-    initializeViewMode: (viewMode) => {
-      if (get().viewModeInitialized) return;
-      set({ viewMode, viewModeInitialized: true });
-    },
-  }),
-);
+export const useBrowseStore = create<
+  BrowseFilterStoreState & BrowseViewModeStoreState
+>((set, get) => ({
+  filters: cloneFilterState(defaultSearchFilters),
+  page: 1,
+  scopedByType: createFilterByAssetType(defaultSearchFilters, 1),
+  viewMode: 'full',
+  viewModeInitialized: false,
+  setFilters: (updater) =>
+    set((state) => {
+      const nextFilters =
+        typeof updater === 'function' ? updater(state.filters) : updater;
+      return {
+        filters: nextFilters,
+        scopedByType: syncFilter(state.scopedByType, nextFilters, state.page),
+      };
+    }),
+  setType: (type) =>
+    set((state) =>
+      switchFilter(state.filters, state.page, state.scopedByType, type),
+    ),
+  setPage: (page) =>
+    set((state) => ({
+      page,
+      scopedByType: syncFilter(state.scopedByType, state.filters, page),
+    })),
+  setViewMode: (viewMode) => set({ viewMode, viewModeInitialized: true }),
+  initializeViewMode: (viewMode) => {
+    if (get().viewModeInitialized) return;
+    set({ viewMode, viewModeInitialized: true });
+  },
+}));

@@ -78,7 +78,9 @@ export function HomePage() {
 
   const getTotalDownloads = useCallback(
     (type: AssetType, id: string) =>
-      type === 'mod' ? (modDownloadTotals[id] ?? 0) : (mapDownloadTotals[id] ?? 0),
+      type === 'mod'
+        ? (modDownloadTotals[id] ?? 0)
+        : (mapDownloadTotals[id] ?? 0),
     [modDownloadTotals, mapDownloadTotals],
   );
 
@@ -190,9 +192,7 @@ export function HomePage() {
   );
 
   const hasActiveUpdateOperation = useMemo(
-    () =>
-      updatingAll ||
-      pendingUpdateEntries.some(({ id }) => isOperating(id)),
+    () => updatingAll || pendingUpdateEntries.some(({ id }) => isOperating(id)),
     [isOperating, pendingUpdateEntries, updatingAll],
   );
 
@@ -276,7 +276,10 @@ export function HomePage() {
                   size="sm"
                   disabled={updatingAll}
                   onClick={() => setUpdateAllConfirmOpen(true)}
-                  className={cn('h-8 gap-1.5 text-xs', UPDATE_ACCENT.solidButton)}
+                  className={cn(
+                    'h-8 gap-1.5 text-xs',
+                    UPDATE_ACCENT.solidButton,
+                  )}
                 >
                   {updatingAll ? (
                     <RefreshCw className="h-3 w-3 animate-spin" aria-hidden />
@@ -296,7 +299,9 @@ export function HomePage() {
                   className="h-12 w-12 text-muted-foreground mb-2"
                   aria-hidden
                 />
-                <p className="text-sm text-muted-foreground">{emptyUpdatesMessage}</p>
+                <p className="text-sm text-muted-foreground">
+                  {emptyUpdatesMessage}
+                </p>
               </div>
             ) : updatesLoading && displayedPendingUpdateEntries.length === 0 ? (
               Array.from({ length: 3 }).map((_, i) => (
@@ -312,9 +317,7 @@ export function HomePage() {
                     currentVersion={currentVersion}
                     latestVersion={latestVersion}
                     isUpdating={isOperating(id)}
-                    onUpdate={() =>
-                      void runUpdateOperations([{ type, id }])
-                    }
+                    onUpdate={() => void runUpdateOperations([{ type, id }])}
                     updateButtonClassName={UPDATE_ACCENT.solidButton}
                   />
                 ),

@@ -16,7 +16,9 @@ import type { BrowseFilterState } from '@/stores/browse-store';
 
 const SIDEBAR_WIDTH_REM = 15.5;
 const SIDEBAR_GAP_REM = 1.5;
-const VIEWPORT_EDGE_GAP_PX = 24;
+
+/** Minimum gap between the sidebar and the viewport/footer edge (px). */
+const EDGE_GAP_PX = 24;
 
 export const SIDEBAR_CONTENT_OFFSET = `${SIDEBAR_WIDTH_REM + SIDEBAR_GAP_REM}rem`;
 
@@ -40,107 +42,126 @@ export interface BrowseSidebarProps {
 function getNavbarOffsetPx(): number {
   return (
     parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--app-navbar-offset'),
+      getComputedStyle(document.documentElement).getPropertyValue(
+        '--app-navbar-offset',
+      ),
     ) || 72
   );
 }
 
-function getMainContentLeft(): number {
-  const el = document.querySelector<HTMLElement>('main');
-  if (!el) return 16;
-  const { left } = el.getBoundingClientRect();
-  return left + (parseFloat(getComputedStyle(el).paddingLeft) || 0);
-}
-
-function computeSidebarTop(): number {
-  return getNavbarOffsetPx() - 24;
-}
-
-export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarProps) {
+/**
+ * Floating filter sidebar for the Browse page.
+ *
+ * Vertical position:
+ *   The sidebar is centred between the navbar bottom and the viewport bottom.
+ *   When the footer scrolls into view and the sidebar is tall enough to reach
+ *   it, the sidebar's `top` tracks just above the footer so it visually
+ *   "scrolls up" with the page rather than overlapping it.
+ *
+ * Implementation note — `top` and `maxHeight` are mutated directly on the DOM
+ * elements rather than via React state, so position updates on every scroll
+ * frame incur zero React re-render overhead.  Only `left` (infrequent) goes
+ * through React state.
+ */
+export function BrowseSidebar({
+  open,
+  onToggle,
+  ...filterProps
+}: BrowseSidebarProps) {
   const panelRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
   const [left, setLeft] = useState(0);
-  const [anchored, setAnchored] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(
-    typeof window !== 'undefined' ? window.innerHeight : 800,
-  );
+
+  // ── Custom scrollbar ─────────────────────────────────────────────────
   const [showScrollThumb, setShowScrollThumb] = useState(false);
   const [thumbHeight, setThumbHeight] = useState(0);
   const [thumbTop, setThumbTop] = useState(0);
-  const anchoredTopRef = useRef(0);
 
+  // ── Position management ──────────────────────────────────────────────
   useLayoutEffect(() => {
-    const updateLeft = () => setLeft(getMainContentLeft());
-    const updateViewportHeight = () => setViewportHeight(window.innerHeight);
-    const recomputeAnchor = () => {
-      if (!open) {
-        setAnchored(false);
-        return;
-      }
-
-      const footerEl = document.querySelector<HTMLElement>('footer');
-      const sH = panelRef.current?.offsetHeight ?? 0;
-      if (!footerEl || sH === 0) {
-        setAnchored(false);
-        return;
-      }
-
-      const fixedTop = computeSidebarTop();
-      const footerRect = footerEl.getBoundingClientRect();
-      const footerTopViewport = footerRect.top;
-      const footerInViewport = footerTopViewport <= window.innerHeight;
-
-      if (!footerInViewport) {
-        setAnchored(false);
-        return;
-      }
-
-      if (fixedTop + sH < footerTopViewport - VIEWPORT_EDGE_GAP_PX) {
-        setAnchored(false);
-        return;
-      }
-
-      anchoredTopRef.current =
-        footerTopViewport + window.scrollY - sH - VIEWPORT_EDGE_GAP_PX;
-      setAnchored(true);
-    };
-    const updateAll = () => {
-      updateLeft();
-      updateViewportHeight();
-      recomputeAnchor();
-    };
-    let rafId = 0;
-    const scheduleUpdate = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updateAll);
-    };
-    const handleScroll = () => {
-      recomputeAnchor();
-    };
-
-    updateAll();
-
+    const rootEl = document.getElementById('root');
     const mainEl = document.querySelector<HTMLElement>('main');
+    const footerEl = document.querySelector<HTMLElement>('footer');
 
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target === mainEl) updateLeft();
+    // Left alignment: tracks <main>'s content left edge.
+    const updateLeft = () => {
+      if (!mainEl) return;
+      const { left: l } = mainEl.getBoundingClientRect();
+      setLeft(l + (parseFloat(getComputedStyle(mainEl).paddingLeft) || 0));
+    };
+
+    // Vertical position: centred between navbar and viewport bottom,
+    // clamped upward when the footer enters the visible area.
+    //
+    // Mutates panel/toggle .style directly — no React re-render on scroll.
+    const updatePosition = () => {
+      const panel = panelRef.current;
+      const toggle = toggleRef.current;
+      if (!panel) return;
+
+      const sH = panel.offsetHeight;
+      const vh = window.innerHeight;
+      const navOffset = getNavbarOffsetPx();
+
+      // Ideal centred top — clamped so sidebar never overlaps the navbar.
+      const idealTop = Math.max(
+        navOffset + EDGE_GAP_PX,
+        (navOffset + vh - sH) / 2,
+      );
+
+      // maxHeight: always derived from idealTop so it doesn't feed back into
+      // the height → idealTop → maxHeight loop.
+      const maxH = vh - idealTop - EDGE_GAP_PX;
+
+      let top = idealTop;
+
+      // Footer awareness: if the sidebar (at idealTop) would overlap the
+      // footer, track the footer's position so the sidebar scrolls up with
+      // the page rather than covering it.
+      if (footerEl && sH > 0) {
+        const footerTopVp = footerEl.getBoundingClientRect().top;
+        const footerVisible = footerTopVp < vh;
+        if (footerVisible && idealTop + sH >= footerTopVp - EDGE_GAP_PX) {
+          top = Math.max(0, footerTopVp - sH - EDGE_GAP_PX);
+        }
       }
-      scheduleUpdate();
-    });
-    if (mainEl) ro.observe(mainEl);
-    if (panelRef.current) ro.observe(panelRef.current);
-    window.addEventListener('resize', scheduleUpdate);
-    window.addEventListener('scroll', handleScroll, { passive: true });
+
+      panel.style.top = `${top}px`;
+      panel.style.maxHeight = `${maxH}px`;
+      if (toggle) toggle.style.top = `${top}px`;
+    };
+
+    const handleResize = () => {
+      updateLeft();
+      updatePosition();
+    };
+
+    updateLeft();
+    updatePosition();
+
+    // ResizeObservers: <main> for left, panel itself for height changes
+    // (filter sections collapsing/expanding).
+    const mainRo = new ResizeObserver(updateLeft);
+    if (mainEl) mainRo.observe(mainEl);
+
+    const panelRo = new ResizeObserver(updatePosition);
+    if (panelRef.current) panelRo.observe(panelRef.current);
+
+    // #root is the page scroll container (html/body are overflow:hidden).
+    window.addEventListener('resize', handleResize);
+    rootEl?.addEventListener('scroll', updatePosition, { passive: true });
 
     return () => {
-      cancelAnimationFrame(rafId);
-      ro.disconnect();
-      window.removeEventListener('resize', scheduleUpdate);
-      window.removeEventListener('scroll', handleScroll);
+      mainRo.disconnect();
+      panelRo.disconnect();
+      window.removeEventListener('resize', handleResize);
+      rootEl?.removeEventListener('scroll', updatePosition);
     };
-  }, [open]);
+  }, []); // runs once; all updates go through direct DOM mutation or closures
 
+  // ── Scroll page to top when filters change ───────────────────────────
   const lastFiltersRef = useRef<BrowseFilterState | null>(null);
   useEffect(() => {
     if (!open) return;
@@ -148,11 +169,11 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
       lastFiltersRef.current = filterProps.filters;
       return;
     }
-
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.getElementById('root')?.scrollTo({ top: 0, behavior: 'auto' });
     lastFiltersRef.current = filterProps.filters;
   }, [filterProps.filters, open]);
 
+  // ── Custom scrollbar thumb ───────────────────────────────────────────
   useLayoutEffect(() => {
     const scrollEl = scrollRef.current;
     if (!scrollEl || !open) {
@@ -163,21 +184,17 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
     const updateThumb = () => {
       const { clientHeight, scrollHeight, scrollTop } = scrollEl;
       const overflow = scrollHeight - clientHeight;
-
       if (overflow <= 1) {
         setShowScrollThumb(false);
         setThumbHeight(0);
         setThumbTop(0);
         return;
       }
-
-      const nextThumbHeight = Math.max(24, (clientHeight * clientHeight) / scrollHeight);
-      const maxThumbTop = clientHeight - nextThumbHeight;
-      const nextThumbTop = (scrollTop / overflow) * maxThumbTop;
-
+      const nextH = Math.max(24, (clientHeight * clientHeight) / scrollHeight);
+      const maxTop = clientHeight - nextH;
       setShowScrollThumb(true);
-      setThumbHeight(nextThumbHeight);
-      setThumbTop(nextThumbTop);
+      setThumbHeight(nextH);
+      setThumbTop((scrollTop / overflow) * maxTop);
     };
 
     updateThumb();
@@ -196,16 +213,23 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
     };
   }, [filterProps.filters, open]);
 
-  const fixedTop = computeSidebarTop();
-  const maxHeight = viewportHeight - fixedTop - VIEWPORT_EDGE_GAP_PX;
-
-  const expandedPositionStyle = open && anchored
-    ? ({ position: 'absolute', top: anchoredTopRef.current, left } as const)
-    : ({ position: 'fixed', top: fixedTop, left } as const);
-  const collapsedPositionStyle = { position: 'fixed', top: fixedTop, left } as const;
+  // `top` and `maxHeight` are NOT in the inline style — managed via direct
+  // DOM mutation above.  Only `position`, `left`, and `width` come from React.
+  const panelStyle = {
+    position: 'fixed' as const,
+    left,
+    width: `${SIDEBAR_WIDTH_REM}rem`,
+  };
+  const toggleStyle = {
+    position: 'fixed' as const,
+    left,
+    width: '2.5rem',
+    height: '2.5rem',
+  };
 
   return (
     <>
+      {/* ── Expanded panel ─────────────────────────────────────────────── */}
       <aside
         ref={panelRef}
         aria-label="Browse filters"
@@ -217,8 +241,9 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
             ? 'opacity-100 translate-x-0 pointer-events-auto'
             : 'opacity-0 -translate-x-3 pointer-events-none',
         )}
-        style={{ ...expandedPositionStyle, width: `${SIDEBAR_WIDTH_REM}rem`, maxHeight }}
+        style={panelStyle}
       >
+        {/* Header — proportions mirror the navbar pill */}
         <div className="flex shrink-0 items-center gap-2 border-b border-border/60 px-[clamp(0.65rem,1.4vw,1rem)] py-[clamp(0.42rem,0.88vw,0.6rem)]">
           <SlidersHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" />
           <span className="flex-1 text-[clamp(0.78rem,0.92vw,0.88rem)] font-semibold text-muted-foreground">
@@ -234,11 +259,12 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
           </button>
         </div>
 
+        {/* Scrollable filter content + overlay scrollbar thumb */}
         <div className="group/sidebar relative flex min-h-0 flex-1 flex-col">
           <div
             ref={scrollRef}
             className="sidebar-scroll min-h-0 flex-1 overflow-y-auto overflow-x-visible px-[clamp(0.65rem,1.4vw,1rem)] py-3"
-            onWheelCapture={(event) => event.stopPropagation()}
+            onWheelCapture={(e) => e.stopPropagation()}
           >
             <SidebarFilters {...filterProps} />
           </div>
@@ -247,14 +273,21 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
             <div className="pointer-events-none absolute bottom-3 right-1 top-3 w-1 opacity-0 transition-opacity duration-150 group-hover/sidebar:opacity-100">
               <div
                 className="absolute left-0 w-full rounded-full bg-[color-mix(in_srgb,var(--foreground)_28%,transparent)]"
-                style={{ height: thumbHeight, transform: `translateY(${thumbTop}px)` } as CSSProperties}
+                style={
+                  {
+                    height: thumbHeight,
+                    transform: `translateY(${thumbTop}px)`,
+                  } as CSSProperties
+                }
               />
             </div>
           )}
         </div>
       </aside>
 
+      {/* ── Collapsed toggle pill ───────────────────────────────────────── */}
       <button
+        ref={toggleRef}
         type="button"
         onClick={onToggle}
         aria-label="Expand filters sidebar"
@@ -267,7 +300,7 @@ export function BrowseSidebar({ open, onToggle, ...filterProps }: BrowseSidebarP
             ? 'opacity-0 pointer-events-none scale-90'
             : 'opacity-100 scale-100 pointer-events-auto',
         )}
-        style={{ ...collapsedPositionStyle, width: '2.5rem', height: '2.5rem' }}
+        style={toggleStyle}
       >
         <SlidersHorizontal className="h-4 w-4" />
       </button>

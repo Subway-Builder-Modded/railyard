@@ -73,7 +73,10 @@ export function SidebarFilters({
   return (
     <div className="space-y-5">
       <div>
-        <p className={cn(FILTER_SECTION_TITLE_CLASS, 'mb-1 px-1 py-1.5')} aria-hidden>
+        <p
+          className={cn(FILTER_SECTION_TITLE_CLASS, 'mb-1 px-1 py-1.5')}
+          aria-hidden
+        >
           Type
         </p>
         <nav className="space-y-0.5" aria-label="Content type filter">
@@ -94,7 +97,9 @@ export function SidebarFilters({
                     'text-[clamp(0.78rem,0.9vw,0.86rem)] font-semibold',
                     'transition-all duration-150',
                     'group-hover:bg-accent/45 group-hover:text-primary',
-                    isCurrent ? 'bg-accent/45 text-primary' : 'text-muted-foreground',
+                    isCurrent
+                      ? 'bg-accent/45 text-primary'
+                      : 'text-muted-foreground',
                   )}
                 >
                   <Icon className="h-3.5 w-3.5 shrink-0 transition-colors" />
@@ -133,7 +138,10 @@ export function SidebarFilters({
             counts={modTagCounts}
             selected={filters.mod.tags}
             onChange={(values) =>
-              onFiltersChange((prev) => ({ ...prev, mod: { ...prev.mod, tags: values } }))
+              onFiltersChange((prev) => ({
+                ...prev,
+                mod: { ...prev.mod, tags: values },
+              }))
             }
             emptyLabel={SEARCH_FILTER_EMPTY_LABELS.tags}
           />
@@ -150,7 +158,10 @@ export function SidebarFilters({
             counts={mapLocationCounts}
             selected={filters.map.locations}
             onChange={(values) =>
-              onFiltersChange((prev) => ({ ...prev, map: { ...prev.map, locations: values } }))
+              onFiltersChange((prev) => ({
+                ...prev,
+                map: { ...prev.map, locations: values },
+              }))
             }
           />
           <ChecklistFilterSection
@@ -248,7 +259,9 @@ function ChecklistFilterSection({
       >
         <div className="min-h-0 overflow-hidden">
           {visibleValues.length === 0 ? (
-            <p className="px-1 py-1 text-xs text-muted-foreground">{emptyLabel}</p>
+            <p className="px-1 py-1 text-xs text-muted-foreground">
+              {emptyLabel}
+            </p>
           ) : (
             <div className="space-y-1 pt-1">
               {visibleValues.map((value) => (
@@ -265,7 +278,10 @@ function ChecklistFilterSection({
                   )}
                 >
                   <span className="flex items-center gap-2">
-                    <Checkbox checked={selected.includes(value)} aria-hidden="true" />
+                    <Checkbox
+                      checked={selected.includes(value)}
+                      aria-hidden="true"
+                    />
                     <span>{formatValue(value)}</span>
                   </span>
                   <span className={FILTER_COUNT_BADGE_CLASS}>

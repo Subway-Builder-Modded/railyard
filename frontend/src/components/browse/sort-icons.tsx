@@ -17,7 +17,8 @@ export function SortOptionIcon({ option }: { option: SortOption }) {
 
   const baseIconClass = 'h-4 w-4 text-current';
 
-  if (field === 'random') return <Shuffle className={baseIconClass} aria-hidden />;
+  if (field === 'random')
+    return <Shuffle className={baseIconClass} aria-hidden />;
 
   if (field === 'last_updated') {
     const Icon = direction === 'asc' ? CalendarArrowUp : CalendarArrowDown;
@@ -29,7 +30,12 @@ export function SortOptionIcon({ option }: { option: SortOption }) {
     return <Icon className={baseIconClass} aria-hidden />;
   }
 
-  if (field === 'name' || field === 'city_code' || field === 'country' || field === 'author') {
+  if (
+    field === 'name' ||
+    field === 'city_code' ||
+    field === 'country' ||
+    field === 'author'
+  ) {
     const Icon = direction === 'asc' ? ArrowDownAZ : ArrowDownZA;
     return <Icon className={baseIconClass} aria-hidden />;
   }

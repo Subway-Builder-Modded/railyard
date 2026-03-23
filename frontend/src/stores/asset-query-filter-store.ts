@@ -18,4 +18,3 @@ export interface AssetQueryFilterStoreState {
   setType: (type: AssetType) => void;
   setPage: (page: number) => void;
 }
-

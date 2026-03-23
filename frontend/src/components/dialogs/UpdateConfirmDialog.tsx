@@ -44,7 +44,8 @@ export function UpdateConfirmDialog({
   onConfirm,
 }: UpdateConfirmDialogProps) {
   const sortedEntries = useMemo(
-    () => [...entries].sort((left, right) => left.name.localeCompare(right.name)),
+    () =>
+      [...entries].sort((left, right) => left.name.localeCompare(right.name)),
     [entries],
   );
   const previewEntries = useMemo(

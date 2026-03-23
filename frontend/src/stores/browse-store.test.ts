@@ -118,4 +118,3 @@ describe('useBrowseStore per-asset-type state', () => {
     expect(state.filters.perPage).toBe(24);
   });
 });
-

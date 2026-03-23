@@ -28,7 +28,8 @@ export function SortSelect({ value, onChange, tab }: SortSelectProps) {
   const sortOptions = getSortOptionsForType(tab);
   const selectedOptionKey = sortStateToOptionKey(value, tab);
   const selectedOption =
-    sortOptions.find((opt) => opt.value === selectedOptionKey) ?? sortOptions[0];
+    sortOptions.find((opt) => opt.value === selectedOptionKey) ??
+    sortOptions[0];
 
   useEffect(() => {
     if (!sortOptions.some((opt) => opt.value === selectedOptionKey)) {
@@ -58,7 +59,9 @@ export function SortSelect({ value, onChange, tab }: SortSelectProps) {
         {selectedOption ? (
           <span className="flex min-w-0 items-center gap-2">
             <SortOptionIcon option={selectedOption} />
-            <span className="min-w-0 flex-1 truncate">{selectedOption.label}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {selectedOption.label}
+            </span>
           </span>
         ) : (
           <span className="text-muted-foreground">Sort</span>

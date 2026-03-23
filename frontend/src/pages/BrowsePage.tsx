@@ -1,7 +1,10 @@
 import { Compass, SearchX } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { BrowseSidebar, SIDEBAR_CONTENT_OFFSET } from '@/components/browse/BrowseSidebar';
+import {
+  BrowseSidebar,
+  SIDEBAR_CONTENT_OFFSET,
+} from '@/components/browse/BrowseSidebar';
 import { SortSelect } from '@/components/browse/SortSelect';
 import { ViewModeToggle } from '@/components/browse/ViewModeToggle';
 import { SearchBar } from '@/components/search/SearchBar';
@@ -49,18 +52,32 @@ export function BrowsePage() {
     for (const installed of installedMods) {
       const manifest = mods.find((m) => m.id === installed.id);
       if (manifest)
-        items.push({ type: 'mod', item: manifest, installedVersion: installed.version });
+        items.push({
+          type: 'mod',
+          item: manifest,
+          installedVersion: installed.version,
+        });
     }
     for (const installed of installedMaps) {
       const manifest = maps.find((m) => m.id === installed.id);
       if (manifest)
-        items.push({ type: 'map', item: manifest, installedVersion: installed.version });
+        items.push({
+          type: 'map',
+          item: manifest,
+          installedVersion: installed.version,
+        });
     }
     return items;
   }, [mods, maps, installedMods, installedMaps]);
 
   const installedVersionByItemKey = useMemo(
-    () => new Map(installedItems.map((e) => [`${e.type}-${e.item.id}`, e.installedVersion])),
+    () =>
+      new Map(
+        installedItems.map((e) => [
+          `${e.type}-${e.item.id}`,
+          e.installedVersion,
+        ]),
+      ),
     [installedItems],
   );
 
@@ -69,7 +86,10 @@ export function BrowsePage() {
     return [...new Set(modTags)].sort();
   }, [mods]);
 
-  const availableSpecialDemand = useMemo(() => buildSpecialDemandValues(maps), [maps]);
+  const availableSpecialDemand = useMemo(
+    () => buildSpecialDemandValues(maps),
+    [maps],
+  );
 
   const {
     modTagCounts,
@@ -87,8 +107,16 @@ export function BrowsePage() {
     initializeViewMode(defaultBrowseViewMode);
   }, [defaultBrowseViewMode, initializeViewMode]);
 
-  const { items, page, totalPages, totalResults, filters, setFilters, setType, setPage } =
-    useFilteredItems({ mods, maps, modDownloadTotals, mapDownloadTotals });
+  const {
+    items,
+    page,
+    totalPages,
+    totalResults,
+    filters,
+    setFilters,
+    setType,
+    setPage,
+  } = useFilteredItems({ mods, maps, modDownloadTotals, mapDownloadTotals });
 
   const cardGridPreset = useMemo(
     () => (viewMode === 'compact' ? 'compact' : 'default'),
@@ -132,7 +160,9 @@ export function BrowsePage() {
 
         <SearchBar
           query={filters.query}
-          onQueryChange={(value) => setFilters((prev) => ({ ...prev, query: value }))}
+          onQueryChange={(value) =>
+            setFilters((prev) => ({ ...prev, query: value }))
+          }
         />
 
         <div className="space-y-4">
@@ -142,7 +172,9 @@ export function BrowsePage() {
                 <span className="inline-block h-4 w-24 animate-pulse rounded bg-muted" />
               ) : (
                 <>
-                  <span className="font-medium text-foreground">{totalResults}</span>{' '}
+                  <span className="font-medium text-foreground">
+                    {totalResults}
+                  </span>{' '}
                   result{totalResults !== 1 ? 's' : ''}
                   {filters.query && (
                     <span className="ml-1">
@@ -161,7 +193,9 @@ export function BrowsePage() {
                     ...prev,
                     sort: value,
                     randomSeed:
-                      value.field === 'random' ? createRandomSeed() : prev.randomSeed,
+                      value.field === 'random'
+                        ? createRandomSeed()
+                        : prev.randomSeed,
                   }))
                 }
                 tab={filters.type}
@@ -191,7 +225,9 @@ export function BrowsePage() {
                       type={itemType}
                       item={item}
                       viewMode={viewMode}
-                      installedVersion={installedVersionByItemKey.get(`${itemType}-${item.id}`)}
+                      installedVersion={installedVersionByItemKey.get(
+                        `${itemType}-${item.id}`,
+                      )}
                       totalDownloads={
                         itemType === 'mod'
                           ? (modDownloadTotals[item.id] ?? 0)
@@ -208,7 +244,9 @@ export function BrowsePage() {
                       type={itemType}
                       item={item}
                       viewMode={viewMode}
-                      installedVersion={installedVersionByItemKey.get(`${itemType}-${item.id}`)}
+                      installedVersion={installedVersionByItemKey.get(
+                        `${itemType}-${item.id}`,
+                      )}
                       totalDownloads={
                         itemType === 'mod'
                           ? (modDownloadTotals[item.id] ?? 0)
