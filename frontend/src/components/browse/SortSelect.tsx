@@ -104,7 +104,7 @@ export function SortSelect({ value, onChange, tab }: SortSelectProps) {
             'text-xs font-semibold text-muted-foreground',
             'hover:bg-accent/45 hover:text-primary dark:hover:bg-accent/45',
             'data-[state=open]:bg-accent/45 data-[state=open]:text-primary',
-            '[&_svg]:text-current',
+            '[&_svg]:!text-current',
             !isRandom && 'rounded-none border-r border-border/60',
           )}
         >
