@@ -23,7 +23,7 @@ export function PageHeading({
   const isSidebar = size === 'sidebar';
 
   return (
-    <header className={cn('relative isolate mb-10 text-center', className)}>
+    <header className={cn('relative mb-10 text-center', className)}>
       <div
         className={cn(
           'pointer-events-none absolute inset-x-0 z-0 mx-auto rounded-full blur-3xl',

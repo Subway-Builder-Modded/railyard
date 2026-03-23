@@ -1,9 +1,8 @@
 export const SEARCH_BAR_PLACEHOLDER = 'Search by name, author, description...';
 
 export const SEARCH_FILTER_EMPTY_LABELS = {
-  generic: 'No options available',
+  generic: 'No filters available',
   tags: 'No tags available',
-  specialDemand: 'No special demand tags available',
 } as const;
 
 export const MAX_CARD_BADGES = 3;

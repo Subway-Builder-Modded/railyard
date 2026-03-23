@@ -8,12 +8,7 @@ import {
   Tag,
   X,
 } from 'lucide-react';
-import {
-  type ComponentType,
-  type Dispatch,
-  type SetStateAction,
-  useState,
-} from 'react';
+import { type ComponentType, type Dispatch, type SetStateAction, useState } from 'react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
@@ -27,16 +22,20 @@ import {
 } from '@/lib/map-filter-values';
 import { SEARCH_FILTER_EMPTY_LABELS } from '@/lib/search';
 import { cn } from '@/lib/utils';
-import { type BrowseFilterState } from '@/stores/browse-store';
+import type { AssetQueryFilters } from '@/stores/asset-query-filter-store';
 
-const FILTER_SECTION_TITLE_CLASS =
+// ─── Shared style constants ────────────────────────────────────────────────────
+
+export const FILTER_SECTION_TITLE_CLASS =
   'text-xs font-semibold uppercase tracking-widest text-muted-foreground';
-const FILTER_COUNT_BADGE_CLASS =
+export const FILTER_COUNT_BADGE_CLASS =
   'inline-flex h-5 min-w-5 items-center justify-center rounded-full border border-border/65 bg-muted/45 px-1.5 text-[0.65rem] font-semibold tabular-nums text-muted-foreground transition-colors';
 
-interface SidebarFiltersProps {
-  filters: BrowseFilterState;
-  onFiltersChange: Dispatch<SetStateAction<BrowseFilterState>>;
+// ─── Props ────────────────────────────────────────────────────────────────────
+
+export interface SidebarFiltersProps {
+  filters: AssetQueryFilters;
+  onFiltersChange: Dispatch<SetStateAction<AssetQueryFilters>>;
   onTypeChange: (type: AssetType) => void;
   availableTags: string[];
   availableSpecialDemand: string[];
@@ -49,10 +48,14 @@ interface SidebarFiltersProps {
   mapCount: number;
 }
 
+// ─── Type selector ─────────────────────────────────────────────────────────────
+
 const typeOptions = [
   { value: 'map' as const, label: 'Maps', icon: MapPin },
   { value: 'mod' as const, label: 'Mods', icon: Package },
 ];
+
+// ─── Main component ────────────────────────────────────────────────────────────
 
 export function SidebarFilters({
   filters,
@@ -110,7 +113,6 @@ export function SidebarFilters({
                     {counts[value]}
                   </span>
                 </span>
-
                 {isCurrent && (
                   <span
                     aria-hidden
@@ -192,13 +194,55 @@ export function SidebarFilters({
                 map: { ...prev.map, specialDemand: values },
               }))
             }
-            emptyLabel={SEARCH_FILTER_EMPTY_LABELS.specialDemand}
+            emptyLabel={SEARCH_FILTER_EMPTY_LABELS.generic}
           />
         </>
       )}
     </div>
   );
 }
+
+// ─── Collapsible section header ────────────────────────────────────────────────
+
+interface CollapsibleFilterHeaderProps {
+  title: string;
+  icon: ComponentType<{ className?: string }>;
+  open: boolean;
+  onToggle: () => void;
+}
+
+function CollapsibleFilterHeader({
+  title,
+  icon: Icon,
+  open,
+  onToggle,
+}: CollapsibleFilterHeaderProps) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="group mb-1 flex w-full items-center gap-1.5 rounded-md px-1 py-1.5 transition-colors hover:bg-accent/45"
+    >
+      <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+      <span
+        className={cn(
+          FILTER_SECTION_TITLE_CLASS,
+          'flex-1 text-left transition-colors group-hover:text-primary',
+        )}
+      >
+        {title}
+      </span>
+      <ChevronDown
+        className={cn(
+          'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-200 group-hover:text-primary',
+          !open && '-rotate-90',
+        )}
+      />
+    </button>
+  );
+}
+
+// ─── Checklist filter section ──────────────────────────────────────────────────
 
 interface FilterSectionProperties {
   title: string;
@@ -226,9 +270,7 @@ function ChecklistFilterSection({
 
   const toggle = (value: string) => {
     onChange(
-      selected.includes(value)
-        ? selected.filter((v) => v !== value)
-        : [...selected, value],
+      selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value],
     );
   };
 
@@ -268,9 +310,7 @@ function ChecklistFilterSection({
                     <Checkbox checked={selected.includes(value)} aria-hidden="true" />
                     <span>{formatValue(value)}</span>
                   </span>
-                  <span className={FILTER_COUNT_BADGE_CLASS}>
-                    {counts[value] ?? 0}
-                  </span>
+                  <span className={FILTER_COUNT_BADGE_CLASS}>{counts[value] ?? 0}</span>
                 </button>
               ))}
             </div>
@@ -291,43 +331,5 @@ function ChecklistFilterSection({
         </div>
       </div>
     </div>
-  );
-}
-
-interface CollapsibleFilterHeaderProps {
-  title: string;
-  icon: ComponentType<{ className?: string }>;
-  open: boolean;
-  onToggle: () => void;
-}
-
-function CollapsibleFilterHeader({
-  title,
-  icon: Icon,
-  open,
-  onToggle,
-}: CollapsibleFilterHeaderProps) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="group mb-1 flex w-full items-center gap-1.5 rounded-md px-1 py-1.5 transition-colors hover:bg-accent/45"
-    >
-      <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-      <span
-        className={cn(
-          FILTER_SECTION_TITLE_CLASS,
-          'flex-1 text-left transition-colors group-hover:text-primary',
-        )}
-      >
-        {title}
-      </span>
-      <ChevronDown
-        className={cn(
-          'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-200 group-hover:text-primary',
-          !open && '-rotate-90',
-        )}
-      />
-    </button>
   );
 }
