@@ -23,6 +23,14 @@ import { SectionHeader } from '@/components/homepage/SectionHeader';
 import { PageHeading } from '@/components/shared/PageHeading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AssetType } from '@/lib/asset-types';
 import { getLocalAccentClasses } from '@/lib/local-accent';
@@ -37,6 +45,7 @@ import { useInstalledStore } from '@/stores/installed-store';
 import { useRegistryStore } from '@/stores/registry-store';
 
 const UPDATE_ACCENT = getLocalAccentClasses('update');
+const DISCOVER_SECTION_ITEM_LIMIT = 8;
 
 export function HomePage() {
   const {
@@ -60,6 +69,7 @@ export function HomePage() {
     useState<PendingUpdatesByKey>({});
   const [updatesLoading, setUpdatesLoading] = useState(false);
   const [updatingAll, setUpdatingAll] = useState(false);
+  const [updateAllConfirmOpen, setUpdateAllConfirmOpen] = useState(false);
   const [lastPendingUpdateEntries, setLastPendingUpdateEntries] = useState<
     Array<{
       key: string;
@@ -137,38 +147,44 @@ export function HomePage() {
     [mapManifestById, modManifestById, pendingUpdatesByKey],
   );
 
-  const handleUpdateSingle = useCallback(
-    async (type: AssetType, id: string) => {
+  const runUpdateOperations = useCallback(
+    async (
+      operations: Array<{ type: AssetType; id: string }>,
+      options?: { trackBulkUpdate?: boolean },
+    ) => {
+      const trackBulkUpdate = options?.trackBulkUpdate ?? false;
+      if (trackBulkUpdate) {
+        setUpdatingAll(true);
+      }
+
       try {
-        await updateAssetsToLatest([{ type, id }]);
+        await updateAssetsToLatest(operations);
         void fetchPendingUpdates();
       } catch {
         // Errors via toasts in the store.
+      } finally {
+        if (trackBulkUpdate) {
+          setUpdatingAll(false);
+        }
       }
     },
     [fetchPendingUpdates, updateAssetsToLatest],
   );
 
   const handleUpdateAll = useCallback(async () => {
-    setUpdatingAll(true);
-    try {
-      await updateAssetsToLatest(
-        pendingUpdateEntries.map(({ type, id }) => ({ type, id })),
-      );
-      void fetchPendingUpdates();
-    } catch {
-      // Errors via toasts in the store.
-    } finally {
-      setUpdatingAll(false);
-    }
-  }, [fetchPendingUpdates, pendingUpdateEntries, updateAssetsToLatest]);
+    setUpdateAllConfirmOpen(false);
+    await runUpdateOperations(
+      pendingUpdateEntries.map(({ type, id }) => ({ type, id })),
+      { trackBulkUpdate: true },
+    );
+  }, [pendingUpdateEntries, runUpdateOperations]);
 
   const recentMaps = useMemo(
     () =>
       sortTaggedItemsByLastUpdated(
         maps.map((item) => ({ type: 'map' as const, item })),
         'desc',
-      ).slice(0, 8),
+      ).slice(0, DISCOVER_SECTION_ITEM_LIMIT),
     [maps],
   );
 
@@ -177,7 +193,7 @@ export function HomePage() {
       sortTaggedItemsByLastUpdated(
         mods.map((item) => ({ type: 'mod' as const, item })),
         'desc',
-      ).slice(0, 8),
+      ).slice(0, DISCOVER_SECTION_ITEM_LIMIT),
     [mods],
   );
 
@@ -263,11 +279,11 @@ export function HomePage() {
               ) : undefined
             }
             action={
-              !updatesLoading && pendingUpdateEntries.length > 1 ? (
+              !updatesLoading && pendingUpdateEntries.length > 0 ? (
                 <Button
                   size="sm"
                   disabled={updatingAll}
-                  onClick={handleUpdateAll}
+                  onClick={() => setUpdateAllConfirmOpen(true)}
                   className={cn('h-8 gap-1.5 text-xs', UPDATE_ACCENT.solidButton)}
                 >
                   {updatingAll ? (
@@ -304,7 +320,9 @@ export function HomePage() {
                     currentVersion={currentVersion}
                     latestVersion={latestVersion}
                     isUpdating={isOperating(id)}
-                    onUpdate={() => void handleUpdateSingle(type, id)}
+                    onUpdate={() =>
+                      void runUpdateOperations([{ type, id }])
+                    }
                     updateButtonClassName={UPDATE_ACCENT.solidButton}
                   />
                 ),
@@ -313,6 +331,35 @@ export function HomePage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={updateAllConfirmOpen} onOpenChange={setUpdateAllConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update all available content?</DialogTitle>
+            <DialogDescription>
+              This will send {pendingUpdateEntries.length} update operation
+              {pendingUpdateEntries.length === 1 ? '' : 's'}.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUpdateAllConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={updatingAll}
+              onClick={() => void handleUpdateAll()}
+              className={UPDATE_ACCENT.solidButton}
+            >
+              {updatingAll ? (
+                <RefreshCw className="h-3 w-3 animate-spin" aria-hidden />
+              ) : (
+                <Download className="h-3 w-3" aria-hidden />
+              )}
+              Update All
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <section>
         <SectionHeader

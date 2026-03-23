@@ -1,5 +1,5 @@
 import { CheckCircle, Download, MapPin, Package, Users } from 'lucide-react';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 
 import { Badge } from '@/components/ui/badge';
@@ -150,37 +150,36 @@ function ItemBadges({
   compact = false,
   wrap = false,
   fixedVisibleCount,
+  maxWidthPercentage = 1,
 }: {
   badges: string[];
   align?: 'left' | 'right';
   compact?: boolean;
   wrap?: boolean;
   fixedVisibleCount?: number;
+  maxWidthPercentage?: number;
 }) {
   if (badges.length === 0) return null;
 
-  const preferredVisibleCount = 3;
-  const fallbackVisibleCount = 2;
-  const resolvedPreferredCount =
-    fixedVisibleCount === undefined
-      ? preferredVisibleCount
-      : Math.max(1, fixedVisibleCount);
+  const maxBadgeCount =
+    fixedVisibleCount === undefined ? badges.length : Math.max(1, fixedVisibleCount);
+  const visibleBadges = badges.slice(0, maxBadgeCount);
 
   const justifyClass = align === 'left' ? 'justify-start' : 'justify-end';
   const badgeClassName = compact
     ? 'text-[11px] px-1.5 py-0 h-5'
     : 'text-xs px-1.5 py-0';
-
-  const badgesPreferred = useMemo(
-    () => badges.slice(0, resolvedPreferredCount),
-    [badges, resolvedPreferredCount],
-  );
+  const clampedMaxWidthPercent = Math.min(1, Math.max(0, maxWidthPercentage)) * 100;
+  const maxWidthStyle =
+    clampedMaxWidthPercent < 100
+      ? { maxWidth: `${clampedMaxWidthPercent}%` }
+      : undefined;
 
   if (wrap) {
-    const overflowCount = Math.max(0, badges.length - badgesPreferred.length);
+    const overflowCount = Math.max(0, badges.length - visibleBadges.length);
     return (
-      <div className={cn('flex flex-wrap gap-1', justifyClass)}>
-        {badgesPreferred.map((badge) => (
+      <div className={cn('flex flex-wrap gap-1', justifyClass)} style={maxWidthStyle}>
+        {visibleBadges.map((badge) => (
           <Badge key={badge} variant="secondary" className={badgeClassName}>
             {badge}
           </Badge>
@@ -196,13 +195,11 @@ function ItemBadges({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const measureRef = useRef<HTMLDivElement | null>(null);
-  const [visibleCount, setVisibleCount] = useState(() =>
-    Math.min(resolvedPreferredCount, badgesPreferred.length),
-  );
+  const [visibleCount, setVisibleCount] = useState(visibleBadges.length);
 
   useLayoutEffect(() => {
     if (fixedVisibleCount !== undefined) {
-      setVisibleCount(Math.min(resolvedPreferredCount, badgesPreferred.length));
+      setVisibleCount(visibleBadges.length);
       return;
     }
 
@@ -248,18 +245,14 @@ function ItemBadges({
         return totalWidth <= availableWidth;
       };
 
-      const maxPossible = Math.min(resolvedPreferredCount, badgeWidths.length);
-      const preferred = maxPossible;
-      const fallback = Math.min(fallbackVisibleCount, maxPossible);
-
-      if (preferred <= fallback || fits(preferred)) {
-        setVisibleCount(preferred);
-        return;
+      for (let count = badgeWidths.length; count >= 0; count -= 1) {
+        if (fits(count)) {
+          setVisibleCount(count);
+          return;
+        }
       }
 
-      // Product behavior: once three badges no longer fit, we collapse early to
-      // two visible badges rather than cascading down to a single badge.
-      setVisibleCount(Math.max(1, fallback));
+      setVisibleCount(0);
     };
 
     update();
@@ -267,7 +260,7 @@ function ItemBadges({
     const ro = new ResizeObserver(() => update());
     ro.observe(container);
     return () => ro.disconnect();
-  }, [badges.length, badgesPreferred, fixedVisibleCount, resolvedPreferredCount]);
+  }, [badges.length, fixedVisibleCount, visibleBadges]);
 
   const overflowCount = Math.max(0, badges.length - visibleCount);
 
@@ -276,8 +269,9 @@ function ItemBadges({
       <div
         ref={containerRef}
         className={cn('flex flex-nowrap gap-1 overflow-hidden', justifyClass)}
+        style={maxWidthStyle}
       >
-        {badgesPreferred.slice(0, visibleCount).map((badge) => (
+        {visibleBadges.slice(0, visibleCount).map((badge) => (
           <Badge key={badge} variant="secondary" className={badgeClassName}>
             {badge}
           </Badge>
@@ -294,7 +288,7 @@ function ItemBadges({
         aria-hidden="true"
         className="pointer-events-none absolute -left-[99999px] -top-[99999px] flex gap-1 opacity-0"
       >
-        {badgesPreferred.map((badge) => (
+        {visibleBadges.map((badge) => (
           <Badge
             key={badge}
             data-measure="badge"
@@ -576,7 +570,7 @@ export function ItemCard({
               showDownloads={presentation.showDownloads}
               totalDownloads={totalDownloads}
             />
-            <ItemBadges badges={presentation.badges} />
+            <ItemBadges badges={presentation.badges} maxWidthPercentage={0.65} />
           </div>
         </div>
       </article>

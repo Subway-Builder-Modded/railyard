@@ -230,9 +230,17 @@
   html,
   body,
   #root {
-    @apply min-h-screen bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+  html,
+  body {
+    @apply h-full overflow-hidden;
+  }
+  #root {
+    @apply h-full min-h-screen overflow-y-auto;
+    overscroll-behavior-y: none;
   }
   body {
     @apply bg-background text-foreground;
