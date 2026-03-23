@@ -58,6 +58,29 @@ document.addEventListener(
 );
 
 document.addEventListener(
+  'click',
+  (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    if (!(e.ctrlKey || e.metaKey)) {
+      return;
+    }
+
+    const anchor = target.closest('a');
+    if (!anchor) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  true,
+);
+
+document.addEventListener(
   'contextmenu',
   (e) => {
     e.preventDefault();

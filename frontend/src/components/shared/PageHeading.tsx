@@ -23,22 +23,22 @@ export function PageHeading({
   const isSidebar = size === 'sidebar';
 
   return (
-    <header className={cn('relative mb-10 text-center', className)}>
+    <header className={cn('relative isolate mb-10 text-center', className)}>
       <div
         className={cn(
-          'pointer-events-none absolute inset-x-0 mx-auto rounded-full blur-3xl',
+          'pointer-events-none absolute inset-x-0 z-0 mx-auto rounded-full blur-3xl',
           isSidebar
             ? '-top-7 h-24 max-w-sm'
             : isCompact
               ? '-top-7 h-24 max-w-sm'
               : '-top-10 h-36 w-full',
-          'bg-gradient-to-r from-transparent via-primary/20 to-transparent',
+          'bg-gradient-to-r from-transparent via-primary/35 to-transparent dark:via-primary/22',
         )}
       />
 
       <h1
         className={cn(
-          'relative mt-1 inline-flex items-center justify-center font-black tracking-tight',
+          'relative z-10 mt-1 inline-flex items-center justify-center font-black tracking-tight',
           isSidebar
             ? 'gap-2.5 text-[2.35rem] leading-tight'
             : isCompact
@@ -63,7 +63,7 @@ export function PageHeading({
       {description ? (
         <p
           className={cn(
-            'text-muted-foreground',
+            'relative z-10 text-muted-foreground',
             isCompact
               ? 'mt-2 max-w-xs text-xs leading-4'
               : 'mt-3 w-full text-base sm:text-lg',
