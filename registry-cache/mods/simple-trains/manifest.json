@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "simple-trains",
+  "name": "Simple Trains",
+  "author": "Bobby-047",
+  "github_id": 262406331,
+  "description": "Adds some simple trains:\n- City Bus\n- High Speed Tram\n- High Capacity Tram\n- High speed metro\n- Maglev",
+  "tags": [
+    "trains"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/simple-trains/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/Bobby-047/Some-new-Trains",
+  "update": {
+    "type": "github",
+    "repo": "Bobby-047/Some-new-Trains"
+  },
+  "last_updated": 1777504907
+}

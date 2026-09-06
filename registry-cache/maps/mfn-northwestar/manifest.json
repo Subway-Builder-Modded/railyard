@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "id": "mfn-northwestar",
+  "name": "Northwest Arkansas",
+  "author": "crumpetime",
+  "github_id": 121749023,
+  "description": "A custom map of Northwest Arkansas, with demand added for various colleges in the area as well as the local airport.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-northwestar/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-northwestar/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/crumpetime/sb-maps-xna",
+  "update": {
+    "type": "github",
+    "repo": "crumpetime/sb-maps-xna"
+  },
+  "city_code": "XNA",
+  "country": "US",
+  "population": 261959,
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 261959,
+  "points_count": 3064,
+  "population_count": 38101,
+  "initial_view_state": {
+    "latitude": 36.342093,
+    "longitude": -94.205017,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.39653980846546755,
+      "p25": 0.5464029911471726,
+      "p50": 0.7367825103467899,
+      "p75": 1.1768694525063697,
+      "p90": 1.6722746065489162,
+      "mean": 0.8929940986022756
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.23701115891530528,
+      "p25": 0.34606700944207053,
+      "p50": 0.48810448502237835,
+      "p75": 0.6861348547085787,
+      "p90": 1.0413555899571034,
+      "mean": 0.5734571312880073
+    },
+    "commuteDistanceKm": {
+      "p10": 6848,
+      "p25": 13946,
+      "p50": 25870,
+      "p75": 42461,
+      "p90": 59406,
+      "mean": 30654.342956877772
+    },
+    "residentCellDensity": {
+      "p10": 2,
+      "p25": 5,
+      "p50": 19,
+      "p75": 78,
+      "p90": 344,
+      "mean": 111.51638995317157
+    },
+    "workerCellDensity": {
+      "p10": 2,
+      "p25": 4,
+      "p50": 18,
+      "p75": 113,
+      "p90": 406,
+      "mean": 187.3719599427754
+    },
+    "detail": {
+      "radiusKm": 0.5996889591999465,
+      "expectedPointSpacingKm": 0.9585059631854884,
+      "normalizedRadius": 0.6256496904901317,
+      "activityPerPoint": 85.49575718015666,
+      "playableAreaKm2": 9554,
+      "playableAreaPerPointKm2": 3.118146214099217,
+      "playableCatchmentRadiusKm": 0.9962613946722715,
+      "localityScore": 0.38498563129625196,
+      "deaggregationScore": 0.007332465729446876,
+      "score": 0.053130913297337906
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9999793985844914,
+        "continuousScore": 0.5170467817679365,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.999958798017802,
+        "largestCenterShare": 0.5022694391107005,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -94.2043416511077,
+            "latitude": 36.34691150164904,
+            "massShare": 0.5022694391107005,
+            "assignedMass": 263148,
+            "assignedPointCount": 1117,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -94.1605136746673,
+            "latitude": 36.11123213681605,
+            "massShare": 0.49773056088929946,
+            "assignedMass": 260770,
+            "assignedPointCount": 1515,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1773210696,
+  "search_aliases": [
+    "Fayetteville",
+    "Фејетвил",
+    "페이엣빌",
+    "フェイエットビル",
+    "Fejetvilis",
+    "Фейетвилл",
+    "费耶特维尔",
+    "فايتفيل",
+    "פאייטוויל",
+    "Фаєтвіль"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:48.106Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

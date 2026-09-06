@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "id": "riviera-romagnola",
+  "name": "Riviera Romagnola",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Romagna Riviera, spanning from Ravenna to Fano and including Pesaro, Rimini, Cesena, Forlì, and Faenza, with fully realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/riviera-romagnola/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/riviera-romagnola/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/riviera-romagnola/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/riviera-romagnola/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/RIV.json"
+  },
+  "city_code": "RIV",
+  "country": "IT",
+  "population": 630314,
+  "residents_total": 630314,
+  "points_count": 4349,
+  "population_count": 7433,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 44.0609,
+    "longitude": 12.5648,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "RIV.pmtiles": 61.92,
+    "buildings_index.bin": 51.98,
+    "buildings_index.json": 77.42,
+    "config.json": 0,
+    "demand_data.json": 1.45,
+    "roads.geojson": 22.5,
+    "runways_taxiways.geojson": 0.29
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.14014893058605415,
+      "p25": 0.16345382463583888,
+      "p50": 0.18965503710792198,
+      "p75": 0.22266254583058154,
+      "p90": 0.2651033331502132,
+      "mean": 0.21517290213946838
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.031061605280420023,
+      "p25": 0.08657223274992654,
+      "p50": 0.1662890663758199,
+      "p75": 0.21480234519390495,
+      "p90": 0.33204270507343436,
+      "mean": 0.1892194430879642
+    },
+    "commuteDistanceKm": {
+      "p10": 2109.8,
+      "p25": 4304,
+      "p50": 9912.4,
+      "p75": 27265.8,
+      "p90": 40356.9,
+      "mean": 16302.080277142495
+    },
+    "residentCellDensity": {
+      "p10": 99,
+      "p25": 169,
+      "p50": 326,
+      "p75": 793,
+      "p90": 1698,
+      "mean": 639.3837563451776
+    },
+    "workerCellDensity": {
+      "p10": 75,
+      "p25": 97,
+      "p50": 149,
+      "p75": 881,
+      "p90": 3444,
+      "mean": 1253.0099403578529
+    },
+    "detail": {
+      "radiusKm": 0.1775881726189777,
+      "expectedPointSpacingKm": 0.5122100770445491,
+      "normalizedRadius": 0.3467096423476496,
+      "activityPerPoint": 144.93308806622213,
+      "playableAreaKm2": 2292,
+      "playableAreaPerPointKm2": 0.5270177052195907,
+      "playableCatchmentRadiusKm": 0.409578985990847,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9814849433774568,
+        "continuousScore": 0.9475505413229474,
+        "detectedCenterCount": 6,
+        "effectiveCenterCount": 5.491612425009445,
+        "largestCenterShare": 0.2422308563668267,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 12.588827575803888,
+            "latitude": 44.032660645787224,
+            "massShare": 0.2422308563668267,
+            "assignedMass": 305363,
+            "assignedPointCount": 828,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.910319470803614,
+            "latitude": 43.869074121903985,
+            "massShare": 0.2121426780937755,
+            "assignedMass": 267433,
+            "assignedPointCount": 851,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.016091127522,
+            "latitude": 44.24641256636995,
+            "massShare": 0.16224532534578004,
+            "assignedMass": 204531,
+            "assignedPointCount": 715,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.19356314606577,
+            "latitude": 44.42081977489489,
+            "massShare": 0.16142271946997847,
+            "assignedMass": 203494,
+            "assignedPointCount": 819,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.400593050931686,
+            "latitude": 44.17299425406214,
+            "massShare": 0.1374553000567971,
+            "assignedMass": 173280,
+            "assignedPointCount": 628,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.24712935479223,
+            "latitude": 44.1514216837425,
+            "massShare": 0.08450312066684224,
+            "assignedMass": 106527,
+            "assignedPointCount": 508,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Rimini",
+    "ريميني",
+    "リミニ",
+    "Римини",
+    "Ріміні",
+    "Rímini"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

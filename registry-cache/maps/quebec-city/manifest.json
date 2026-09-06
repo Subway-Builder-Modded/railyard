@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "id": "quebec-city",
+  "name": "Quebec City",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Quebec City and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/quebec-city/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/quebec-city/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/quebec-city/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YQB-update.json"
+  },
+  "city_code": "YQB",
+  "country": "CA",
+  "population": 497019,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 497019,
+  "points_count": 2147,
+  "population_count": 4131,
+  "initial_view_state": {
+    "latitude": 46.8139,
+    "longitude": -71.208,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YQB.pmtiles": 27.34,
+    "YQB_foundations.pmtiles": 12.93,
+    "buildings_index.bin": 36.62,
+    "buildings_index.json": 48.25,
+    "config.json": 0,
+    "demand_data.json": 1.02,
+    "ocean_depth_index.json": 13.31,
+    "roads.geojson": 7.35,
+    "runways_taxiways.geojson": 0.26
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2535902808943515,
+      "p25": 0.2766911567210497,
+      "p50": 0.30779650446029794,
+      "p75": 0.3558242567472661,
+      "p90": 0.4803376964994657,
+      "mean": 0.3948761282865253
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.25998108725895264,
+      "p25": 0.28470616876032134,
+      "p50": 0.32126022842225005,
+      "p75": 0.42281138288172393,
+      "p90": 0.6513339940266937,
+      "mean": 0.4273980184838485
+    },
+    "commuteDistanceKm": {
+      "p10": 2191,
+      "p25": 5012,
+      "p50": 10565,
+      "p75": 19426,
+      "p90": 30990,
+      "mean": 13842.26894214476
+    },
+    "residentCellDensity": {
+      "p10": 77,
+      "p25": 155,
+      "p50": 428,
+      "p75": 920,
+      "p90": 1446,
+      "mean": 634.8269230769231
+    },
+    "workerCellDensity": {
+      "p10": 103,
+      "p25": 155,
+      "p50": 368,
+      "p75": 794,
+      "p90": 1997,
+      "mean": 802.614262560778
+    },
+    "detail": {
+      "radiusKm": 0.314456317046558,
+      "expectedPointSpacingKm": 0.6284661686980061,
+      "normalizedRadius": 0.5003552024097294,
+      "activityPerPoint": 231.4946436888682,
+      "playableAreaKm2": 1580,
+      "playableAreaPerPointKm2": 0.735910572892408,
+      "playableCatchmentRadiusKm": 0.4839913332889656,
+      "localityScore": 0.6215991278049359,
+      "deaggregationScore": 1,
+      "score": 0.7884155806457251
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.5740671635731246,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -71.27420272605275,
+            "latitude": 46.81016002808731,
+            "massShare": 1,
+            "assignedMass": 994038,
+            "assignedPointCount": 2147,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "Québec",
+    "Quebec",
+    "Квебек",
+    "Kota Quebec",
+    "Thành phố Québec",
+    "퀘벡",
+    "क्यूबेक नगर",
+    "ケベック・シティー",
+    "Kvebeka",
+    "Ciutat de Quebec",
+    "Kvebekas",
+    "Quebec Hiria",
+    "مدينة كيبك",
+    "Bandaraya Quebec",
+    "Quebecstad",
+    "კვებეკი",
+    "ควิเบก",
+    "Κεμπέκ",
+    "קוויבק סיטי",
+    "Kebeku",
+    "魁北克市",
+    "Kvebek",
+    "Քվեբեկ",
+    "কিউবেক"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

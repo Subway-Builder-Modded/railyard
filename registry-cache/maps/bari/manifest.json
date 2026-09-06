@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "id": "bari",
+  "name": "Bari",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Bari metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bari/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bari/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bari/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/BAR.json"
+  },
+  "city_code": "BAR",
+  "country": "IT",
+  "population": 660455,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 660455,
+  "points_count": 3875,
+  "population_count": 7869,
+  "initial_view_state": {
+    "latitude": 41.1171,
+    "longitude": 16.8719,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "BAR.pmtiles": 28.93,
+    "BAR.zip": 86.61,
+    "buildings_index.bin": 53.1,
+    "buildings_index.json": 78.98,
+    "config.json": 0,
+    "demand_data.json": 1.47,
+    "roads.geojson": 14.02,
+    "runways_taxiways.geojson": 0.13
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.14338128345361598,
+      "p25": 0.16628927600354484,
+      "p50": 0.1963250513423598,
+      "p75": 0.22686758658067455,
+      "p90": 0.2769035118668002,
+      "mean": 0.22826826432814482
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 7.900885651219831e-13,
+      "p25": 0.0828813146214782,
+      "p50": 0.1519128281188414,
+      "p75": 0.20381708500432905,
+      "p90": 0.2453097362520325,
+      "mean": 0.15719322831356095
+    },
+    "commuteDistanceKm": {
+      "p10": 2000.3,
+      "p25": 4751.1,
+      "p50": 10265,
+      "p75": 16323.7,
+      "p90": 22831.3,
+      "mean": 11686.469932647109
+    },
+    "residentCellDensity": {
+      "p10": 101,
+      "p25": 174,
+      "p50": 371,
+      "p75": 989,
+      "p90": 2081,
+      "mean": 770.348538011696
+    },
+    "workerCellDensity": {
+      "p10": 70,
+      "p25": 100,
+      "p50": 156,
+      "p75": 445,
+      "p90": 2976,
+      "mean": 1345.122199592668
+    },
+    "detail": {
+      "radiusKm": 0.17269711572575444,
+      "expectedPointSpacingKm": 0.5069834889466481,
+      "normalizedRadius": 0.3406365680361004,
+      "activityPerPoint": 170.44,
+      "playableAreaKm2": 1976,
+      "playableAreaPerPointKm2": 0.5099354838709678,
+      "playableCatchmentRadiusKm": 0.40288646767053865,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.844820187562444,
+        "continuousScore": 0.8643537283912268,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.289447830236623,
+        "largestCenterShare": 0.595674194305441,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 16.859422315880764,
+            "latitude": 41.051623667377186,
+            "massShare": 0.595674194305441,
+            "assignedMass": 786832,
+            "assignedPointCount": 2115,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 16.603583180116132,
+            "latitude": 41.13365497239995,
+            "massShare": 0.21262992936687586,
+            "assignedMass": 280865,
+            "assignedPointCount": 800,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 17.182222222815824,
+            "latitude": 40.894360325378514,
+            "massShare": 0.1916958763276832,
+            "assignedMass": 253213,
+            "assignedPointCount": 960,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "باري",
+    "Μπάρι",
+    "בארי",
+    "バーリ",
+    "Baris",
+    "Бари",
+    "巴里",
+    "Μπαρι",
+    "Барі",
+    "ბარი",
+    "바리",
+    "বারি",
+    "बारी"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

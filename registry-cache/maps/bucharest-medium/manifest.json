@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "id": "bucharest-medium",
+  "name": "Bucharest",
+  "author": "metatablestudios",
+  "github_id": 172184760,
+  "description": "This map contains Bucharest and the greater metropolitan area. Kontur data has been used for demand data with a custom made data generator.",
+  "tags": [
+    "east-europe"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bucharest-medium/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bucharest-medium/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bucharest-medium/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/metatablestudios/subwaybuilder-romania/releases/latest/download/BUC.zip",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/metatablestudios/subwaybuilder-romania/refs/heads/main/BUC.json"
+  },
+  "city_code": "BUC",
+  "country": "RO",
+  "population": 2583210,
+  "residents_total": 2583210,
+  "points_count": 1852,
+  "population_count": 64703,
+  "initial_view_state": {
+    "latitude": 44.438414,
+    "longitude": 26.048912,
+    "zoom": 15,
+    "bearing": 0
+  },
+  "data_source": "OSM, Kontur Population Data",
+  "source_quality": "medium-quality",
+  "level_of_detail": "medium-detail",
+  "location": "east-europe",
+  "special_demand": [],
+  "file_sizes": {
+    "BUC.pmtiles": 23.43,
+    "buildings_index.json": 51.37,
+    "config.json": 0,
+    "demand_data.json": 9.09,
+    "manifest.json": 0,
+    "roads.geojson": 9.86,
+    "runways_taxiways.geojson": 0.33
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.934963316006082,
+      "p25": 0.9352970512995216,
+      "p50": 0.9355921707378438,
+      "p75": 0.9358394903663622,
+      "p90": 0.9361009487308777,
+      "mean": 0.9364678599375855
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.9350457758503136,
+      "p25": 0.9352207549329119,
+      "p50": 0.9354408488417859,
+      "p75": 0.9356072008299958,
+      "p90": 0.9357508429784803,
+      "mean": 0.9361704613464031
+    },
+    "commuteDistanceKm": {
+      "p10": 4732,
+      "p25": 10521,
+      "p50": 18518,
+      "p75": 28563,
+      "p90": 38150,
+      "mean": 20307.895012596015
+    },
+    "residentCellDensity": {
+      "p10": 40,
+      "p25": 113,
+      "p50": 338,
+      "p75": 929,
+      "p90": 4606,
+      "mean": 1470.4786081003992
+    },
+    "workerCellDensity": {
+      "p10": 2,
+      "p25": 4,
+      "p50": 13,
+      "p75": 74,
+      "p90": 893,
+      "mean": 556.221334854535
+    },
+    "detail": {
+      "radiusKm": 0.9355165067302328,
+      "expectedPointSpacingKm": 0.9729050706301635,
+      "normalizedRadius": 0.9615701829206074,
+      "activityPerPoint": 857.075135038539,
+      "playableAreaKm2": 2532,
+      "playableAreaPerPointKm2": 1.367170626349892,
+      "playableCatchmentRadiusKm": 0.6596847174728666,
+      "localityScore": 0,
+      "deaggregationScore": 0.8143547221239155,
+      "score": 0
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.25960932377183343,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 26.086708838465064,
+            "latitude": 44.43837316141841,
+            "massShare": 1,
+            "assignedMass": 3558559,
+            "assignedPointCount": 1852,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1782518400,
+  "search_aliases": [
+    "București",
+    "Bucarest",
+    "Bukarest",
+    "Букурещ",
+    "Bukurešť",
+    "בוקרשט",
+    "Bukurešt",
+    "ブカレスト",
+    "ბუქარესტი",
+    "부쿠레슈티",
+    "Bukareštas",
+    "Bukareste",
+    "Boekarest",
+    "Bukareszt",
+    "Bucareste",
+    "Бухарест",
+    "Букурешт",
+    "Bükreş",
+    "布加勒斯特",
+    "بوخارست",
+    "Βουκουρέστι",
+    "Բուխարեստ",
+    "Bucureşti",
+    "Bukureshti",
+    "Buxarest",
+    "Бухарэст",
+    "Bukarešta"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "id": "sydney",
+  "name": "Sydney",
+  "author": "WillBarouch",
+  "github_id": 93062709,
+  "description": "Covers the Greater Sydney metropolitan area from Penrith in the west to the Northern Beaches and Royal National Park in the south. Uses ABS census data for residences and jobs, augmented with real-world visitor figures for signficant entertainment venues, beaches, and military installations.",
+  "tags": [
+    "oceania",
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/sydney/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/sydney/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/sydney/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/WillBarouch/subwaybuilder-sydney",
+  "update": {
+    "type": "github",
+    "repo": "WillBarouch/subwaybuilder-sydney"
+  },
+  "city_code": "SYD",
+  "country": "AU",
+  "population": 3176499,
+  "residents_total": 3176499,
+  "points_count": 9687,
+  "population_count": 25580,
+  "initial_view_state": {
+    "latitude": -33.858134,
+    "longitude": 151.213705,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "ABS",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "oceania",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "file_sizes": {
+    "SYD.pmtiles": 59.51,
+    "buildings_index.json": 100.36,
+    "config.json": 0,
+    "demand_data.json": 8.91,
+    "roads.geojson": 25.57,
+    "runways_taxiways.geojson": 0.38
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.14735627174247823,
+      "p25": 0.24918601785154337,
+      "p50": 0.29467153500102244,
+      "p75": 0.34175301546532943,
+      "p90": 0.39630109027337174,
+      "mean": 0.3040220134202941
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.10629797361299302,
+      "p25": 0.1972653994257227,
+      "p50": 0.2715421215181616,
+      "p75": 0.3568999455668825,
+      "p90": 0.551165981507435,
+      "mean": 0.3225880071257885
+    },
+    "commuteDistanceKm": {
+      "p10": 1046,
+      "p25": 3419,
+      "p50": 9837,
+      "p75": 20868,
+      "p90": 33567,
+      "mean": 14057.921266614543
+    },
+    "residentCellDensity": {
+      "p10": 180,
+      "p25": 381,
+      "p50": 971,
+      "p75": 1765,
+      "p90": 2831,
+      "mean": 1365.0343790287925
+    },
+    "workerCellDensity": {
+      "p10": 142,
+      "p25": 287,
+      "p50": 626,
+      "p75": 1364,
+      "p90": 2735,
+      "mean": 1567.9007407407407
+    },
+    "detail": {
+      "radiusKm": 0.28287052473736257,
+      "expectedPointSpacingKm": 0.5157776978822404,
+      "normalizedRadius": 0.5484349670387378,
+      "activityPerPoint": 327.913595540415,
+      "playableAreaKm2": 3132,
+      "playableAreaPerPointKm2": 0.323319913285847,
+      "playableCatchmentRadiusKm": 0.320805119658292,
+      "localityScore": 0.5244533511038904,
+      "deaggregationScore": 1,
+      "score": 0.7241915154873677
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9986426340074952,
+        "continuousScore": 0.5322883299162965,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.9972889479049083,
+        "largestCenterShare": 0.5184212241212731,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 151.18918762003426,
+            "latitude": -33.87775441794601,
+            "massShare": 0.5184212241212731,
+            "assignedMass": 3293529,
+            "assignedPointCount": 3547,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 150.93102490825146,
+            "latitude": -33.828150497374985,
+            "massShare": 0.4815787758787269,
+            "assignedMass": 3059469,
+            "assignedPointCount": 6060,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1774149736,
+  "search_aliases": [
+    "Сидней",
+    "Sídney",
+    "سيدني",
+    "Сидни",
+    "סידני",
+    "सिडनी",
+    "シドニー",
+    "시드니",
+    "Sidnėjus",
+    "Сиднеј",
+    "ซิดนีย์",
+    "Sidney",
+    "Сідней",
+    "悉尼",
+    "Sidneja",
+    "Sydney City",
+    "Syd",
+    "სიდნეი",
+    "Սիդնեյ",
+    "Σίδνεϋ",
+    "সিডনি"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "id": "edmonton",
+  "name": "Edmonton",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Edmonton and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/edmonton/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/edmonton/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/edmonton/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YEG-update.json"
+  },
+  "city_code": "YEG",
+  "country": "CA",
+  "population": 798307,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 798307,
+  "points_count": 3374,
+  "population_count": 6612,
+  "initial_view_state": {
+    "latitude": 53.5461,
+    "longitude": -113.4938,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YEG.pmtiles": 40.86,
+    "YEG_foundations.pmtiles": 24.44,
+    "buildings_index.bin": 70.24,
+    "buildings_index.json": 96.51,
+    "config.json": 0,
+    "demand_data.json": 1.62,
+    "ocean_depth_index.json": 10.91,
+    "roads.geojson": 14.8,
+    "runways_taxiways.geojson": 0.16
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2489776686378451,
+      "p25": 0.26771863141714863,
+      "p50": 0.3008814139446358,
+      "p75": 0.34585992471802773,
+      "p90": 0.3980644550034696,
+      "mean": 0.3331995028645915
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2522015286820932,
+      "p25": 0.27937388739163443,
+      "p50": 0.323614079163611,
+      "p75": 0.4167069108382478,
+      "p90": 0.8065660597713107,
+      "mean": 0.446395479926532
+    },
+    "commuteDistanceKm": {
+      "p10": 2779,
+      "p25": 6587,
+      "p50": 12640,
+      "p75": 20462,
+      "p90": 35111,
+      "mean": 15753.142770719904
+    },
+    "residentCellDensity": {
+      "p10": 108,
+      "p25": 351,
+      "p50": 687,
+      "p75": 1212,
+      "p90": 1676,
+      "mean": 824.635987590486
+    },
+    "workerCellDensity": {
+      "p10": 104,
+      "p25": 155,
+      "p50": 342,
+      "p75": 781,
+      "p90": 1710,
+      "mean": 780.667972575906
+    },
+    "detail": {
+      "radiusKm": 0.31204080135639084,
+      "expectedPointSpacingKm": 0.6084272825494951,
+      "normalizedRadius": 0.5128645777501054,
+      "activityPerPoint": 236.6055127445169,
+      "playableAreaKm2": 1820,
+      "playableAreaPerPointKm2": 0.5394190871369294,
+      "playableCatchmentRadiusKm": 0.4143699171415805,
+      "localityScore": 0.5954534612442559,
+      "deaggregationScore": 1,
+      "score": 0.7716563103119523
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7457048203337858,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -113.5014901814719,
+            "latitude": 53.521519020126036,
+            "massShare": 1,
+            "assignedMass": 1596614,
+            "assignedPointCount": 3374,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "אדמונטון",
+    "エドモントン",
+    "에드먼턴",
+    "Edmontonas",
+    "Эдмонтон",
+    "Едмонтон",
+    "Эдмантан",
+    "إدمونتون",
+    "ედმონტონი",
+    "Edmontona",
+    "Едмънтън",
+    "Έντμοντον",
+    "埃德蒙顿",
+    "Էդմոնտոն",
+    "เอดมันตัน",
+    "एडमॉन्टन",
+    "এডমন্টন"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

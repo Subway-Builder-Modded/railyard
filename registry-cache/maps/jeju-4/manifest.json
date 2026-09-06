@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "id": "jeju-4",
+  "name": "Jeju (40km×40km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# JEJU (40km×40km)\r\n\r\n### CJU4 · v0.1.0\r\n\r\nCustom map of Jeju, Korea made with official Korean traffic volume data from official soures.\r\nWith 1,667 Pops and 272,881 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Jeju, Seogwipo</td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>1,600 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">272,881</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/jeju-4/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/CJU4.json"
+  },
+  "city_code": "CJU4",
+  "country": "KR",
+  "population": 770019,
+  "residents_total": 770019,
+  "points_count": 503,
+  "population_count": 11188,
+  "initial_view_state": {
+    "latitude": 33.489,
+    "longitude": 126.4983,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "CJU4.pmtiles": 15.92,
+    "buildings_index.json": 36.17,
+    "config.json": 0,
+    "demand_data.json": 11.72,
+    "roads.geojson": 7.22,
+    "runways_taxiways.geojson": 0.58
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4171808645240508,
+      "p25": 0.4172242594676913,
+      "p50": 0.4173110184701141,
+      "p75": 0.4174627476131156,
+      "p90": 0.5003778610509171,
+      "mean": 0.48645139749696575
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.3059644569541387,
+      "p25": 0.4172242594676913,
+      "p50": 0.4173110184714319,
+      "p75": 0.41752773576587826,
+      "p90": 0.5003778610509171,
+      "mean": 0.4851821625127622
+    },
+    "commuteDistanceKm": {
+      "p10": 2797,
+      "p25": 4236,
+      "p50": 6597,
+      "p75": 11914,
+      "p90": 25667,
+      "mean": 10346.345906328208
+    },
+    "residentCellDensity": {
+      "p10": 48,
+      "p25": 142,
+      "p50": 616,
+      "p75": 3001,
+      "p90": 10001,
+      "mean": 3164.346846846847
+    },
+    "workerCellDensity": {
+      "p10": 479,
+      "p25": 1096,
+      "p50": 2594,
+      "p75": 7240,
+      "p90": 16759,
+      "mean": 7322.546666666667
+    },
+    "detail": {
+      "radiusKm": 0.417311018470773,
+      "expectedPointSpacingKm": 0.6688169431015647,
+      "normalizedRadius": 0.6239540172764453,
+      "activityPerPoint": 2412.6470312464494,
+      "playableAreaKm2": 460,
+      "playableAreaPerPointKm2": 0.9145129224652088,
+      "playableCatchmentRadiusKm": 0.5395354522767771,
+      "localityScore": 0.3878591617734861,
+      "deaggregationScore": 1,
+      "score": 0.6227833987619501
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7454093543590431,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 126.4895994339232,
+            "latitude": 33.46997024719356,
+            "massShare": 1,
+            "assignedMass": 2682610,
+            "assignedPointCount": 503,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "제주시",
+    "Jeju City",
+    "Czedżu",
+    "Jeju",
+    "Cheju",
+    "Kota Jeju",
+    "済州市",
+    "Чеджу",
+    "제주",
+    "Τζέτζου",
+    "جيجو",
+    "Jeju Şehri",
+    "Jeju Shahri",
+    "जेजु शहर",
+    "জেজু শহর",
+    "Jeju Şəhəri"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

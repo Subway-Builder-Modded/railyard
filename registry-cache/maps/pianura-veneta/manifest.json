@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "id": "pianura-veneta",
+  "name": "Pianura Veneta",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Venetian plain polycentric metropolitan area, spanning Venice, Padua, Treviso, Chioggia, and Castelfranco Veneto, with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-veneta/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-veneta/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-veneta/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/VPT.json"
+  },
+  "city_code": "VPT",
+  "country": "IT",
+  "population": 1165753,
+  "residents_total": 1165753,
+  "points_count": 8150,
+  "population_count": 12448,
+  "initial_view_state": {
+    "latitude": 45.5,
+    "longitude": 11.9,
+    "zoom": 10.5,
+    "bearing": 0
+  },
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "file_sizes": {
+    "VPT.pmtiles": 116.97,
+    "buildings_index.bin": 145.24,
+    "buildings_index.json": 216.71,
+    "config.json": 0,
+    "demand_data.json": 2.51,
+    "roads.geojson": 42.96,
+    "runways_taxiways.geojson": 0.43
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.1421732846806108,
+      "p25": 0.16592276795072242,
+      "p50": 0.19619846890598336,
+      "p75": 0.2315319682077273,
+      "p90": 0.2815065990176223,
+      "mean": 0.2244516269653365
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.021130759337867747,
+      "p25": 0.09186181149375369,
+      "p50": 0.18482427316561867,
+      "p75": 0.22798067511941308,
+      "p90": 0.302517770486074,
+      "mean": 0.18539480091486643
+    },
+    "commuteDistanceKm": {
+      "p10": 2913.5,
+      "p25": 6756,
+      "p50": 11692.1,
+      "p75": 34422.5,
+      "p90": 43543.3,
+      "mean": 19071.627016388124
+    },
+    "residentCellDensity": {
+      "p10": 95,
+      "p25": 108,
+      "p50": 307,
+      "p75": 715,
+      "p90": 1342,
+      "mean": 549.9740443605474
+    },
+    "workerCellDensity": {
+      "p10": 85,
+      "p25": 106,
+      "p50": 108,
+      "p75": 790,
+      "p90": 3872,
+      "mean": 1452.9638403990025
+    },
+    "detail": {
+      "radiusKm": 0.19042646720389372,
+      "expectedPointSpacingKm": 0.5386873388894104,
+      "normalizedRadius": 0.35350091501405645,
+      "activityPerPoint": 143.03717791411043,
+      "playableAreaKm2": 4052,
+      "playableAreaPerPointKm2": 0.49717791411042944,
+      "playableCatchmentRadiusKm": 0.39781483790022876,
+      "localityScore": 0.9894618063898917,
+      "deaggregationScore": 1,
+      "score": 0.9947169478750685
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8745482620435019,
+        "continuousScore": 0.9656961619864746,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.7770642067970273,
+        "largestCenterShare": 0.6770958341947222,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 12.32940406554601,
+            "latitude": 45.59413260828435,
+            "massShare": 0.6770958341947222,
+            "assignedMass": 1578653,
+            "assignedPointCount": 5314,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 11.901433728162223,
+            "latitude": 45.429342454981196,
+            "massShare": 0.3229041658052778,
+            "assignedMass": 752853,
+            "assignedPointCount": 2836,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Padua",
+    "Padova",
+    "Padoue",
+    "Padwa",
+    "بادوفا",
+    "Падуа",
+    "Pàdua",
+    "פאדובה",
+    "パドヴァ",
+    "პადუა",
+    "파도바",
+    "Pádua",
+    "Падуя",
+    "Падова",
+    "帕多瓦",
+    "Padoa"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

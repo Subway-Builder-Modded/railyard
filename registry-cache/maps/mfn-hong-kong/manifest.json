@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "id": "mfn-hong-kong",
+  "name": "Hong Kong",
+  "author": "crumpetime",
+  "github_id": 121749023,
+  "description": "A map of the entirety of the Hong Kong Special Administrative Region. Population data is sourced from the 2021 Hong Kong Census, and employment/ O/D data is generated using gravity modelling based on the data available in the 2021 Census.",
+  "tags": [
+    "east-asia",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-hong-kong/gallery/screenshot1.webp"
+  ],
+  "source": "https://github.com/crumpetime/sb-maps-hkg",
+  "update": {
+    "type": "github",
+    "repo": "crumpetime/sb-maps-hkg"
+  },
+  "city_code": "HKG",
+  "country": "HK",
+  "population": 4038323,
+  "level_of_detail": "medium-detail",
+  "source_quality": "medium-quality",
+  "data_source": "CENS",
+  "location": "east-asia",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 4038323,
+  "points_count": 1965,
+  "population_count": 236084,
+  "initial_view_state": {
+    "latitude": 22.310498,
+    "longitude": 114.17902,
+    "zoom": 14,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "HKG.pmtiles": 33.58,
+    "HKG_foundations.pmtiles": 8.66,
+    "buildings_index.bin": 25.96,
+    "config.json": 0,
+    "demand_data.json": 33.4,
+    "ocean_depth_index.json": 67.84,
+    "roads.geojson": 32.95,
+    "runways_taxiways.geojson": 2.08
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.08439590922213258,
+      "p25": 0.12612902881504456,
+      "p50": 0.21258321016795134,
+      "p75": 0.315831701006934,
+      "p90": 0.4667803786597455,
+      "mean": 0.2655078763500764
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.05122812159823613,
+      "p25": 0.08370649072881103,
+      "p50": 0.18853541061655432,
+      "p75": 0.7185039523840105,
+      "p90": 1.035960867914332,
+      "mean": 0.5318878498403881
+    },
+    "commuteDistanceKm": {
+      "p10": 4470,
+      "p25": 8762,
+      "p50": 15305,
+      "p75": 28326,
+      "p90": 36539,
+      "mean": 18626.92759780417
+    },
+    "residentCellDensity": {
+      "p10": 784,
+      "p25": 1404,
+      "p50": 3355,
+      "p75": 13723,
+      "p90": 27958,
+      "mean": 9169.154545454545
+    },
+    "workerCellDensity": {
+      "p10": 966,
+      "p25": 3030,
+      "p50": 12389,
+      "p75": 27119,
+      "p90": 53891,
+      "mean": 22530.24431818182
+    },
+    "detail": {
+      "radiusKm": 0.2001985584843207,
+      "expectedPointSpacingKm": 0.4926947245537072,
+      "normalizedRadius": 0.4063338787839967,
+      "activityPerPoint": 2055.1262086513993,
+      "playableAreaKm2": 988,
+      "playableAreaPerPointKm2": 0.5027989821882952,
+      "playableCatchmentRadiusKm": 0.4000573543801964,
+      "localityScore": 0.8419819002654895,
+      "deaggregationScore": 1,
+      "score": 0.9175957172227263
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8014107864631228,
+        "continuousScore": 0.7093151593350434,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.668628398630642,
+        "largestCenterShare": 0.7228167484374083,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 114.18316290843714,
+            "latitude": 22.323380352182053,
+            "massShare": 0.7228167484374083,
+            "assignedMass": 5837935,
+            "assignedPointCount": 1550,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 114.02909026154545,
+            "latitude": 22.44323778611667,
+            "massShare": 0.2771832515625917,
+            "assignedMass": 2238711,
+            "assignedPointCount": 415,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784461073,
+  "search_aliases": [
+    "Шэньчжэнь",
+    "선전 시",
+    "Shenzhen",
+    "شينزين",
+    "深セン市",
+    "Thâm Quyến",
+    "深圳",
+    "Шеньчжень",
+    "שנג'ן",
+    "Šen-čen",
+    "Sencsen",
+    "শেনচেন",
+    "Šenžden",
+    "Шънджън",
+    "शेन्झेन",
+    "Шенџен",
+    "Šendženas",
+    "เซินเจิ้น",
+    "심천",
+    "Šenžen",
+    "Şençjen"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

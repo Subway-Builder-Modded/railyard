@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "danield1909-dantrains",
+  "name": "danTrains (v1.* \"Phoenix\")",
+  "author": "DanielD1909",
+  "github_id": 112905459,
+  "description": "danTrains is a train pack mod which allows you to add new train types to your game. Currently has 312 models to choose from. See the attached README for more.",
+  "tags": [
+    "gameplay",
+    "qol",
+    "tracks",
+    "trains"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/danield1909-dantrains/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/danield1909-dantrains/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/danield1909-dantrains/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/danield1909-dantrains/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/DanielD1909/danTrains",
+  "update": {
+    "type": "github",
+    "repo": "DanielD1909/danTrains"
+  },
+  "is_test": false,
+  "last_updated": 1775959226,
+  "deprecation": {
+    "since": "2026-08-06T00:38:50Z",
+    "by_github_id": 268817724,
+    "reason": "Source repository (DanielD1909/danTrains) was made private or removed by the author; no installable versions remain.",
+    "deleted": true
+  }
+}

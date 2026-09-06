@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "id": "glasgow-edinburgh",
+  "name": "Glasgow-Edinburgh",
+  "author": "Kronifer",
+  "github_id": 44979306,
+  "description": "A map of the Central Belt area of Scotland containing Glasgow, Edinburgh, and the surrounding cities. All data is from Scotland's 2022 Census, and includes all daytime population data (i.e Universities).",
+  "tags": [
+    "west-europe",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/glasgow-edinburgh/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/glasgow-edinburgh/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/glasgow-edinburgh/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/glasgow-edinburgh/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kronifer/sb-glasgow-edinburgh-map",
+  "update": {
+    "type": "github",
+    "repo": "kronifer/sb-glasgow-edinburgh-map"
+  },
+  "city_code": "GLED",
+  "country": "GB",
+  "population": 3069560,
+  "residents_total": 3069560,
+  "points_count": 12148,
+  "population_count": 47377,
+  "initial_view_state": {
+    "latitude": 55.8940579,
+    "longitude": -3.6944198,
+    "zoom": 7,
+    "bearing": 0
+  },
+  "data_source": "NRS",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "west-europe",
+  "special_demand": [
+    "universities"
+  ],
+  "file_sizes": {
+    "GLED.pmtiles": 124.5,
+    "buildings_index.json": 236.96,
+    "config.json": 0,
+    "demand_data.json": 11.11,
+    "roads.geojson": 36.74,
+    "runways_taxiways.geojson": 0.44
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.08969811740426523,
+      "p25": 0.1247987859231442,
+      "p50": 0.17377930586223744,
+      "p75": 0.22723516361614657,
+      "p90": 0.2958951400447719,
+      "mean": 0.20814757731429623
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.0982014068985824,
+      "p25": 0.1400791622668683,
+      "p50": 0.19319245741481134,
+      "p75": 0.2691247461728067,
+      "p90": 0.38343627094786364,
+      "mean": 0.2482344691044758
+    },
+    "commuteDistanceKm": {
+      "p10": 3632,
+      "p25": 7603,
+      "p50": 18592,
+      "p75": 45498,
+      "p90": 74263,
+      "mean": 29853.879815100154
+    },
+    "residentCellDensity": {
+      "p10": 108,
+      "p25": 193,
+      "p50": 701,
+      "p75": 1611,
+      "p90": 2433,
+      "mean": 1052.1251285567364
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 231,
+      "p50": 675,
+      "p75": 1544,
+      "p90": 2439,
+      "mean": 1110.4233625928428
+    },
+    "detail": {
+      "radiusKm": 0.18322895826633348,
+      "expectedPointSpacingKm": 0.49378754968232136,
+      "normalizedRadius": 0.3710684045886009,
+      "activityPerPoint": 261.5751657720116,
+      "playableAreaKm2": 3332,
+      "playableAreaPerPointKm2": 0.27428383272966744,
+      "playableCatchmentRadiusKm": 0.2954780120046741,
+      "localityScore": 0.9381094270787528,
+      "deaggregationScore": 1,
+      "score": 0.9685604922144785
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.978326188822528,
+        "continuousScore": 0.6001426157827959,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.8753599813920965,
+        "largestCenterShare": 0.41654927462252916,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -4.354222157284032,
+            "latitude": 55.863180004474046,
+            "massShare": 0.41654927462252916,
+            "assignedMass": 2648851,
+            "assignedPointCount": 4922,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -3.241197707613302,
+            "latitude": 55.98558567954934,
+            "massShare": 0.33679124848208075,
+            "assignedMass": 2141667,
+            "assignedPointCount": 4131,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -3.9393748964393875,
+            "latitude": 55.914194772634644,
+            "massShare": 0.24665947689539008,
+            "assignedMass": 1568516,
+            "assignedPointCount": 3095,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1774487752,
+  "search_aliases": [
+    "Glasgow",
+    "Глазгоу",
+    "Γλασκώβη",
+    "גלאזגו",
+    "グラスゴー",
+    "Glazgas",
+    "Glāzgova",
+    "Глазго",
+    "格拉斯哥",
+    "กลาสโกว์",
+    "글래스고",
+    "ग्लासगो",
+    "გლაზგო",
+    "Глазгов",
+    "غلاسكو",
+    "Глазга",
+    "Գլազգո",
+    "Qlazqo",
+    "গ্লাসগো",
+    "Glazgo"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

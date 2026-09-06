@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "id": "providence",
+  "name": "Providence",
+  "author": "soccerjonj",
+  "github_id": 222296520,
+  "description": "Custom map of the Providence, RI area and surrounding towns such as Pawtucket, Barrington, Bristol and Warwick. Generated using 2023 LODES Census Data and added demand for the following:\n\nUniversities: Brown University, Bryant University, Providence College, Johnson & Wales University, Rhode Island College, Rhode Island School of Design, Roger Williams University, Community College of Rhode Island: Flannigan Campus, Liston Campus, Knight Campus\n\nEntertainment: Amica Mutual Pavillion, Centreville Bank Stadium, Roger Williams Park Zoo",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/providence/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/providence/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/providence/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/soccerjonj/Providence",
+  "update": {
+    "type": "github",
+    "repo": "soccerjonj/Providence"
+  },
+  "city_code": "PVD",
+  "country": "US",
+  "population": 233115,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 233115,
+  "points_count": 683,
+  "population_count": 13933,
+  "initial_view_state": {
+    "latitude": 41.823189,
+    "longitude": -71.41215,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.32916928687921126,
+      "p25": 0.3957230042417684,
+      "p50": 0.5143660742094895,
+      "p75": 0.6689411862921858,
+      "p90": 0.8713504906606019,
+      "mean": 0.5799560067435786
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2289531866128419,
+      "p25": 0.30432160579780804,
+      "p50": 0.4247201226179236,
+      "p75": 0.5615590832667643,
+      "p90": 0.7737916264047187,
+      "mean": 0.4813895874129055
+    },
+    "commuteDistanceKm": {
+      "p10": 2515,
+      "p25": 5389,
+      "p50": 11091,
+      "p75": 19599,
+      "p90": 27570,
+      "mean": 13383.476207564774
+    },
+    "residentCellDensity": {
+      "p10": 33,
+      "p25": 130,
+      "p50": 347,
+      "p75": 732,
+      "p90": 1222,
+      "mean": 556.2935560859189
+    },
+    "workerCellDensity": {
+      "p10": 39,
+      "p25": 122,
+      "p50": 272,
+      "p75": 593,
+      "p90": 1118,
+      "mean": 555.7780429594272
+    },
+    "detail": {
+      "radiusKm": 0.46739878274205465,
+      "expectedPointSpacingKm": 0.7869729987312554,
+      "normalizedRadius": 0.5939197196035787,
+      "activityPerPoint": 341.3103953147877,
+      "playableAreaKm2": 527,
+      "playableAreaPerPointKm2": 0.7715959004392386,
+      "playableCatchmentRadiusKm": 0.4955871298255167,
+      "localityScore": 0.440092642609587,
+      "deaggregationScore": 1,
+      "score": 0.6633947863901155
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8724010439417076,
+        "continuousScore": 0.2574907398413914,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.7736802515242909,
+        "largestCenterShare": 0.6786049803744932,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -71.42295356514518,
+            "latitude": 41.83294418765205,
+            "massShare": 0.6786049803744932,
+            "assignedMass": 316386,
+            "assignedPointCount": 422,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -71.4309179303225,
+            "latitude": 41.71575087620618,
+            "massShare": 0.3213950196255067,
+            "assignedMass": 149844,
+            "assignedPointCount": 260,
+            "prominenceRatio": 0.9999999999999969
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1771721307,
+  "search_aliases": [
+    "פרובידנס",
+    "プロヴィデンス",
+    "Providensa",
+    "プロビデンス",
+    "Провидънс",
+    "Провиденс",
+    "Πρόβιντενς",
+    "Providensas",
+    "بروفيدنس",
+    "พรอวิเดนซ์",
+    "프로비던스",
+    "Провіденс",
+    "Провідэнс",
+    "Փրովիդենս",
+    "普罗维登斯",
+    "Provans",
+    "प्रोविडेंस",
+    "প্রভিডেন্স"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:40.599Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

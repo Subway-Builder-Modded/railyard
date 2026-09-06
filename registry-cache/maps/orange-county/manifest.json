@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "id": "orange-county",
+  "name": "Orange County",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2023 LODES data. Coverage spans the entirety of Orange County, CA.\nIncludes demand for SNA and FUL airports; UC Irvine, Concordia, Westcliff, Santa Ana College, Irvine Valley College, Chapman, Vanguard, Fullerton College, Orange Coast College, and CSUF universities; Disneyland, California Adventure, Knott's Berry Farm, Huntington Beach, Laguna Beach, Newport Beach, Dana Point, Crystal Cove State Park (split between Historic District, Moro Beach, Reef Point, and Pelican Point), Irvine Regional Park, Mission San Juan Capistrano, the Orange County Museum of Art, Honda Center, Angel Stadium, the Great Park, Irvine Spectrum Center, South Coast Plaza, and Fashion Island.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/orange-county/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/orange-county/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/OC.json"
+  },
+  "city_code": "OC",
+  "country": "US",
+  "population": 1429155,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 1429155,
+  "points_count": 2701,
+  "population_count": 137792,
+  "initial_view_state": {
+    "latitude": 33.68336,
+    "longitude": -117.82662,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "OC.pmtiles": 75.07,
+    "OC_foundations.pmtiles": 56.26,
+    "buildings_index.bin.gz": 42.7,
+    "buildings_index.json.gz": 32.21,
+    "config.json": 0,
+    "demand_data.json": 22.12,
+    "ocean_depth_index.json.gz": 2.46,
+    "roads.geojson": 34.06,
+    "runways_taxiways.geojson": 0.18
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.37085482713078044,
+      "p25": 0.4490227243020204,
+      "p50": 0.5605444286404789,
+      "p75": 0.7076818286666754,
+      "p90": 0.8690691085744349,
+      "mean": 0.599561282729635
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2503818056527502,
+      "p25": 0.3122451007966319,
+      "p50": 0.3792625369772848,
+      "p75": 0.5136464518987454,
+      "p90": 0.6555660129571218,
+      "mean": 0.43008651872378995
+    },
+    "commuteDistanceKm": {
+      "p10": 5363,
+      "p25": 11084,
+      "p50": 19707,
+      "p75": 30561,
+      "p90": 42137,
+      "mean": 22056.51474686484
+    },
+    "residentCellDensity": {
+      "p10": 75,
+      "p25": 271,
+      "p50": 700,
+      "p75": 1270,
+      "p90": 2087,
+      "mean": 957.7761394101876
+    },
+    "workerCellDensity": {
+      "p10": 83,
+      "p25": 154,
+      "p50": 342,
+      "p75": 801,
+      "p90": 1773,
+      "mean": 968.0033898305085
+    },
+    "detail": {
+      "radiusKm": 0.461078628971969,
+      "expectedPointSpacingKm": 0.7464589986416477,
+      "normalizedRadius": 0.6176878164922744,
+      "activityPerPoint": 529.1206960385042,
+      "playableAreaKm2": 2044,
+      "playableAreaPerPointKm2": 0.7567567567567568,
+      "playableCatchmentRadiusKm": 0.49079848931313735,
+      "localityScore": 0.3985461995300149,
+      "deaggregationScore": 1,
+      "score": 0.6313051556339572
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9920035680627852,
+        "continuousScore": 0.8083057918214074,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.9841340074550724,
+        "largestCenterShare": 0.5447113853990645,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -117.81747709258032,
+            "latitude": 33.656042832977725,
+            "massShare": 0.5447113853990645,
+            "assignedMass": 1556954,
+            "assignedPointCount": 1359,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -117.92648511208058,
+            "latitude": 33.833201799731896,
+            "massShare": 0.4552886146009355,
+            "assignedMass": 1301356,
+            "assignedPointCount": 1342,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "Long Beach",
+    "Лонг Бийч",
+    "ロングビーチ",
+    "Лонг Бич",
+    "לונג ביץ",
+    "Long Byčas",
+    "Лонг-Бич",
+    "ლონგ-ბიჩი",
+    "롱비치",
+    "Λονγκ Μπιτς",
+    "لونغ بيتش",
+    "ลองบีช",
+    "Longbīča",
+    "Лонг-Біч",
+    "Լոնգ Բիչ",
+    "लाँग बीच",
+    "長灘",
+    "Lonq Biç",
+    "লং বিচ"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

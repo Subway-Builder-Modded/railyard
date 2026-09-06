@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "id": "rome",
+  "name": "Rome",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Rome metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/rome/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/rome/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/rome/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/ROM.json"
+  },
+  "city_code": "ROM",
+  "country": "IT",
+  "population": 1920000,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "OSM",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 1920000,
+  "points_count": 10725,
+  "population_count": 28808,
+  "initial_view_state": {
+    "latitude": 41.9028,
+    "longitude": 12.4964,
+    "zoom": 12.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "ROM.pmtiles": 62.05,
+    "buildings_index.bin": 65.69,
+    "buildings_index.json": 97.99,
+    "config.json": 0,
+    "demand_data.json": 5.07,
+    "roads.geojson": 35.91,
+    "runways_taxiways.geojson": 0.92
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13715015766950378,
+      "p25": 0.16012214263746669,
+      "p50": 0.18634734656587845,
+      "p75": 0.2151964317416031,
+      "p90": 0.24512385735851272,
+      "mean": 0.19702075288128185
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.06393938715723808,
+      "p50": 0.15737141784262532,
+      "p75": 0.20756548530102978,
+      "p90": 0.24002847308453237,
+      "mean": 0.14265883924564476
+    },
+    "commuteDistanceKm": {
+      "p10": 2375.8,
+      "p25": 4410,
+      "p50": 8405.5,
+      "p75": 16186.8,
+      "p90": 24358.9,
+      "mean": 11463.491849486294
+    },
+    "residentCellDensity": {
+      "p10": 80,
+      "p25": 160,
+      "p50": 537,
+      "p75": 1266,
+      "p90": 2296,
+      "mean": 1011.0785036880927
+    },
+    "workerCellDensity": {
+      "p10": 64,
+      "p25": 80,
+      "p50": 180,
+      "p75": 740,
+      "p90": 4309,
+      "mean": 2050.9668803418804
+    },
+    "detail": {
+      "radiusKm": 0.1712476164513929,
+      "expectedPointSpacingKm": 0.4319414619753776,
+      "normalizedRadius": 0.39646024178423206,
+      "activityPerPoint": 179.020979020979,
+      "playableAreaKm2": 2800,
+      "playableAreaPerPointKm2": 0.26107226107226106,
+      "playableCatchmentRadiusKm": 0.2882739698752843,
+      "localityScore": 0.8680278716789591,
+      "deaggregationScore": 1,
+      "score": 0.9316801337792704
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.45034380256483253,
+        "continuousScore": 0.7300947890696629,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.2906088481497997,
+        "largestCenterShare": 0.8706940104166667,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 12.54452085550427,
+            "latitude": 41.841386891760976,
+            "massShare": 0.8706940104166667,
+            "assignedMass": 3343465,
+            "assignedPointCount": 9244,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 12.269975133665822,
+            "latitude": 41.8022350836794,
+            "massShare": 0.12930598958333334,
+            "assignedMass": 496535,
+            "assignedPointCount": 1481,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Roma",
+    "Rom",
+    "Erroma",
+    "روما",
+    "Рым",
+    "Рим",
+    "Řím",
+    "Ρώμη",
+    "Rooma",
+    "רומא",
+    "रोम",
+    "Rim",
+    "Róma",
+    "ローマ",
+    "რომი",
+    "로마",
+    "Rzym",
+    "Rím",
+    "โรม",
+    "Հռոմ",
+    "Romë",
+    "罗马市",
+    "রোম"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

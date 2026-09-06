@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "id": "catania",
+  "name": "Catania",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Catania metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/catania/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/catania/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/catania/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/CAT.json"
+  },
+  "city_code": "CAT",
+  "country": "IT",
+  "population": 530181,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 530181,
+  "points_count": 3552,
+  "population_count": 7992,
+  "initial_view_state": {
+    "latitude": 37.5027,
+    "longitude": 15.0872,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "CAT.pmtiles": 24.22,
+    "buildings_index.bin": 35.01,
+    "buildings_index.json": 52.14,
+    "config.json": 0,
+    "demand_data.json": 1.46,
+    "roads.geojson": 13.92,
+    "runways_taxiways.geojson": 0.25
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13609984303839312,
+      "p25": 0.16019528634980265,
+      "p50": 0.18707471340435555,
+      "p75": 0.21264850590054632,
+      "p90": 0.2449545828106918,
+      "mean": 0.1948463617666934
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.020668992992857693,
+      "p25": 0.06920825370605778,
+      "p50": 0.1493731658372174,
+      "p75": 0.19101039113622353,
+      "p90": 0.2374424766243711,
+      "mean": 0.166004906441523
+    },
+    "commuteDistanceKm": {
+      "p10": 1959.2,
+      "p25": 3690.9,
+      "p50": 7536.1,
+      "p75": 14202.3,
+      "p90": 20857.3,
+      "mean": 10017.798648648626
+    },
+    "residentCellDensity": {
+      "p10": 77,
+      "p25": 217,
+      "p50": 549,
+      "p75": 1248,
+      "p90": 2199,
+      "mean": 945.3028673835125
+    },
+    "workerCellDensity": {
+      "p10": 64,
+      "p25": 100,
+      "p50": 224,
+      "p75": 1183,
+      "p90": 2975,
+      "mean": 1526.585014409222
+    },
+    "detail": {
+      "radiusKm": 0.16716441663613318,
+      "expectedPointSpacingKm": 0.4164413805368331,
+      "normalizedRadius": 0.4014116378651952,
+      "activityPerPoint": 149.2626689189189,
+      "playableAreaKm2": 1012,
+      "playableAreaPerPointKm2": 0.2849099099099099,
+      "playableCatchmentRadiusKm": 0.30114720818240615,
+      "localityScore": 0.8548863465043046,
+      "deaggregationScore": 1,
+      "score": 0.9246006416309177
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7939591945104664,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 15.043453505057286,
+            "latitude": 37.53658354597975,
+            "massShare": 1,
+            "assignedMass": 1060362,
+            "assignedPointCount": 3552,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "كاتانيا",
+    "Catane",
+    "カターニア",
+    "კატანია",
+    "Katania",
+    "Catânia",
+    "Катания",
+    "קטניה",
+    "Catània",
+    "Κατάνη",
+    "Katānija",
+    "Катанија"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

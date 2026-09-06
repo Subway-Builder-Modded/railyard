@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "id": "seoul-3",
+  "name": "Seoul (30km×30km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# Seoul (30km×30km)\r\n\r\n### SEL3 · v0.1.0\r\n\r\nCustom map of Seoul, Korea made with official Korean traffic volume data from official soures.\r\nWith 36,039 Pops and 6,908,334 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Seoul, Gwangmyeong, Goyang </td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>900 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">6,908,334</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/seoul-3/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/SEL3.json"
+  },
+  "city_code": "SEL3",
+  "country": "KR",
+  "population": 9102941,
+  "residents_total": 9102941,
+  "points_count": 2650,
+  "population_count": 100550,
+  "initial_view_state": {
+    "latitude": 37.566,
+    "longitude": 126.978,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "SEL3.pmtiles": 103.03,
+    "buildings_index.json": 224.35,
+    "config.json": 0,
+    "demand_data.json": 79.29,
+    "ocean_depth_index.json": 0.01,
+    "roads.geojson": 42.77,
+    "runways_taxiways.geojson": 2.22
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.29758509241363285,
+      "p25": 0.3963615900862958,
+      "p50": 0.3967211180589537,
+      "p75": 0.39696049750878604,
+      "p90": 0.3971040076528435,
+      "mean": 0.37824467305855924
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.22057347979340208,
+      "p25": 0.3962896184616861,
+      "p50": 0.3966732127981572,
+      "p75": 0.39696049750878604,
+      "p90": 0.3971040076528435,
+      "mean": 0.36745805110762747
+    },
+    "commuteDistanceKm": {
+      "p10": 1952,
+      "p25": 2515,
+      "p50": 3519,
+      "p75": 5325,
+      "p90": 8361,
+      "mean": 4654.108831427151
+    },
+    "residentCellDensity": {
+      "p10": 708,
+      "p25": 2557,
+      "p50": 8192,
+      "p75": 16513,
+      "p90": 25321,
+      "mean": 11250.023841059603
+    },
+    "workerCellDensity": {
+      "p10": 3370,
+      "p25": 11116,
+      "p50": 30037,
+      "p75": 57417,
+      "p90": 89172,
+      "mean": 39439.28665785997
+    },
+    "detail": {
+      "radiusKm": 0.3966971647054239,
+      "expectedPointSpacingKm": 0.5344720547965914,
+      "normalizedRadius": 0.7422224626063907,
+      "activityPerPoint": 6566.034615414667,
+      "playableAreaKm2": 848,
+      "playableAreaPerPointKm2": 0.32,
+      "playableCatchmentRadiusKm": 0.31915382432114614,
+      "localityScore": 0.20408002660432603,
+      "deaggregationScore": 1,
+      "score": 0.45175217387891564
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6975791365574964,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 126.99091402805394,
+            "latitude": 37.54671924161289,
+            "massShare": 1,
+            "assignedMass": 42362490,
+            "assignedPointCount": 2650,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "서울특별시",
+    "Seoul",
+    "首尔特别市",
+    "ソウル特別市",
+    "Seúl",
+    "Сеул",
+    "Seül",
+    "Soul",
+    "Séoul",
+    "סאול",
+    "सियोल",
+    "Szöul",
+    "Seul",
+    "Seulas",
+    "Seula",
+    "Seoel",
+    "Söul",
+    "โซล",
+    "Sŏul",
+    "Σεούλ",
+    "סיאול",
+    "Սեուլ",
+    "სეული",
+    "সিউল",
+    "سيول",
+    "서울",
+    "서울시",
+    "Seoul-si",
+    "首尔",
+    "ソウル"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

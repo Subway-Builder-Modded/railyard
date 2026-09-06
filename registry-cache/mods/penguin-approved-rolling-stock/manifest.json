@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "penguin-approved-rolling-stock",
+  "name": "Penguin-Approved Rolling Stock",
+  "author": "prodigious-penguin",
+  "github_id": 170536278,
+  "description": "A lightweight mod that adds niche but useful train types to Subway Builder. Visit the [source](https://github.com/prodigious-penguin/Penguin-Approved-Rolling-Stock) for up-to-date details about included trains.",
+  "tags": [
+    "stations",
+    "tracks",
+    "trains"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/penguin-approved-rolling-stock/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/prodigious-penguin/Penguin-Approved-Rolling-Stock",
+  "update": {
+    "type": "github",
+    "repo": "prodigious-penguin/Penguin-Approved-Rolling-Stock"
+  },
+  "last_updated": 1787496375,
+  "deprecation_history": [
+    {
+      "since": "2026-08-14T15:39:45.878Z",
+      "by_github_id": 268817724,
+      "reason": "Maintainer-initiated: no version has ever passed integrity (both releases are missing a matching top-level manifest.json), the listing has never recorded a download, and it has been unavailable since 2026-07-26. Reversible — remove the deprecation once a release passes integrity.",
+      "until": "2026-08-18T15:15:23.096Z",
+      "removed_by_github_id": 19807509
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "id": "ruhrgebiet",
+  "name": "Ruhrgebiet",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of the Ruhrgebiet & Düsseldorf & Münster, Germany: Dortmund, Essen, Bochum, Duisburg, Wuppertal, Düsseldorf and Münster, sharing the VRR/Rhein-Ruhr-Express regional rail network, from Dortmund and Düsseldorf Airports across the whole densely urbanized region. Residential population comes from the official 2022 census 100m population grid (Zensus 2022), with real German labor-market statistics (official employment counts and municipality-to-municipality commuter flows) anchoring 14 major municipalities across the region, including all 7 core cities.",
+  "tags": [
+    "central-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ruhrgebiet/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ruhrgebiet/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ruhrgebiet/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ruhrgebiet/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-deutschland",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-deutschland/main/updates/rhr-update.json"
+  },
+  "city_code": "RHR",
+  "country": "DE",
+  "population": 3781300,
+  "residents_total": 3781300,
+  "points_count": 36704,
+  "population_count": 36940,
+  "initial_view_state": {
+    "latitude": 51.575,
+    "longitude": 7.2,
+    "zoom": 8,
+    "bearing": 0
+  },
+  "data_source": "OSMZensus 2022 (Destatis), Beschäftigtenstatistik BA + Pendlerrechnung der Länder (regionalstatistik.de/GENESIS-Online), OSM, Overture Maps",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.21,
+    "weighted_score": 0.41,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "RHR.pmtiles": 211.52,
+    "buildings_index.bin.gz": 115.91,
+    "config.json": 0,
+    "demand_data.json.gz": 1.25,
+    "ocean_depth_index.json.gz": 2.99,
+    "ocean_depth_index_contours.json.gz": 2.04,
+    "roads.geojson.gz": 15.15,
+    "runways_taxiways.geojson.gz": 0.15
+  },
+  "included_cities": [
+    "Dortmund",
+    "Essen",
+    "Bochum",
+    "Duisburg",
+    "Wuppertal",
+    "Düsseldorf",
+    "Münster",
+    "Gelsenkirchen",
+    "Oberhausen",
+    "Krefeld",
+    "Solingen",
+    "Herne",
+    "Mülheim an der Ruhr"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.1712514380930981,
+      "p50": 0.1731463224031507,
+      "p75": 0.1744715928092035,
+      "p90": 0.32754350058695514,
+      "mean": 0.18398020092505638
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0.17150929318732633,
+      "p75": 0.17400848621000437,
+      "p90": 0.41690977442253535,
+      "mean": 0.14961891296914384
+    },
+    "commuteDistanceKm": {
+      "p10": 13234,
+      "p25": 18896,
+      "p50": 29570,
+      "p75": 48207,
+      "p90": 73301,
+      "mean": 36844.73692474283
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 300,
+      "p75": 650,
+      "p90": 1150,
+      "mean": 495.17168793579793
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 300,
+      "p75": 600,
+      "p90": 1400,
+      "mean": 681.5851663333939
+    },
+    "detail": {
+      "radiusKm": 0.17232586391296376,
+      "expectedPointSpacingKm": 0.488785525893086,
+      "normalizedRadius": 0.35255926123855247,
+      "activityPerPoint": 103.02146904969486,
+      "playableAreaKm2": 9316,
+      "playableAreaPerPointKm2": 0.25381429816913686,
+      "playableCatchmentRadiusKm": 0.284238632775414,
+      "localityScore": 0.9922860065889497,
+      "deaggregationScore": 1,
+      "score": 0.9961355362544545
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8692106442164731,
+        "continuousScore": 0.9704872908819815,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.768676004749085,
+        "largestCenterShare": 0.6808240552191045,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 7.1747636610472325,
+            "latitude": 51.52265853490133,
+            "massShare": 0.6808240552191045,
+            "assignedMass": 5148800,
+            "assignedPointCount": 25920,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 7.004223103198277,
+            "latitude": 51.378618650675286,
+            "massShare": 0.31917594478089545,
+            "assignedMass": 2413800,
+            "assignedPointCount": 10784,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1788048000
+}

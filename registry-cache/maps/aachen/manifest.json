@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "id": "aachen",
+  "name": "Aachen",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of Aachen, Germany, from the city center to the surrounding Städteregion Aachen towns (Würselen, Eschweiler, Stolberg, Herzogenrath, and others). Residential population comes from the official 2022 census 100m population grid (Zensus 2022), with real German labor-market statistics (official employment counts and municipality-to-municipality commuter flows) anchoring Aachen and its neighboring municipalities.",
+  "tags": [
+    "central-europe",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/aachen/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/aachen/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-deutschland",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-deutschland/main/updates/aac-update.json"
+  },
+  "city_code": "AAC",
+  "country": "DE",
+  "population": 217200,
+  "residents_total": 217200,
+  "points_count": 2031,
+  "population_count": 2029,
+  "initial_view_state": {
+    "latitude": 50.7753,
+    "longitude": 6.0839,
+    "zoom": 11,
+    "bearing": 0
+  },
+  "data_source": "Zensus 2022 (Destatis), Beschäftigtenstatistik BA + Pendlerrechnung der Länder (regionalstatistik.de/GENESIS-Online), OSM, Overture Maps",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.21,
+    "weighted_score": 0.41,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "central-europe",
+  "special_demand": [
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "AAC.pmtiles": 22.62,
+    "buildings_index.bin.gz": 13.68,
+    "config.json": 0,
+    "demand_data.json.gz": 0.06,
+    "ocean_depth_index.json.gz": 0.32,
+    "ocean_depth_index_contours.json.gz": 0.22,
+    "roads.geojson.gz": 1,
+    "runways_taxiways.geojson.gz": 0.02
+  },
+  "included_cities": [
+    "Würselen",
+    "Eschweiler",
+    "Stolberg",
+    "Herzogenrath",
+    "Alsdorf",
+    "Baesweiler"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.1752259702654167,
+      "p50": 0.17573396862664387,
+      "p75": 0.2779877005835794,
+      "p90": 0.35096018239285015,
+      "mean": 0.20473897167105
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0.1756399683780149,
+      "p75": 0.4714160373721682,
+      "p90": 0.6061467473659855,
+      "mean": 0.23959524592098722
+    },
+    "commuteDistanceKm": {
+      "p10": 3030,
+      "p25": 9724,
+      "p50": 16909,
+      "p75": 22457,
+      "p90": 27861,
+      "mean": 16534.445046821093
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 500,
+      "p90": 800,
+      "mean": 412.6195028680688
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 500,
+      "p90": 1100,
+      "mean": 661.6564417177914
+    },
+    "detail": {
+      "radiusKm": 0.1756869622155463,
+      "expectedPointSpacingKm": 0.5339299961306674,
+      "normalizedRadius": 0.3290449375175222,
+      "activityPerPoint": 106.9423929098966,
+      "playableAreaKm2": 756,
+      "playableAreaPerPointKm2": 0.3722304283604136,
+      "playableCatchmentRadiusKm": 0.3442159573371736,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6511625538279552,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 6.132040385819522,
+            "latitude": 50.80850472651933,
+            "massShare": 1,
+            "assignedMass": 434400,
+            "assignedPointCount": 2031,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1788048000
+}

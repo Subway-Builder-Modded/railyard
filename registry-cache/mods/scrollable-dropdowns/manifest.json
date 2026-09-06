@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "scrollable-dropdowns",
+  "name": "Scrollable Dropdowns",
+  "author": "seanyushoumori",
+  "github_id": 124742441,
+  "description": "<img width=\"2400\" height=\"1260\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/554f6544-fdce-443f-84d2-a0d9f865b012\" />",
+  "tags": [
+    "qol",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/scrollable-dropdowns/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/seanyushoumori/scrollable-dropdowns",
+  "update": {
+    "type": "github",
+    "repo": "seanyushoumori/scrollable-dropdowns"
+  },
+  "last_updated": 1783301973
+}

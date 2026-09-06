@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "id": "mfn-lasvegas",
+  "name": "Las Vegas",
+  "author": "crumpetime",
+  "github_id": 121749023,
+  "description": "A custom map of Las Vegas using LODES demand data, hotel data from the Clark County Comprehensive Planning Dept. and the LVCVA, and a whole load of guessing.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-lasvegas/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-lasvegas/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-lasvegas/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/crumpetime/sb-maps-las",
+  "update": {
+    "type": "github",
+    "repo": "crumpetime/sb-maps-las"
+  },
+  "city_code": "LAS",
+  "country": "US",
+  "population": 1296870,
+  "residents_total": 1296870,
+  "points_count": 2373,
+  "population_count": 79319,
+  "initial_view_state": {
+    "latitude": 36.120474,
+    "longitude": -115.167789,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "file_sizes": {
+    "LAS.pmtiles": 32.33,
+    "buildings_index.json": 96.75,
+    "config.json": 0,
+    "demand_data.json": 12.7,
+    "roads.geojson": 24.92,
+    "runways_taxiways.geojson": 1.86
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.31477887446018293,
+      "p25": 0.3913665751703889,
+      "p50": 0.4715775272715532,
+      "p75": 0.5757014852736392,
+      "p90": 0.6939919615832589,
+      "mean": 0.4962274096880382
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.061401056496055026,
+      "p25": 0.25370670082351804,
+      "p50": 0.3181516611308733,
+      "p75": 0.4415733927041722,
+      "p90": 0.5490721257193105,
+      "mean": 0.33995229581857295
+    },
+    "commuteDistanceKm": {
+      "p10": 6383,
+      "p25": 11634,
+      "p50": 18717,
+      "p75": 26719,
+      "p90": 34741,
+      "mean": 19878.96628802683
+    },
+    "residentCellDensity": {
+      "p10": 56,
+      "p25": 288,
+      "p50": 825,
+      "p75": 1650,
+      "p90": 2617,
+      "mean": 1148.6873339238264
+    },
+    "workerCellDensity": {
+      "p10": 28,
+      "p25": 85,
+      "p50": 281,
+      "p75": 786,
+      "p90": 1897,
+      "mean": 1132.6375545851529
+    },
+    "detail": {
+      "radiusKm": 0.3873411592555513,
+      "expectedPointSpacingKm": 0.7301236120224446,
+      "normalizedRadius": 0.5305144949121905,
+      "activityPerPoint": 546.5107458912769,
+      "playableAreaKm2": 1600,
+      "playableAreaPerPointKm2": 0.67425200168563,
+      "playableCatchmentRadiusKm": 0.4632721423912147,
+      "localityScore": 0.5596283401903783,
+      "deaggregationScore": 1,
+      "score": 0.7480831104833061
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.4495606194748491,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -115.16367967715736,
+            "latitude": 36.12614988972088,
+            "massShare": 1,
+            "assignedMass": 2593740,
+            "assignedPointCount": 2268,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1774006444,
+  "search_aliases": [
+    "라스베이거스",
+    "لاس فيغاس",
+    "לאס וגאס",
+    "ラスベガス",
+    "Лас-Вегас",
+    "Лас Вегас",
+    "লাস ভেগাস",
+    "ลาสเวกัส",
+    "Lasvegasa",
+    "Las Vegasas",
+    "लास वेगास",
+    "Λας Βέγκας",
+    "ლას-ვეგასი",
+    "Las-Veqas",
+    "Լաս Վեգաս",
+    "拉斯维加斯",
+    "라스베가스"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "id": "syracuse-ny",
+  "name": "Syracuse, NY",
+  "author": "PSWBSF",
+  "github_id": 193011631,
+  "description": "<p>Map of Syracuse, New York. Made using the Map Patcher by Kronifer and US Demand Generator by slurry.</p>\n<p>Uses 2023 LODES data and includes additional demand data as follows:</p>\n<h3>Airports</h3>\n<ul>\n<li>Syracuse Hancock International Airport (SYR)</li>\n</ul>\n<h3>Universities</h3>\n<ul>\n<li><p>Syracuse University (not listed as a college campus in game)</p>\n</li>\n<li><p>Le Moyne College</p>\n</li>\n<li><p>Onondaga Community College</p>\n</li>\n</ul>\n<h3>Entertainment/Tourism</h3>\n<ul>\n<li><p>Museum of Science &amp; Technology</p>\n</li>\n<li><p>Rosamond Gifford Zoo</p>\n</li>\n</ul>\n<h3>Stadiums</h3>\n<ul>\n<li>JMA Wireless Dome</li>\n</ul>\n<h3>Shopping</h3>\n<ul>\n<li><p>Destiny USA</p>\n</li>\n<li><p>Shoppingtown Mall</p>\n</li>\n</ul>\n<h3>Military Bases</h3>\n<ul>\n<li>Hancock Field Air National Guard Base</li>\n</ul>",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/syracuse-ny/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/syracuse-ny/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/syracuse-ny/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/syracuse-ny/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/PSWBSF/syracuse-ny",
+  "update": {
+    "type": "github",
+    "repo": "PSWBSF/syracuse-ny"
+  },
+  "city_code": "SYR",
+  "country": "US",
+  "population": 156483,
+  "residents_total": 156483,
+  "points_count": 769,
+  "population_count": 10188,
+  "initial_view_state": {
+    "latitude": 43.0468,
+    "longitude": -76.1452,
+    "zoom": 15,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "file_sizes": {
+    "SYR.pmtiles": 17.45,
+    "__MACOSX/._config.json": 0,
+    "buildings_index.json": 64.49,
+    "config.json": 0,
+    "demand_data.json": 3.07,
+    "ocean_depth_index.json": 0.8,
+    "roads.geojson": 4.8,
+    "runways_taxiways.geojson": 0.34
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.35363884294311876,
+      "p25": 0.43232213819087145,
+      "p50": 0.5634624069102555,
+      "p75": 0.8001114035753015,
+      "p90": 1.1471477889669255,
+      "mean": 0.6693970644008286
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.28381265866001104,
+      "p25": 0.32620780009691513,
+      "p50": 0.44453411188009906,
+      "p75": 0.6290254962991126,
+      "p90": 0.8148934755886111,
+      "mean": 0.5209410327579251
+    },
+    "commuteDistanceKm": {
+      "p10": 3782,
+      "p25": 7899,
+      "p50": 14800,
+      "p75": 21652,
+      "p90": 27785,
+      "mean": 15430.751864939144
+    },
+    "residentCellDensity": {
+      "p10": 9,
+      "p25": 39,
+      "p50": 140,
+      "p75": 369,
+      "p90": 718,
+      "mean": 272.0382608695652
+    },
+    "workerCellDensity": {
+      "p10": 5,
+      "p25": 17,
+      "p50": 92,
+      "p75": 274,
+      "p90": 567,
+      "mean": 286.8642201834862
+    },
+    "detail": {
+      "radiusKm": 0.5004780321189667,
+      "expectedPointSpacingKm": 0.8825721954061498,
+      "normalizedRadius": 0.5670675268538823,
+      "activityPerPoint": 203.4889466840052,
+      "playableAreaKm2": 1408,
+      "playableAreaPerPointKm2": 1.8309492847854356,
+      "playableCatchmentRadiusKm": 0.7634194511854836,
+      "localityScore": 0.48907903442928297,
+      "deaggregationScore": 0.5284536381091784,
+      "score": 0.5083852821109976
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.846372752107799,
+        "continuousScore": 0.7414490444464799,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.7336622411218283,
+        "largestCenterShare": 0.6959765597540947,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -76.13358393805258,
+            "latitude": 43.047130793560584,
+            "massShare": 0.6959765597540947,
+            "assignedMass": 217817,
+            "assignedPointCount": 467,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -76.2048461949751,
+            "latitude": 43.143738599174696,
+            "massShare": 0.30402344024590533,
+            "assignedMass": 95149,
+            "assignedPointCount": 285,
+            "prominenceRatio": 0.9999999999997113
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1777488271,
+  "search_aliases": [
+    "Syracuse",
+    "シラキューズ",
+    "シラキュース",
+    "Siracusa",
+    "سيراكيوز",
+    "시러큐스",
+    "Сіракюс",
+    "Сиракюз",
+    "Syracuse i New York",
+    "Сиракјус",
+    "Сиракьюс",
+    "锡拉丘兹",
+    "სირაკიუსი",
+    "Sirakuz",
+    "סירקיוז"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

@@ -1,0 +1,14 @@
+import{a as e}from"./chunk-BEqpzyXh.js";import{t}from"./jsx-runtime-qJqhvtml.js";var n=e(t());function r(e){let t={a:`a`,code:`code`,h2:`h2`,li:`li`,p:`p`,ul:`ul`,...e.components};return(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(t.p,{children:`Welcome to Depot, the core tools for Subway Builder map creation. Depot is a Python library of utilities related to custom maps. This project is still in active development, and that's where community feedback and contributions will help.`}),`
+`,(0,n.jsxs)(t.p,{children:[`You can find the GitHub repo `,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/depot`,children:`here`}),`, along with instructions on how to set it up.`]}),`
+`,(0,n.jsx)(t.h2,{id:`current-features`,children:`Current Features`}),`
+`,(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`Depot creates the 4 key non-demand files needed for any custom map: `,(0,n.jsx)(t.code,{children:`buildings_index.json`}),`, `,(0,n.jsx)(t.code,{children:`<city>.pmtiles`}),`, `,(0,n.jsx)(t.code,{children:`roads.geojson`}),`, and `,(0,n.jsx)(t.code,{children:`runways_taxiways.geojson`}),`.`]}),`
+`,(0,n.jsx)(t.li,{children:`You can provide your own buildings.geojson file if you want, or you can let the program download from the Overture Maps database, which combines OSM with other data sets (like satellite-based maps). This makes a world of difference for maps with bad OSM coverage, as the Patcher's source exclusively uses OSM.`}),`
+`,(0,n.jsxs)(t.li,{children:[`You have more control over `,(0,n.jsx)(t.code,{children:`buildings_index.json`}),`. You can filter out all buildings below a certain size in m^2, and you can control the simplification of the building footprints, both of which reduce the final filesize. This is particularly important for big maps, as both of these tweaks are what make the LAX map even possible.`]}),`
+`,(0,n.jsx)(t.li,{children:`Optimized pmtiles. Unnecessary data are cut out, tiny buildings can be omitted to save space, better coverage of rivers, military bases are colored like airports so they stand out more, and more nature reserves/parks are marked in green.`}),`
+`,(0,n.jsx)(t.li,{children:`You can easily add labels to the created pmtiles, and adjust which place labels will show up at which zoom levels.`}),`
+`]}),`
+`,(0,n.jsx)(t.h2,{children:`Planned Features`}),`
+`,(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsx)(t.li,{children:`Bathymetric data and utilities to create and manipulate demand data`}),`
+`]})]})}function i(e={}){let{wrapper:t}=e.components||{};return t?(0,n.jsx)(t,{...e,children:(0,n.jsx)(r,{...e})}):r(e)}export{i as default};

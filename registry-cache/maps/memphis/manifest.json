@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "id": "memphis",
+  "name": "Memphis",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2023 LODES data for the Memphis area.\nIncludes demand for MEM airport; the University of Memphis; FedExForum Arena, Southland Casino, Beale Street (split into 4 spots; average of annual tourism data), and the South Main Arts District (split into 3 spots; a guesstimate of demand based on tourism data).",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/memphis/gallery/screenshot1.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/MEM.json"
+  },
+  "city_code": "MEM",
+  "country": "US",
+  "population": 739736,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 739736,
+  "points_count": 1454,
+  "population_count": 39229,
+  "initial_view_state": {
+    "latitude": 35.13959,
+    "longitude": -90.05188,
+    "zoom": 12.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "MEM.pmtiles": 40.06,
+    "MEM_foundations.pmtiles": 25.57,
+    "buildings_index.bin.gz": 22.5,
+    "buildings_index.json.gz": 16.2,
+    "config.json": 0,
+    "demand_data.json": 6.29,
+    "ocean_depth_index.json.gz": 1.38,
+    "roads.geojson": 14.57,
+    "runways_taxiways.geojson": 0.46
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4134533052983444,
+      "p25": 0.5426075448906946,
+      "p50": 0.7111120884807077,
+      "p75": 0.8825948359270495,
+      "p90": 1.1845429144391393,
+      "mean": 0.7513272314761817
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.262680059657483,
+      "p25": 0.3458810370056663,
+      "p50": 0.4666078663780333,
+      "p75": 0.6172424225979113,
+      "p90": 0.8836829523653352,
+      "mean": 0.5344325457706663
+    },
+    "commuteDistanceKm": {
+      "p10": 5633,
+      "p25": 10934,
+      "p50": 18382,
+      "p75": 26701,
+      "p90": 34905,
+      "mean": 19513.842820362486
+    },
+    "residentCellDensity": {
+      "p10": 22,
+      "p25": 94,
+      "p50": 422,
+      "p75": 1008,
+      "p90": 1672,
+      "mean": 677.9303391384051
+    },
+    "workerCellDensity": {
+      "p10": 12,
+      "p25": 52,
+      "p50": 228,
+      "p75": 580,
+      "p90": 1578,
+      "mean": 713.5849420849421
+    },
+    "detail": {
+      "radiusKm": 0.5760299422439864,
+      "expectedPointSpacingKm": 0.8807899418110986,
+      "normalizedRadius": 0.6539924162389295,
+      "activityPerPoint": 508.7592847317744,
+      "playableAreaKm2": 2636,
+      "playableAreaPerPointKm2": 1.81292984869326,
+      "playableCatchmentRadiusKm": 0.7596535353677678,
+      "localityScore": 0.33807515828109175,
+      "deaggregationScore": 0.5381343679152671,
+      "score": 0.42653236877105727
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8210409957866837,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -89.9075855085961,
+            "latitude": 35.11340719544014,
+            "massShare": 1,
+            "assignedMass": 1479472,
+            "assignedPointCount": 1454,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784160000,
+  "search_aliases": [],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "id": "guangzhou",
+  "name": "Guangzhou",
+  "author": "Kronifer",
+  "github_id": 44979306,
+  "description": "<h1>广州 <strong>(Guangzhou)</strong></h1>\n<h3><strong>CAN · v1.0.0</strong></h3>\n<p>Detailed map of the prefecture-level city of 广州 (Guangzhou), as well as parts of 佛山 (Foshan) based off data from the 2023 5th National Economic\n    Census.</p>\n<h2><strong>Coverage</strong></h2>\n<p><strong>Playable Area:</strong> 6,930 km²</p>\n<h2><strong>Population Summary</strong></h2>\n<p><strong>Total Population:</strong> 26,903,204</p>\n<p><strong>Modeled Demand:</strong> 15,574,201</p>\n<h2><strong>Map Statistics</strong></h2>\n<p><strong>Buildings Indexed:</strong> ~3,300,000</p>\n<p><strong>Demand Points:</strong> 16,673</p>\n<p><strong>Populations:</strong> 156,200</p>\n<p><strong>Mean Point Size:</strong> 898.87</p>\n<p><strong>Median Point Size:</strong> 191</p>\n<p><strong>Mean Pop Size:</strong> 100.87</p>\n<p><strong>Median Pop Size:</strong> 97</p>\n<h2><strong>Special Demand</strong></h2>\n<h3><strong>Airport</strong></h3>\n<ul>\n    <li>Guangzhou Baiyun International Airport (CAN): 104,109 daily arrivals/departures modeled</li>\n</ul>\n<h3><strong>Universities</strong></h3>\n<ul>\n    <li>\n        <p>Sun Yat-Sen University: 56,047 students modeled</p>\n    </li>\n    <li>\n        <p>South China University of Technology (SCUT): 45,357 students modeled</p>\n    </li>\n    <li>\n        <p>Jinan University: 50,000 students modeled</p>\n    </li>\n</ul>\n<h2><strong>Additional Features</strong></h2>\n<ul>\n    <li>\n        <p><strong>Building Collision</strong> — A buildings index is included for all non-filtered buildings, assigning\n            each a flat foundation depth of <strong>−10 m</strong> in-game. This provides underground collision geometry\n            so that tunnels interact correctly with building footprints.</p>\n    </li>\n    <li>\n        <p><strong>Neighborhood Labels</strong> — Three layers of place name labels are embedded in the map:</p>\n        <ul>\n            <li>\n                <p><em>City labels</em> — Prefecture-Level Cities, Counties, County-Level Cities</p>\n            </li>\n            <li>\n                <p><em>Municipality labels</em> — Districts</p>\n            </li>\n            <li>\n                <p><em>Neighborhood labels</em> — Subdistricts, Towns, Townships</p>\n            </li>\n        </ul>\n    </li>\n</ul>\n<h2><strong>Methodology</strong></h2>\n<p>This map was created using a multi-step methodology, sourcing data from all 11 Districts of Guangzhou, as well as the districts of Nanhai, Shunde, and Chancheng in Foshan.</p>\n<h3><strong>Data Collection</strong></h3>\n<p>5th Economic Census data was fetched from each individual District. Specifically, Communique/Bulletin\n    no. 7, focusing on employees per subdistrict was obtained.</p>\n<h3><strong>Spatial Assignment</strong></h3>\n<p>Population and Employee data for each subdistrict based on the above bulletins were assigned to the geometry of each\n    subdistrict using a Shapefile.</p>\n<h3><strong>Geographical Processing - Stage 1</strong></h3>\n<p>Data was disaggregated to the individual building level by assigning a building a usage metric based off of total\n    commercial/residential volume within a Subdistrict.</p>\n<h3><strong>Geographical Processing - Stage 2</strong></h3>\n<p>Data was aggregated up to a hexagonal grid with side length n=400m for commute modelling.</p>\n<h3><strong>Commute Modelling</strong></h3>\n<p>O/D pairs were created using a Gravity Model, the source for which can be found in the sources linked below.</p>\n<h3><strong>Map Data</strong></h3>\n<p>Map Data was fetched from OpenStreetMap, Overture, and 3D-GloBFP and processed by RSlurry&#39;s <code>depot</code>\n    package.</p>\n<h2><strong>Sources</strong></h2>\n<p>All data used in the creation of this map was obtained from freely available sources.</p>\n<ul>\n    <li>\n        <p>Depot (RSlurry): <a href=\"https://github.com/rslurry/depot/\"><strong><u>GitHub</u></strong></a></p>\n    </li>\n    <li>\n        <p>3D-GloBFP: <a href=\"https://zenodo.org/records/15459025/\"><strong><u>Zenodo</u></strong></a></p>\n    </li>\n    <li>\n        <p><a href=\"https://overturemaps.org/\"><strong><u>Overture Maps</u></strong></a></p>\n    </li>\n    <li>\n        <p><a href=\"https://openstreetmap.org/\"><strong><u>OpenStreetMap</u></strong></a></p>\n    </li>\n    <li>\n        <p>Gravity Model (Kronifer): <a\n                href=\"https://github.com/kronifer/sb-chinese-maps/\"><strong><u>GitHub</u></strong></a></p>\n    </li>\n    <li>\n        <p>Liwan District Employment: <strong><a\n                    href=\"https://www.lw.gov.cn/attachment/7/7892/7892488/10467999.pdf\">https://www.lw.gov.cn/attachment/7/7892/7892488/10467999.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Haizhu District Employment: <strong><a\n                    href=\"https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.haizhu.gov.cn%2Fattachment%2F7%2F7843%2F7843001%2F10349307.doc&wdOrigin=BROWSELINK\">https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.haizhu.gov.cn%2Fattachment%2F7%2F7843%2F7843001%2F10349307.doc&amp;wdOrigin=BROWSELINK</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Yuexiu District Employment: <strong><a\n                    href=\"https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.yuexiu.gov.cn%2Fattachment%2F7%2F7876%2F7876894%2F10423163.docx&wdOrigin=BROWSELINK\">https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.yuexiu.gov.cn%2Fattachment%2F7%2F7876%2F7876894%2F10423163.docx&amp;wdOrigin=BROWSELINK</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Tianhe District Employment: <strong><a\n                    href=\"https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.thnet.gov.cn%2Fattachment%2F7%2F7922%2F7922787%2F10517126.doc&wdOrigin=BROWSELINK\">https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.thnet.gov.cn%2Fattachment%2F7%2F7922%2F7922787%2F10517126.doc&amp;wdOrigin=BROWSELINK</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Baiyun District Employment: <strong><a\n                    href=\"https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.by.gov.cn%2Fattachment%2F7%2F7885%2F7885546%2F10449790.doc&wdOrigin=BROWSELINK\">https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fwww.by.gov.cn%2Fattachment%2F7%2F7885%2F7885546%2F10449790.doc&amp;wdOrigin=BROWSELINK</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Nansha District Employment: <strong><a\n                    href=\"https://www.gzns.gov.cn/zwgk/tjsj/content/post_10426312.html\">https://www.gzns.gov.cn/zwgk/tjsj/content/post_10426312.html</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Zengcheng District Employment: <strong><a\n                    href=\"http://www.zc.gov.cn/gk/sjgk/cyjj/sjtj/content/post_10402940.html\">http://www.zc.gov.cn/gk/sjgk/cyjj/sjtj/content/post_10402940.html</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Conghua District Employment: <strong><a\n                    href=\"https://www.conghua.gov.cn/attachment/7/7842/7842581/10348061.pdf\">https://www.conghua.gov.cn/attachment/7/7842/7842581/10348061.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Huangpu District Employment: <strong><a\n                    href=\"http://www.hp.gov.cn/attachment/7/7847/7847910/10363191.pdf\">http://www.hp.gov.cn/attachment/7/7847/7847910/10363191.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Panyu District Employment: <strong><a\n                    href=\"https://www.panyu.gov.cn/attachment/7/7860/7860509/10390434.pdf\">https://www.panyu.gov.cn/attachment/7/7860/7860509/10390434.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Huadu District Employment: <strong><a\n                    href=\"https://www.huadu.gov.cn/attachment/7/7918/7918853/10500751.pdf\">https://www.huadu.gov.cn/attachment/7/7918/7918853/10500751.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Nanhai District Employment: <strong><a\n                    href=\"http://www.nanhai.gov.cn/attachment/0/558/558489/6680430.pdf\">http://www.nanhai.gov.cn/attachment/0/558/558489/6680430.pdf</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Chancheng District Employment: <strong><a\n                    href=\"https://www.chancheng.gov.cn/ztzd/wjp/tzgg/content/post_6681859.html\">https://www.chancheng.gov.cn/ztzd/wjp/tzgg/content/post_6681859.html</a></strong>\n        </p>\n    </li>\n    <li>\n        <p>Shunde District Employment: <strong><a\n                    href=\"https://www.shunde.gov.cn/fssdtjj/attachment/0/561/561408/6753823.pdf\">https://www.shunde.gov.cn/fssdtjj/attachment/0/561/561408/6753823.pdf</a></strong>\n        </p>\n</ul>\n<h2><strong>Credits</strong></h2>\n<p>Map authored by <a href=\"https://github.com/Kronifer/\"><strong><u>Kronifer</u></strong></a></p>",
+  "tags": [
+    "east-asia",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/guangzhou/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/guangzhou/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/guangzhou/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kronifer/sb-chinese-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/Kronifer/sb-chinese-maps/refs/heads/main/CAN/CAN.json"
+  },
+  "city_code": "CAN",
+  "country": "CN",
+  "population": 15562720,
+  "residents_total": 15562720,
+  "points_count": 15458,
+  "population_count": 220997,
+  "initial_view_state": {
+    "latitude": 23.115865436343867,
+    "longitude": 113.25756725504931,
+    "zoom": 11,
+    "bearing": 0
+  },
+  "data_source": "5th National Economic Census",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "east-asia",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "file_sizes": {
+    "CAN.pmtiles": 310.9,
+    "CAN_foundations.pmtiles": 160.91,
+    "buildings_index.bin.gz": 207.5,
+    "config.json": 0,
+    "demand_data.json": 27.64,
+    "driving_paths.json": 175.37,
+    "ocean_depth_index.json.gz": 8.74,
+    "roads.geojson": 61.79,
+    "runways_taxiways.geojson": 2.61
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.6923097074751224,
+      "p25": 0.6927186580918313,
+      "p50": 0.6928203212844333,
+      "p75": 0.6928203212848284,
+      "p90": 0.6928203212848284,
+      "mean": 0.692798894843271
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.6923288023913167,
+      "p25": 0.6927426632067537,
+      "p50": 0.6928203212844333,
+      "p75": 0.6928203212848284,
+      "p90": 0.6928203212848284,
+      "mean": 0.6929242161783912
+    },
+    "commuteDistanceKm": {
+      "p10": 3572,
+      "p25": 6082,
+      "p50": 10073,
+      "p75": 15771,
+      "p90": 22566,
+      "mean": 12334.150196609004
+    },
+    "residentCellDensity": {
+      "p10": 14,
+      "p25": 147,
+      "p50": 910,
+      "p75": 2521,
+      "p90": 5416,
+      "mean": 2044.199527124655
+    },
+    "workerCellDensity": {
+      "p10": 29,
+      "p25": 141,
+      "p50": 765,
+      "p75": 2530,
+      "p90": 5900,
+      "mean": 2519.8370550161812
+    },
+    "detail": {
+      "radiusKm": 0.6928203212844333,
+      "expectedPointSpacingKm": 0.7149766541585253,
+      "normalizedRadius": 0.9690111100198532,
+      "activityPerPoint": 1007.1447436637193,
+      "playableAreaKm2": 9104,
+      "playableAreaPerPointKm2": 0.5889507051364989,
+      "playableCatchmentRadiusKm": 0.4329767105975358,
+      "localityScore": 0,
+      "deaggregationScore": 1,
+      "score": 0
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8281891506982593,
+        "continuousScore": 0.8848716776045665,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.7067600980070812,
+        "largestCenterShare": 0.7072503614603245,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 113.3703542374991,
+            "latitude": 23.136175844534893,
+            "massShare": 0.7072503614603245,
+            "assignedMass": 22021576,
+            "assignedPointCount": 10820,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 113.12180707010303,
+            "latitude": 22.983176250807077,
+            "massShare": 0.29274963853967556,
+            "assignedMass": 9115313,
+            "assignedPointCount": 4638,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1786579200,
+  "search_aliases": [
+    "Гуанчжоу",
+    "Гуанчжоў",
+    "광저우",
+    "Cantón",
+    "غوانزو",
+    "Canton",
+    "Kanton",
+    "広州",
+    "광저우 시",
+    "Cantão",
+    "Quảng Châu",
+    "广州",
+    "広州市",
+    "Guangdžou",
+    "Κουανγκτσόου",
+    "Guandžou",
+    "გუანჯოუ",
+    "Գուանչժոու",
+    "Гуангџоу",
+    "Kwangtsjou",
+    "กว่างโจว",
+    "Quançjou",
+    "ग्वांगझोउ",
+    "גואנגגואו",
+    "Гуанджоу",
+    "Guangdžov",
+    "Guanchjou",
+    "গুয়ংঝো",
+    "Kōshū"
+  ],
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.16,
+    "weighted_score": 0.4,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

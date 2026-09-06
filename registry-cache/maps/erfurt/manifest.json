@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "id": "erfurt",
+  "name": "Erfurt",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of Erfurt, Germany, from the city center to Erfurt-Weimar Airport, spanning Weimar and the surrounding Thuringian towns (Gotha, Arnstadt, Sömmerda, Apolda, Bad Berka). Residential population comes from the official 2022 census 100m population grid (Zensus 2022), with real German labor-market statistics (official employment counts and municipality-to-municipality commuter flows) anchoring Erfurt and its 5 largest neighboring municipalities.",
+  "tags": [
+    "central-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/erfurt/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/erfurt/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-deutschland",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-deutschland/main/updates/erf-update.json"
+  },
+  "city_code": "ERF",
+  "country": "DE",
+  "population": 398200,
+  "residents_total": 398200,
+  "points_count": 4712,
+  "population_count": 3964,
+  "initial_view_state": {
+    "latitude": 50.9848,
+    "longitude": 11.0299,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "data_source": "Zensus 2022 (Destatis), Beschäftigtenstatistik BA + Pendlerrechnung der Länder (regionalstatistik.de/GENESIS-Online), OSM, Overture Maps",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.21,
+    "weighted_score": 0.41,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "ERF.pmtiles": 34.01,
+    "buildings_index.bin.gz": 15.39,
+    "config.json": 0,
+    "demand_data.json.gz": 0.13,
+    "ocean_depth_index.json.gz": 0.96,
+    "ocean_depth_index_contours.json.gz": 0.57,
+    "roads.geojson.gz": 2.1,
+    "runways_taxiways.geojson.gz": 0.02
+  },
+  "included_cities": [
+    "Weimar",
+    "Gotha",
+    "Arnstadt",
+    "Sömmerda",
+    "Apolda",
+    "Bad Berka"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.17446214961898512,
+      "p50": 0.17512236976203155,
+      "p75": 0.2779877005835794,
+      "p90": 0.35013168673193407,
+      "mean": 0.22485567342736587
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0.17467925892334404,
+      "p75": 0.17569637254099987,
+      "p90": 0.3287783263224104,
+      "mean": 0.1627079499171782
+    },
+    "commuteDistanceKm": {
+      "p10": 15688,
+      "p25": 20297,
+      "p50": 28532,
+      "p75": 41423,
+      "p90": 55651,
+      "mean": 32614.790363269425
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 300,
+      "p90": 600,
+      "mean": 277.03081232492997
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 400,
+      "p90": 800,
+      "mean": 417.7028451001054
+    },
+    "detail": {
+      "radiusKm": 0.17490067401508635,
+      "expectedPointSpacingKm": 0.5926473654967351,
+      "normalizedRadius": 0.2951176098935175,
+      "activityPerPoint": 84.50764006791171,
+      "playableAreaKm2": 3872,
+      "playableAreaPerPointKm2": 0.8217317487266553,
+      "playableCatchmentRadiusKm": 0.5114345895721064,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.9537690769496315,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 11.082858924158712,
+            "latitude": 50.97447688071321,
+            "massShare": 1,
+            "assignedMass": 796400,
+            "assignedPointCount": 4712,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1788048000
+}

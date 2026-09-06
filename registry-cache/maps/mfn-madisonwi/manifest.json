@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "id": "mfn-madisonwi",
+  "name": "Madison",
+  "author": "crumpetime",
+  "github_id": 121749023,
+  "description": "A completely reworked map of the Madison, WI area. Now includes entertainment demand and neighbourhood labels.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-madisonwi/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-madisonwi/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/mfn-madisonwi/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/crumpetime/sb-maps-msn",
+  "update": {
+    "type": "github",
+    "repo": "crumpetime/sb-maps-msn"
+  },
+  "city_code": "MSN",
+  "country": "US",
+  "population": 327350,
+  "residents_total": 327350,
+  "points_count": 2101,
+  "population_count": 48129,
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 43.077164,
+    "longitude": -89.382706,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3440184284415626,
+      "p25": 0.4431168932038911,
+      "p50": 0.6033018665086028,
+      "p75": 0.7629565754389562,
+      "p90": 1.2841379659565977,
+      "mean": 0.6958713694732914
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.16082093724322094,
+      "p25": 0.30503015063485406,
+      "p50": 0.4253574230154675,
+      "p75": 0.6157386553374634,
+      "p90": 0.9437536327532986,
+      "mean": 0.5090371390509753
+    },
+    "commuteDistanceKm": {
+      "p10": 6333,
+      "p25": 13381,
+      "p50": 24817,
+      "p75": 40316,
+      "p90": 57563,
+      "mean": 28740.04037067049
+    },
+    "residentCellDensity": {
+      "p10": 4,
+      "p25": 10,
+      "p50": 31,
+      "p75": 169,
+      "p90": 563,
+      "mean": 187.94137931034481
+    },
+    "workerCellDensity": {
+      "p10": 2,
+      "p25": 6,
+      "p50": 37,
+      "p75": 199,
+      "p90": 469,
+      "mean": 249.55038167938932
+    },
+    "detail": {
+      "radiusKm": 0.5065756875714831,
+      "expectedPointSpacingKm": 0.9291923276281338,
+      "normalizedRadius": 0.5451785088072925,
+      "activityPerPoint": 155.80675868633983,
+      "playableAreaKm2": 5894,
+      "playableAreaPerPointKm2": 2.8053307948595907,
+      "playableCatchmentRadiusKm": 0.944968002643285,
+      "localityScore": 0.5307589832153848,
+      "deaggregationScore": 0.11080926458049144,
+      "score": 0.24251394310345578
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.4163761539294151,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -89.35525453086727,
+            "latitude": 43.03834044064522,
+            "massShare": 1,
+            "assignedMass": 654700,
+            "assignedPointCount": 2037,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1773451171,
+  "search_aliases": [
+    "Мадисън",
+    "מדיסון",
+    "मैडिसन",
+    "マディソン",
+    "Madisonas",
+    "Медісон",
+    "მადისონი",
+    "ماديسون",
+    "Медисон",
+    "Medisona",
+    "매디슨",
+    "Мадисон",
+    "Մեդիսոն",
+    "麦迪逊",
+    "Μάντισον",
+    "Мадысан",
+    "ম্যাডিসন"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:50.292Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

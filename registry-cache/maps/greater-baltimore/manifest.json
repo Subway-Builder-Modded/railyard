@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "id": "greater-baltimore",
+  "name": "Greater Baltimore",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2023 LODES data for the greater Baltimore area.\nIncludes demand for BWI and MTN airports; JHU's various campuses, Morgan State, UMB, UMBC, UMCP, Loyola, US Naval Academy, Bowie State, and Towson universities; the National Aquarium, Camden Yards, and M&T Bank Stadium.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-baltimore/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-baltimore/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/BWI.json"
+  },
+  "city_code": "BWI",
+  "country": "US",
+  "population": 972032,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 972032,
+  "points_count": 2914,
+  "population_count": 75010,
+  "initial_view_state": {
+    "latitude": 39.2843,
+    "longitude": -76.613,
+    "zoom": 12.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "BWI.pmtiles": 86.54,
+    "BWI_foundations.pmtiles": 45.33,
+    "buildings_index.bin.gz": 41.79,
+    "buildings_index.json.gz": 30.51,
+    "config.json": 0,
+    "demand_data.json": 12.18,
+    "ocean_depth_index.json.gz": 9.11,
+    "roads.geojson": 30.19,
+    "runways_taxiways.geojson": 0.47
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.33057961578957723,
+      "p25": 0.41624463111445614,
+      "p50": 0.5411967089982838,
+      "p75": 0.7119174073555786,
+      "p90": 0.9515801946490435,
+      "mean": 0.6011469308195481
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.22402385366373168,
+      "p25": 0.3216631668413813,
+      "p50": 0.4565521733322603,
+      "p75": 0.6072546231690039,
+      "p90": 0.8017595313178743,
+      "mean": 0.4962074865114203
+    },
+    "commuteDistanceKm": {
+      "p10": 6445,
+      "p25": 13996,
+      "p50": 25523,
+      "p75": 38700,
+      "p90": 52225,
+      "mean": 27835.65516597787
+    },
+    "residentCellDensity": {
+      "p10": 35,
+      "p25": 112,
+      "p50": 304,
+      "p75": 647,
+      "p90": 1170,
+      "mean": 493.10096889342174
+    },
+    "workerCellDensity": {
+      "p10": 20,
+      "p25": 66,
+      "p50": 169,
+      "p75": 411,
+      "p90": 1010,
+      "mean": 497.13385826771656
+    },
+    "detail": {
+      "radiusKm": 0.4970759838228289,
+      "expectedPointSpacingKm": 0.8211764833132643,
+      "normalizedRadius": 0.605321747424181,
+      "activityPerPoint": 333.57309540150993,
+      "playableAreaKm2": 3180,
+      "playableAreaPerPointKm2": 1.091283459162663,
+      "playableCatchmentRadiusKm": 0.5893779039634254,
+      "localityScore": 0.4199584493634479,
+      "deaggregationScore": 1,
+      "score": 0.6480420120358308
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8745516283509094,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -76.65741317890254,
+            "latitude": 39.243930019601535,
+            "massShare": 1,
+            "assignedMass": 1944064,
+            "assignedPointCount": 2914,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784160000,
+  "search_aliases": [
+    "Baltimore",
+    "Балтимор",
+    "בולטימור",
+    "Baltimora",
+    "ボルチモア",
+    "ბალტიმორი",
+    "볼티모어",
+    "Baltimorė",
+    "Βαλτιμόρη",
+    "بالتيمور",
+    "Բալթիմոր",
+    "बाल्टीमोर",
+    "Балтымар",
+    "Baltimor",
+    "বাল্টিমোর",
+    "บอลทิมอร์",
+    "巴爾的摩"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

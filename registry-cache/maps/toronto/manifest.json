@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "id": "toronto",
+  "name": "Toronto",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Toronto and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/toronto/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/toronto/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YYZ-update.json"
+  },
+  "city_code": "YYZ",
+  "country": "CA",
+  "population": 4039647,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 4039647,
+  "points_count": 11203,
+  "population_count": 33650,
+  "initial_view_state": {
+    "latitude": 43.6532,
+    "longitude": -79.3832,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YYZ.pmtiles": 137.94,
+    "YYZ_foundations.pmtiles": 70.98,
+    "buildings_index.bin": 200.71,
+    "buildings_index.json": 264.08,
+    "config.json": 0,
+    "demand_data.json": 7.59,
+    "ocean_depth_index.json": 71.76,
+    "roads.geojson": 46.49,
+    "runways_taxiways.geojson": 0.73
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.25597132312228077,
+      "p25": 0.27553280594171764,
+      "p50": 0.3056637885713947,
+      "p75": 0.3432140102190643,
+      "p90": 0.38541500465937406,
+      "mean": 0.32464466620815374
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.26026188251086535,
+      "p25": 0.2798478768453816,
+      "p50": 0.3233588754534134,
+      "p75": 0.40288092095191747,
+      "p90": 0.5706422827313501,
+      "mean": 0.38612284326305135
+    },
+    "commuteDistanceKm": {
+      "p10": 1917,
+      "p25": 5420,
+      "p50": 12630,
+      "p75": 24485,
+      "p90": 39510,
+      "mean": 17317.284011887074
+    },
+    "residentCellDensity": {
+      "p10": 104,
+      "p25": 416,
+      "p50": 1068,
+      "p75": 1848,
+      "p90": 2811,
+      "mean": 1357.1861559139784
+    },
+    "workerCellDensity": {
+      "p10": 127,
+      "p25": 254,
+      "p50": 589,
+      "p75": 1262,
+      "p90": 2714,
+      "mean": 1325.9868680236375
+    },
+    "detail": {
+      "radiusKm": 0.3143868619062764,
+      "expectedPointSpacingKm": 0.5595008040137626,
+      "normalizedRadius": 0.5619060055873363,
+      "activityPerPoint": 360.5861822726055,
+      "playableAreaKm2": 4416,
+      "playableAreaPerPointKm2": 0.3941801303222351,
+      "playableCatchmentRadiusKm": 0.35421946928250914,
+      "localityScore": 0.4987605349477037,
+      "deaggregationScore": 1,
+      "score": 0.7062298032140132
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8598555543923648,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -79.46437375013177,
+            "latitude": 43.72108702969594,
+            "massShare": 1,
+            "assignedMass": 8079294,
+            "assignedPointCount": 11203,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "تورونتو",
+    "Торонто",
+    "Τορόντο",
+    "טורונטו",
+    "トロント",
+    "토론토",
+    "Torontas",
+    "โทรอนโต",
+    "টরোন্টো",
+    "Таронта",
+    "टोरण्टो",
+    "ტორონტო",
+    "Տորոնտո",
+    "多伦多"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

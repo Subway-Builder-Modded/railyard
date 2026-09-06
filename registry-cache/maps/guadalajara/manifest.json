@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "guadalajara",
+  "name": "Guadalajara",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Combined result of INEGI's DENUE, CE, CPV, and ENOE data. Covers the greater Guadalajara area. Includes demand for GDL airport; Universidad de Guadalajara (CUCEA, CUCEI, CUCS, CUCSH, CUAAD, and CUCBA campuses), Universidad del Valle de México (Zapopan and Guadalajara Sur campuses), Universidad Panamericana, Universidad Autónoma de Guadalajara (Ciudad Universitaria and International campuses), Universidad Jesuita de Guadalajara (ITESO), Universidad del Valle de Atemajac, Tec de Monterrey (ITESM Guadalajara), Universidad Tecnológica de Jalisco (UTJ), Universidad Lamar (Vallarta campus), Universidad Marista de Guadalajara, and Universidad América Latina (Vallarta campus); Estadio Akron, Expo Guadalajara, Jalisco Stadium, Guadalajara Cathedral, San Juan de Dios, Museo Cabañas, Teatro Degollado, Zoológico Guadalajara, Selva Mágica, Michin Aquarium, Barranca de Huentitán, Parque Mirador Independencia, Parque Natural Huentitán, Parque Metropolitano, Bosque Los Colomos, and Parque Solidaridad.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/guadalajara/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/guadalajara/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/GDL.json"
+  },
+  "city_code": "GDL",
+  "country": "MX",
+  "population": 2824978,
+  "residents_total": 2824978,
+  "points_count": 5838,
+  "population_count": 59632,
+  "initial_view_state": {
+    "latitude": 20.67698,
+    "longitude": -103.34697,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "INEGI's DENUE, CE, CPV, and ENOE",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "file_sizes": {
+    "GDL.pmtiles": 49.65,
+    "GDL_foundations.pmtiles": 46.56,
+    "buildings_index.bin.gz": 56.34,
+    "buildings_index.json.gz": 38.5,
+    "config.json": 0,
+    "demand_data.json": 9.69,
+    "ocean_depth_index.json.gz": 1.13,
+    "roads.geojson": 24.31,
+    "runways_taxiways.geojson": 0.42
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2196881849287205,
+      "p25": 0.2436597840742686,
+      "p50": 0.2712855985038038,
+      "p75": 0.30311038953783476,
+      "p90": 0.3453147253961054,
+      "mean": 0.296166803625082
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2144751526615063,
+      "p25": 0.2437222218421759,
+      "p50": 0.2740996809713587,
+      "p75": 0.31116180670103794,
+      "p90": 0.3728356317948456,
+      "mean": 0.292612586564531
+    },
+    "commuteDistanceKm": {
+      "p10": 2879,
+      "p25": 5163,
+      "p50": 9222,
+      "p75": 15695,
+      "p90": 25398,
+      "mean": 12423.16823182184
+    },
+    "residentCellDensity": {
+      "p10": 67,
+      "p25": 349,
+      "p50": 1338,
+      "p75": 3569,
+      "p90": 5894,
+      "mean": 2234.1947743467936
+    },
+    "workerCellDensity": {
+      "p10": 6,
+      "p25": 103,
+      "p50": 772,
+      "p75": 2848,
+      "p90": 5523,
+      "mean": 2061.027737226277
+    },
+    "detail": {
+      "radiusKm": 0.2726890096832227,
+      "expectedPointSpacingKm": 0.484603651316698,
+      "normalizedRadius": 0.5627052312592152,
+      "activityPerPoint": 483.8948269955464,
+      "playableAreaKm2": 2724,
+      "playableAreaPerPointKm2": 0.46659815005138744,
+      "playableCatchmentRadiusKm": 0.3853865644212632,
+      "localityScore": 0.4972556171910463,
+      "deaggregationScore": 1,
+      "score": 0.7051635393233588
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7199832506214834,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -103.35437456249255,
+            "latitude": 20.638072953443704,
+            "massShare": 1,
+            "assignedMass": 5649956,
+            "assignedPointCount": 5838,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "Zapopan",
+    "Sapopanas",
+    "Сапопан",
+    "Запопан",
+    "サポパン",
+    "سابوبان، خاليسكو",
+    "საპოპანი",
+    "萨波潘",
+    "Сапапан",
+    "Σαπόπαν"
+  ],
+  "data_quality": {
+    "tier": "high",
+    "raw_score": 0.52,
+    "weighted_score": 0.65,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

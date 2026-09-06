@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "id": "ottawa",
+  "name": "Ottawa",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Ottawa and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ottawa/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ottawa/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ottawa/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YOW-update.json"
+  },
+  "city_code": "YOW",
+  "country": "CA",
+  "population": 739120,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 739120,
+  "points_count": 3348,
+  "population_count": 6239,
+  "initial_view_state": {
+    "latitude": 45.4215,
+    "longitude": -75.6972,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YOW.pmtiles": 59.74,
+    "YOW_foundations.pmtiles": 29.03,
+    "buildings_index.bin": 81.7,
+    "buildings_index.json": 107.6,
+    "config.json": 0,
+    "demand_data.json": 1.55,
+    "ocean_depth_index.json": 39.78,
+    "roads.geojson": 13.93,
+    "runways_taxiways.geojson": 0.26
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.25838799080374797,
+      "p25": 0.28088786073119054,
+      "p50": 0.31291150635998544,
+      "p75": 0.36243355553228096,
+      "p90": 0.47706224600080505,
+      "mean": 0.4005542316459455
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.26531645104300483,
+      "p25": 0.291008513235639,
+      "p50": 0.3362939288373241,
+      "p75": 0.45357883429943324,
+      "p90": 0.7726809498939697,
+      "mean": 0.4627378181418932
+    },
+    "commuteDistanceKm": {
+      "p10": 2046,
+      "p25": 5384,
+      "p50": 12307,
+      "p75": 21641,
+      "p90": 31620,
+      "mean": 15109.637762461933
+    },
+    "residentCellDensity": {
+      "p10": 66,
+      "p25": 103,
+      "p50": 324,
+      "p75": 903,
+      "p90": 1531,
+      "mean": 601.0878763222132
+    },
+    "workerCellDensity": {
+      "p10": 86,
+      "p25": 128,
+      "p50": 272,
+      "p75": 627,
+      "p90": 1535,
+      "mean": 684.8832252085264
+    },
+    "detail": {
+      "radiusKm": 0.3243921081842233,
+      "expectedPointSpacingKm": 0.6603644770373823,
+      "normalizedRadius": 0.4912319173186839,
+      "activityPerPoint": 220.76463560334528,
+      "playableAreaKm2": 3356,
+      "playableAreaPerPointKm2": 1.002389486260454,
+      "playableCatchmentRadiusKm": 0.5648632429919596,
+      "localityScore": 0.6410831363392677,
+      "deaggregationScore": 1,
+      "score": 0.8006766740322012
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8503703192947849,
+        "continuousScore": 0.8497910687884491,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.3090078002157366,
+        "largestCenterShare": 0.5698702511094275,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -75.70833745644913,
+            "latitude": 45.418149294341795,
+            "massShare": 0.5698702511094275,
+            "assignedMass": 842405,
+            "assignedPointCount": 1540,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -75.8034194581965,
+            "latitude": 45.29076425343501,
+            "massShare": 0.3040270862647473,
+            "assignedMass": 449425,
+            "assignedPointCount": 1191,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -75.47553568317147,
+            "latitude": 45.4730380129821,
+            "massShare": 0.1261026626258253,
+            "assignedMass": 186410,
+            "assignedPointCount": 617,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "أوتاوا",
+    "Отава",
+    "Οττάβα",
+    "אוטווה",
+    "Օտտավա",
+    "オタワ",
+    "오타와",
+    "Otava",
+    "Оттава",
+    "AA¬²±",
+    "Οτταβα",
+    "ოტავა",
+    "Ottava",
+    "অটোয়া",
+    "Атава",
+    "ออตตาวา",
+    "渥太華"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

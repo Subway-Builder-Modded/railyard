@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "subway-builder-performance",
+  "name": "Subway Builder Performance",
+  "author": "rexmhall09",
+  "github_id": 70306565,
+  "description": "Adds safe rendering presets, adaptive map scaling, optional level of detail, guided benchmarks, and issue-ready diagnostics. Gameplay-affecting experimental tuning is separate and off by default.",
+  "tags": [
+    "qol",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/subway-builder-performance/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/rexmhall09/Subway-Builder-Performance-Mod",
+  "update": {
+    "type": "github",
+    "repo": "rexmhall09/Subway-Builder-Performance-Mod"
+  },
+  "last_updated": 1787560870
+}

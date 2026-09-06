@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "id": "strasbourg",
+  "name": "Strasbourg",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of the Strasbourg metropolitan area, from Strasbourg-Entzheim airport to the European institutions and Kehl border. Cross-border demand data refreshed: Germany-to-Strasbourg commuter flow now sourced from official INSEE data (previously an unsourced estimate).",
+  "tags": [
+    "west-europe",
+    "airports",
+    "entertainment",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/strasbourg/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/strasbourg/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-france",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-france/main/updates/str-update.json"
+  },
+  "city_code": "STR",
+  "country": "FR",
+  "population": 372018,
+  "residents_total": 372018,
+  "points_count": 1968,
+  "population_count": 5510,
+  "initial_view_state": {
+    "latitude": 48.5734,
+    "longitude": 7.7521,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "INSEE Filosofi/MOBPRO 2021, INSEE Flash Grand Est n110, OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "STR.pmtiles": 12.25,
+    "buildings_index.bin.gz": 6.28,
+    "config.json": 0,
+    "demand_data.json.gz": 0.15,
+    "ocean_depth_index.json.gz": 0.31,
+    "ocean_depth_index_contours.json.gz": 0.22,
+    "roads.geojson.gz": 1.03,
+    "runways_taxiways.geojson.gz": 0.09
+  },
+  "included_cities": [
+    "Kehl",
+    "Schiltigheim",
+    "Illkirch-Graffenstaden",
+    "Lingolsheim",
+    "Ostwald",
+    "Bischheim",
+    "Hoenheim",
+    "Eckbolsheim",
+    "Oberhausbergen",
+    "Mundolsheim"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.19870328423950104,
+      "p25": 0.19895079297296517,
+      "p50": 0.19929917020861346,
+      "p75": 0.1994719180717926,
+      "p90": 0.2002608349345135,
+      "mean": 0.21209147111350551
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.19875825882484713,
+      "p25": 0.19912616711294345,
+      "p50": 0.19958423435258413,
+      "p75": 0.30433697945893456,
+      "p90": 0.3566471603445641,
+      "mean": 0.2612986055433448
+    },
+    "commuteDistanceKm": {
+      "p10": 1775,
+      "p25": 4540,
+      "p50": 6983,
+      "p75": 10979,
+      "p90": 17026,
+      "mean": 8371.133938294011
+    },
+    "residentCellDensity": {
+      "p10": 95,
+      "p25": 181,
+      "p50": 437,
+      "p75": 1250,
+      "p90": 2709,
+      "mean": 1103.3492537313432
+    },
+    "workerCellDensity": {
+      "p10": 47,
+      "p25": 106,
+      "p50": 300,
+      "p75": 990,
+      "p90": 2108,
+      "mean": 1141.7323076923076
+    },
+    "detail": {
+      "radiusKm": 0.1994416513499411,
+      "expectedPointSpacingKm": 0.4144248634911699,
+      "normalizedRadius": 0.4812492418283455,
+      "activityPerPoint": 189.03353658536585,
+      "playableAreaKm2": 464,
+      "playableAreaPerPointKm2": 0.23577235772357724,
+      "playableCatchmentRadiusKm": 0.27395012749089176,
+      "localityScore": 0.6628214924622357,
+      "deaggregationScore": 1,
+      "score": 0.8141384971012215
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.15689571012997985,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 7.739448826366196,
+            "latitude": 48.57963235318847,
+            "massShare": 1,
+            "assignedMass": 744036,
+            "assignedPointCount": 1968,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1787443200,
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

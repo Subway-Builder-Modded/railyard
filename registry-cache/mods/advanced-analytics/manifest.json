@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "advanced-analytics",
+  "name": "Advanced Analytics",
+  "author": "stefanorigano",
+  "github_id": 8558351,
+  "description": "A mod for Subway Builder that adds detailed per-route analytics, historical tracking, and financial metrics to your network.\n\n## What it does\n\nAdvanced Analytics sits alongside the game UI and gives you data the base game doesn't expose:\n\n- **Per-route metrics** — ridership, throughput, capacity usage, transfer connections, revenue, cost, profit, and profit per train\n- **Three data modes** — live (last 24h), historical (end-of-day snapshots), and side-by-side day comparison\n- **Trend charts** — visualize how any route evolved over time\n- **System map** — schematic overview of your entire network\n- **Storage manager** — export, import, and manage analytics data across saves\n\nAll data is stored in IndexedDB and persists across game restarts. No save file is modified.\n\n[![Liberapay](https://img.shields.io/badge/Liberapay-Support-F6C915?logo=liberapay&logoColor=black)](https://liberapay.com/Steno)\n[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/Q5Q61VIM68)\n\n---\n\n## Contributing\n\nBug reports and feature suggestions are welcome.\n\n- **Found a bug?** [Open an issue](https://github.com/stefanorigano/advanced_analytics/issues/new) with steps to reproduce and your game version.\n- **Have an idea?** Open an issue to discuss it before sending a PR.\n- **Want to contribute code?** Fork the repo, make your changes on a branch, and open a pull request against `master`. Please keep PRs focused — one feature or fix per PR.\n\n## Thank you\n\nA big thank you to everyone who tested early builds, reported bugs, and shared feedback. This mod wouldn't be where it is without your support. ❤️\n\n---\n\n## License\n\n[![License](https://img.shields.io/github/license/stefanorigano/advanced_analytics)](LICENSE)",
+  "tags": [
+    "gameplay",
+    "misc",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/advanced-analytics/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/advanced-analytics/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/advanced-analytics/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/stefanorigano/advanced_analytics",
+  "update": {
+    "type": "github",
+    "repo": "stefanorigano/advanced_analytics"
+  },
+  "is_test": false,
+  "last_updated": 1785700496,
+  "deprecation": {
+    "since": "2026-08-21T17:04:04.888Z",
+    "by_github_id": 8558351
+  }
+}

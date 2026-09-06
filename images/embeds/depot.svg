@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Depot">
+  <rect width="1200" height="630" fill="#181204"/>
+  <circle cx="600" cy="315" r="178" fill="#b68918" opacity="0.18"/>
+  <g fill="none" stroke="#cfa22e" stroke-linecap="round" stroke-linejoin="round" stroke-width="30">
+    <path d="M424 430V252l176-90 176 90v178"/>
+    <path d="M498 430V318h204v112"/>
+    <path d="M456 272h288"/>
+    <path d="M552 430V318"/>
+    <path d="M648 430V318"/>
+  </g>
+</svg>

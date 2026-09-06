@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "id": "berlin-val",
+  "name": "Berlin",
+  "author": "Valdotorium",
+  "github_id": 116170877,
+  "description": "Custom map of Germanys capital, Berlin, including most of the city area, BER, Spandau and a bit of Potsdam. Demand Data was procedurally generated using generation scripts from the patcher. Data quality: Good (for generated data standards).\nNOTE: population counts on Railyard probably differ from the values in game. This map has a population of 3.9 Million in game.",
+  "tags": [
+    "central-europe",
+    "airports",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/berlin-val/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/berlin-val/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/Valdotorium/Railyard-Maps-2",
+  "update": {
+    "type": "custom",
+    "url": "https://valdotorium.github.io/Railyard-Maps-2/updates/BER.json"
+  },
+  "city_code": "BER",
+  "country": "DE",
+  "population": 3926141,
+  "residents_total": 3926141,
+  "points_count": 921,
+  "population_count": 39805,
+  "data_source": "OSM",
+  "source_quality": "low-quality",
+  "level_of_detail": "medium-detail",
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "schools",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 52.52,
+    "longitude": 13.405,
+    "zoom": 13.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "BER.pmtiles": 59.88,
+    "__MACOSX/._BER.pmtiles": 0,
+    "__MACOSX/._buildings_index.bin": 0,
+    "__MACOSX/._config.json": 0,
+    "__MACOSX/._demand_data.json": 0,
+    "__MACOSX/._manifest.json": 0,
+    "__MACOSX/._roads.geojson": 0,
+    "__MACOSX/._runways_taxiways.geojson": 0,
+    "buildings_index.bin": 150.68,
+    "config.json": 0,
+    "demand_data.json": 8.11,
+    "manifest.json": 0,
+    "roads.geojson": 30.32,
+    "runways_taxiways.geojson": 0.85
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.15489319487944989,
+      "p25": 0.33765184935928194,
+      "p50": 0.5988135360512482,
+      "p75": 0.8741812415668168,
+      "p90": 1.2341553477701415,
+      "mean": 0.7244650704352824
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.10099457677015267,
+      "p25": 0.30806490603607345,
+      "p50": 0.5938388965467648,
+      "p75": 0.8769315473748113,
+      "p90": 1.3018260364495167,
+      "mean": 0.723617236367836
+    },
+    "commuteDistanceKm": {
+      "p10": 4380,
+      "p25": 7470,
+      "p50": 12807,
+      "p75": 21023,
+      "p90": 28580,
+      "mean": 14925.876070845372
+    },
+    "residentCellDensity": {
+      "p10": 788,
+      "p25": 1957,
+      "p50": 4496,
+      "p75": 8606,
+      "p90": 13858,
+      "mean": 6197.004746835443
+    },
+    "workerCellDensity": {
+      "p10": 557,
+      "p25": 2307,
+      "p50": 6675,
+      "p75": 15748,
+      "p90": 31864,
+      "mean": 12975.633870967742
+    },
+    "detail": {
+      "radiusKm": 0.5963210288812055,
+      "expectedPointSpacingKm": 0.8290334232937239,
+      "normalizedRadius": 0.7192967281247127,
+      "activityPerPoint": 6118.064203400307,
+      "playableAreaKm2": 1344,
+      "playableAreaPerPointKm2": 1.4592833876221498,
+      "playableCatchmentRadiusKm": 0.6815455443504146,
+      "localityScore": 0.237300058633389,
+      "deaggregationScore": 0.7505343950530526,
+      "score": 0.42202115581148836
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8386514849778041,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 13.386645593276898,
+            "latitude": 52.50161667540002,
+            "massShare": 1,
+            "assignedMass": 12013029,
+            "assignedPointCount": 921,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784851200,
+  "search_aliases": [
+    "Berlín",
+    "Berlino",
+    "Berlyn",
+    "برلين",
+    "Бэрлін",
+    "Берлин",
+    "Estat de Berlín",
+    "Βερολίνο",
+    "Berliin",
+    "Berliini",
+    "ברלין",
+    "ベルリン",
+    "ბერლინი",
+    "베를린",
+    "Berlynas",
+    "Berlīne",
+    "Berlijn",
+    "Berlim",
+    "Berlini",
+    "เบอร์ลิน",
+    "Берлін",
+    "柏林",
+    "Բեռլին",
+    "বার্লিন"
+  ],
+  "data_quality": {
+    "tier": "absent",
+    "raw_score": 0,
+    "weighted_score": 0,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

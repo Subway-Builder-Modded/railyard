@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "id": "nashville",
+  "name": "Nashville",
+  "author": "soccerjonj",
+  "github_id": 222296520,
+  "description": "Custom map of the Nashville, TN area and surrounding towns such as Brentwood, Franklin, Mt. Juliet and Murfreesboro, Hendersonville etc. Generated using 2023 LODES Census Data and added demand for the following:\n\nUniversities: Vanderbilt University, Belmont University, Middle Tennessee State University, Fisk University, Lipscomb University, Meharry Medical College, Tennessee State University, Trevecca Nazarene University, Nashville State Community College, and Tennessee College of Applied Technology Nashville, Cumberland University, Volunteer State Community College\n\nEntertainment: Lower Broadway (Split into two demand points), Nashville Zoo, Ascend Amphitheater, Ryman Auditorium, Bridgestone Arena, Nissan Stadium, First Horizon Park, Geodis Park, Firstbank Stadium, Opry Mills Mall, Andrew Jackson's Hermitage, Cheekwood, and the Grand Ole Opry",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nashville/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nashville/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nashville/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/soccerjonj/Nashville",
+  "update": {
+    "type": "github",
+    "repo": "soccerjonj/Nashville"
+  },
+  "city_code": "BNA",
+  "country": "US",
+  "population": 838863,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 838863,
+  "points_count": 2807,
+  "population_count": 60682,
+  "initial_view_state": {
+    "latitude": 36.161794,
+    "longitude": -86.7782,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.34883687534400876,
+      "p25": 0.4582960803187529,
+      "p50": 0.6258296490133518,
+      "p75": 0.8965225696731928,
+      "p90": 1.3119526604062555,
+      "mean": 0.729619576162676
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.14807144445747958,
+      "p25": 0.29063498957748957,
+      "p50": 0.3913613009987918,
+      "p75": 0.5307877825568383,
+      "p90": 0.7907533177193647,
+      "mean": 0.45925146518378496
+    },
+    "commuteDistanceKm": {
+      "p10": 7730,
+      "p25": 16978,
+      "p50": 30137,
+      "p75": 46728,
+      "p90": 59671,
+      "mean": 32582.083632708218
+    },
+    "residentCellDensity": {
+      "p10": 19,
+      "p25": 63,
+      "p50": 225,
+      "p75": 543,
+      "p90": 926,
+      "mean": 394.35025858015985
+    },
+    "workerCellDensity": {
+      "p10": 4,
+      "p25": 13,
+      "p50": 59,
+      "p75": 225,
+      "p90": 761,
+      "mean": 439.6491872050341
+    },
+    "detail": {
+      "radiusKm": 0.4948994904437492,
+      "expectedPointSpacingKm": 0.8755882545994136,
+      "normalizedRadius": 0.5652194257335812,
+      "activityPerPoint": 298.84681154257214,
+      "playableAreaKm2": 5091,
+      "playableAreaPerPointKm2": 1.8136800855005344,
+      "playableCatchmentRadiusKm": 0.7598107011548882,
+      "localityScore": 0.4925353652144618,
+      "deaggregationScore": 0.5377293960498484,
+      "score": 0.5146365168446212
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.5519569623764597,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -86.6820020405248,
+            "latitude": 36.09464485923407,
+            "massShare": 1,
+            "assignedMass": 1677726,
+            "assignedPointCount": 2787,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1771693002,
+  "search_aliases": [
+    "ناشفيل",
+    "נאשוויל",
+    "ナッシュビル",
+    "ნეშვილი",
+    "내슈빌",
+    "Нашвилл",
+    "Нашвил",
+    "ন্যাশভিল",
+    "Нешвил",
+    "แนชวิลล์",
+    "Našvila",
+    "Nešvilis",
+    "Νάσβιλ",
+    "Нашвілл",
+    "Նեշվիլ",
+    "纳什维尔",
+    "Neşvill",
+    "Нашвіл",
+    "Neshvill",
+    "नैशविल"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:38.207Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

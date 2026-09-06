@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "id": "vancouver",
+  "name": "Vancouver",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Vancouver and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/vancouver/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/vancouver/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/vancouver/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YVR-update.json"
+  },
+  "city_code": "YVR",
+  "country": "CA",
+  "population": 1677021,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 1677021,
+  "points_count": 5598,
+  "population_count": 13943,
+  "initial_view_state": {
+    "latitude": 49.2827,
+    "longitude": -123.1207,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YVR.pmtiles": 68.62,
+    "YVR_foundations.pmtiles": 32.65,
+    "buildings_index.bin": 96.78,
+    "buildings_index.json": 132.93,
+    "config.json": 0,
+    "demand_data.json": 3.24,
+    "ocean_depth_index.json": 47.88,
+    "roads.geojson": 21.35,
+    "runways_taxiways.geojson": 0.78
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.22850398534271038,
+      "p25": 0.24717316376134923,
+      "p50": 0.2762392884014128,
+      "p75": 0.3146433625099978,
+      "p90": 0.37387308494738253,
+      "mean": 0.3109200884859173
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.23091386136888686,
+      "p25": 0.2485361134635947,
+      "p50": 0.2846846667604253,
+      "p75": 0.35960807298982456,
+      "p90": 0.5660380874089154,
+      "mean": 0.39837086055749243
+    },
+    "commuteDistanceKm": {
+      "p10": 1676,
+      "p25": 4357,
+      "p50": 9934,
+      "p75": 18466,
+      "p90": 29478,
+      "mean": 13097.769848669583
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 254,
+      "p50": 821,
+      "p75": 1604,
+      "p90": 2474,
+      "mean": 1126.0666666666666
+    },
+    "workerCellDensity": {
+      "p10": 113,
+      "p25": 195,
+      "p50": 467,
+      "p75": 1054,
+      "p90": 2470,
+      "mean": 1177.5200281096274
+    },
+    "detail": {
+      "radiusKm": 0.280430186971184,
+      "expectedPointSpacingKm": 0.5468412656108897,
+      "normalizedRadius": 0.5128182611784218,
+      "activityPerPoint": 299.57502679528403,
+      "playableAreaKm2": 1984,
+      "playableAreaPerPointKm2": 0.3544122901036084,
+      "playableCatchmentRadiusKm": 0.3358763697032231,
+      "localityScore": 0.5955490857059564,
+      "deaggregationScore": 1,
+      "score": 0.7717182683505402
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9952872177519712,
+        "continuousScore": 0.8218593596029804,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.9906186477741747,
+        "largestCenterShare": 0.5343248534156698,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -123.0951373949586,
+            "latitude": 49.25324370944818,
+            "massShare": 0.5343248534156698,
+            "assignedMass": 1792148,
+            "assignedPointCount": 2387,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -122.80613850050011,
+            "latitude": 49.16676911211648,
+            "massShare": 0.4656751465843302,
+            "assignedMass": 1561894,
+            "assignedPointCount": 3211,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "バンクーバー",
+    "Ванкувър",
+    "Βανκούβερ",
+    "ונקובר",
+    "バンクーバー市",
+    "밴쿠버",
+    "Vancôver",
+    "Ванкувер",
+    "Vankūvera",
+    "ვანკუვერი",
+    "Վանկուվեր",
+    "แวนคูเวอร์",
+    "ভ্যানকুভার",
+    "Vankuver",
+    "فانكوفر",
+    "Vankuveris",
+    "वैंकूवर",
+    "溫哥華"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

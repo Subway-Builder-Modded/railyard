@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "id": "winnipeg",
+  "name": "Winnipeg",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Winnipeg and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/winnipeg/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/winnipeg/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/winnipeg/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YWG-update.json"
+  },
+  "city_code": "YWG",
+  "country": "CA",
+  "population": 502477,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 502477,
+  "points_count": 2119,
+  "population_count": 4154,
+  "initial_view_state": {
+    "latitude": 49.8951,
+    "longitude": -97.1384,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YWG.pmtiles": 25.5,
+    "YWG_foundations.pmtiles": 15.66,
+    "buildings_index.bin": 46.12,
+    "buildings_index.json": 60.83,
+    "config.json": 0,
+    "demand_data.json": 1.02,
+    "ocean_depth_index.json": 3.23,
+    "roads.geojson": 7.41,
+    "runways_taxiways.geojson": 0.28
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.25585337042996015,
+      "p25": 0.2792246520596609,
+      "p50": 0.30753040859178205,
+      "p75": 0.34386800201552326,
+      "p90": 0.39301560082443143,
+      "mean": 0.33596574893356795
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2570083251545144,
+      "p25": 0.28567435705113614,
+      "p50": 0.32603064331820353,
+      "p75": 0.4058659263046131,
+      "p90": 0.821279428882097,
+      "mean": 0.4385641287138962
+    },
+    "commuteDistanceKm": {
+      "p10": 2000,
+      "p25": 4471,
+      "p50": 8246,
+      "p75": 12343,
+      "p90": 16692,
+      "mean": 9137.554164660569
+    },
+    "residentCellDensity": {
+      "p10": 92,
+      "p25": 242,
+      "p50": 719,
+      "p75": 1251,
+      "p90": 1705,
+      "mean": 844.3939393939394
+    },
+    "workerCellDensity": {
+      "p10": 99,
+      "p25": 149,
+      "p50": 361,
+      "p75": 796,
+      "p90": 1526,
+      "mean": 809.9193548387096
+    },
+    "detail": {
+      "radiusKm": 0.3166454436007073,
+      "expectedPointSpacingKm": 0.5925445246440986,
+      "normalizedRadius": 0.5343825323352617,
+      "activityPerPoint": 237.12930627654555,
+      "playableAreaKm2": 1164,
+      "playableAreaPerPointKm2": 0.5493157149598867,
+      "playableCatchmentRadiusKm": 0.418153826609119,
+      "localityScore": 0.5519364929764101,
+      "deaggregationScore": 1,
+      "score": 0.7429242848207415
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.6913135520409912,
+        "continuousScore": 0.5989635060913087,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.5282499510246665,
+        "largestCenterShare": 0.7777977897495806,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -97.14883754706388,
+            "latitude": 49.90279786029824,
+            "massShare": 0.7777977897495806,
+            "assignedMass": 781651,
+            "assignedPointCount": 1586,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -97.14523531255733,
+            "latitude": 49.81086442725802,
+            "massShare": 0.22220221025041942,
+            "assignedMass": 223303,
+            "assignedPointCount": 533,
+            "prominenceRatio": 0.9999999999421257
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "ויניפג",
+    "ウィニペグ",
+    "Виннипег",
+    "Вінніпег",
+    "Винипег",
+    "Вінніпеґ",
+    "Winnipeg City",
+    "Vinnipeg",
+    "Уинипег",
+    "Вініпег",
+    "Γουίνιπεγκ",
+    "Vinipegas",
+    "วินนิเพก",
+    "უინიპეგი",
+    "وينيبيغ",
+    "Vinipega",
+    "위니펙",
+    "Vinnipeq",
+    "温尼伯",
+    "Վիննիպեգ",
+    "विनिपेग",
+    "উইনিপেগ"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

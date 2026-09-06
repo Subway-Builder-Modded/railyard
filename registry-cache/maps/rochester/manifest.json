@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "rochester",
+  "name": "Rochester",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2022 LODES data for the Rochester area.\nIncludes demand for ROC airport; UR, RIT, Nazareth, St. John Fisher, and Roberts Wesleyan universities.",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/rochester/gallery/screenshot1.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/ROC.json"
+  },
+  "city_code": "ROC",
+  "country": "US",
+  "population": 359848,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 359848,
+  "points_count": 5062,
+  "population_count": 26202,
+  "initial_view_state": {
+    "latitude": 43.154,
+    "longitude": -77.608,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {
+    ".railyard_map/special_demand_points.json": 0.03,
+    ".railyard_map/special_demand_types.json": 0.03,
+    "ROC.pmtiles": 22.41,
+    "ROC_foundations.pmtiles": 12.61,
+    "buildings_index.bin.gz": 11.34,
+    "buildings_index.json.gz": 8.15,
+    "config.json": 0,
+    "demand_data.json": 4.55,
+    "ocean_depth_index.json.gz": 1.26,
+    "roads.geojson": 6.56,
+    "runways_taxiways.geojson": 0.13
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.26063434312052985,
+      "p25": 0.2769143225786342,
+      "p50": 0.3007184131948311,
+      "p75": 0.33560950251103217,
+      "p90": 0.3705383750213992,
+      "mean": 0.3109125877287326
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.24282233917355897,
+      "p25": 0.26722648228395735,
+      "p50": 0.3036869107113065,
+      "p75": 0.35198443410453767,
+      "p90": 0.3949804062798626,
+      "mean": 0.3130412524531669
+    },
+    "commuteDistanceKm": {
+      "p10": 4347,
+      "p25": 8559,
+      "p50": 14528,
+      "p75": 21232,
+      "p90": 27888,
+      "mean": 15582.556064422562
+    },
+    "residentCellDensity": {
+      "p10": 6,
+      "p25": 26,
+      "p50": 121,
+      "p75": 359,
+      "p90": 754,
+      "mean": 285.71088165210483
+    },
+    "workerCellDensity": {
+      "p10": 3,
+      "p25": 9,
+      "p50": 46,
+      "p75": 268,
+      "p90": 798,
+      "mean": 352.7154072620216
+    },
+    "detail": {
+      "radiusKm": 0.302199017035371,
+      "expectedPointSpacingKm": 0.502069994065698,
+      "normalizedRadius": 0.6019061497545439,
+      "activityPerPoint": 71.08810746740419,
+      "playableAreaKm2": 1068,
+      "playableAreaPerPointKm2": 0.21098380086922164,
+      "playableCatchmentRadiusKm": 0.2591490490843165,
+      "localityScore": 0.425949793851542,
+      "deaggregationScore": 1,
+      "score": 0.6526482926136726
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7441583246170611,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -77.60864889383069,
+            "latitude": 43.14993133280347,
+            "massShare": 1,
+            "assignedMass": 719696,
+            "assignedPointCount": 5062,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784160000,
+  "search_aliases": [
+    "Рочестър",
+    "ロチェスター",
+    "Ročestera",
+    "Рочестер",
+    "রচেস্টার",
+    "รอเชสเตอร์",
+    "로체스터",
+    "روتشستر",
+    "रोचेस्टर",
+    "רוצסטר",
+    "Ρότσεστερ",
+    "Ročesteris",
+    "羅徹斯特"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

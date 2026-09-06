@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "id": "dublin",
+  "name": "Dublin",
+  "author": "Kronifer",
+  "github_id": 44979306,
+  "description": "Custom map of Dublin with high-resolution data pulled and processed from the 2022 Census.",
+  "tags": [
+    "west-europe",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/dublin/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/dublin/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/dublin/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Kronifer/sb-dublin-map",
+  "update": {
+    "type": "github",
+    "repo": "kronifer/sb-dublin-map"
+  },
+  "city_code": "DUB",
+  "country": "IE",
+  "population": 732172,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "Ireland Central Statistics Office",
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 732172,
+  "points_count": 3265,
+  "population_count": 3391,
+  "initial_view_state": {
+    "latitude": 53.34704,
+    "longitude": -6.260326,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 9.929497353721012e-8,
+      "p25": 0.08751505857678255,
+      "p50": 0.16061281013759604,
+      "p75": 0.2308416255971922,
+      "p90": 0.30658238809253213,
+      "mean": 0.1752961486153657
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.04719630311005535,
+      "p25": 0.09169130479646533,
+      "p50": 0.1564374370652441,
+      "p75": 0.2288312035465338,
+      "p90": 0.2994410932854562,
+      "mean": 0.18222109170262357
+    },
+    "commuteDistanceKm": {
+      "p10": 4104,
+      "p25": 5659,
+      "p50": 7976,
+      "p75": 10888,
+      "p90": 13552,
+      "mean": 8431.185196107343
+    },
+    "residentCellDensity": {
+      "p10": 473,
+      "p25": 800,
+      "p50": 1839,
+      "p75": 2946,
+      "p90": 4115,
+      "mean": 2123.7257318952234
+    },
+    "workerCellDensity": {
+      "p10": 191,
+      "p25": 275,
+      "p50": 522,
+      "p75": 1004,
+      "p90": 1958,
+      "mean": 1153.2649842271294
+    },
+    "detail": {
+      "radiusKm": 0.15851137617777528,
+      "expectedPointSpacingKm": 0.48373229912097426,
+      "normalizedRadius": 0.3276840857346471,
+      "activityPerPoint": 307.88223420085825,
+      "playableAreaKm2": 707,
+      "playableAreaPerPointKm2": 0.21653905053598774,
+      "playableCatchmentRadiusKm": 0.2625386076950519,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.6401658656327491,
+        "continuousScore": 0.1773624865892646,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.4707676101472678,
+        "largestCenterShare": 0.7999308813573766,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -6.248608257225741,
+            "latitude": 53.351478129425274,
+            "massShare": 0.7999308813573766,
+            "assignedMass": 1689702,
+            "assignedPointCount": 2496,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -6.388191873554863,
+            "latitude": 53.30958905213089,
+            "massShare": 0.20006911864262347,
+            "assignedMass": 422608,
+            "assignedPointCount": 769,
+            "prominenceRatio": 0.999999999998111
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1773250803,
+  "search_aliases": [
+    "Dublín",
+    "دبلن",
+    "Дублін",
+    "Дъблин",
+    "דבלין",
+    "Dublino",
+    "ダブリン",
+    "더블린",
+    "Dublinas",
+    "Dublina",
+    "Дублин",
+    "Даблин",
+    "ดับลิน",
+    "都柏林",
+    "Δουβλίνο",
+    "დუბლინი",
+    "Dublini",
+    "Dublin city",
+    "ডাবলিন",
+    "Դուբլին"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "deprecation": {
+    "since": "2026-08-17T18:09:05.188Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author."
+  }
+}

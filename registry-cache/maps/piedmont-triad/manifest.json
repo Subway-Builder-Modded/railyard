@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "id": "piedmont-triad",
+  "name": "Piedmont Triad",
+  "author": "PSWBSF",
+  "github_id": 193011631,
+  "description": "Map of the Piedmont Triad of North Carolina. Made using the Map Patcher by Kronifer and US Demand Generator by slurry.\n\nExtends from Winston-Salem to the west, Mebane to the east, and Lexington to the south. Major cities include Winston-Salem, Greensboro, High Point, and Burlington.\n\nNote: This map has not been updated to 1.4+ and is not currently being maintained. If someone would like to update and/or maintain this map, please dm @pswbsf on discord.\n\nAdditional demand points as follows:",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/piedmont-triad/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/piedmont-triad/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/piedmont-triad/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/piedmont-triad/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/PSWBSF/piedmont-triad",
+  "update": {
+    "type": "github",
+    "repo": "PSWBSF/piedmont-triad"
+  },
+  "city_code": "WGH",
+  "country": "US",
+  "population": 452333,
+  "residents_total": 452333,
+  "points_count": 2580,
+  "population_count": 49019,
+  "initial_view_state": {
+    "latitude": 36.0731,
+    "longitude": -79.791,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "file_sizes": {},
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4309433756841894,
+      "p25": 0.5903557266371605,
+      "p50": 0.8233982683599118,
+      "p75": 1.2454043220331912,
+      "p90": 1.5778938688024207,
+      "mean": 0.9267654236824167
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.23504369699919508,
+      "p25": 0.3629751141350018,
+      "p50": 0.5174031992945964,
+      "p75": 0.7449437930251809,
+      "p90": 1.0722761137301469,
+      "mean": 0.6014836589359938
+    },
+    "commuteDistanceKm": {
+      "p10": 6890,
+      "p25": 13939,
+      "p50": 26325,
+      "p75": 42474,
+      "p90": 59523,
+      "mean": 30393.2712417634
+    },
+    "residentCellDensity": {
+      "p10": 15,
+      "p25": 44,
+      "p50": 125,
+      "p75": 286,
+      "p90": 494,
+      "mean": 209.25219805645534
+    },
+    "workerCellDensity": {
+      "p10": 4,
+      "p25": 11,
+      "p50": 57,
+      "p75": 193,
+      "p90": 495,
+      "mean": 229.9913530010173
+    },
+    "detail": {
+      "radiusKm": 0.6527088924957657,
+      "expectedPointSpacingKm": 0.9192177328087603,
+      "normalizedRadius": 0.7100699531778498,
+      "activityPerPoint": 175.32286821705426,
+      "playableAreaKm2": 6160,
+      "playableAreaPerPointKm2": 2.387596899224806,
+      "playableCatchmentRadiusKm": 0.871777320905413,
+      "localityScore": 0.250969727430831,
+      "deaggregationScore": 0.26862641033373463,
+      "score": 0.2596480251844407
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9595193276446947,
+        "continuousScore": 0.8903992553316384,
+        "detectedCenterCount": 5,
+        "effectiveCenterCount": 4.303212292455198,
+        "largestCenterShare": 0.2904773695485406,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -79.81272532516095,
+            "latitude": 36.0788567454889,
+            "massShare": 0.2904773695485406,
+            "assignedMass": 262785,
+            "assignedPointCount": 649,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -80.28800029853296,
+            "latitude": 36.075677680431546,
+            "massShare": 0.27912953509914157,
+            "assignedMass": 252519,
+            "assignedPointCount": 594,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -80.01789782957222,
+            "latitude": 35.932599133386866,
+            "massShare": 0.2167020756831803,
+            "assignedMass": 196043,
+            "assignedPointCount": 542,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -79.44672456149044,
+            "latitude": 36.07005082228766,
+            "massShare": 0.11914231329573566,
+            "assignedMass": 107784,
+            "assignedPointCount": 529,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -80.03651881860272,
+            "latitude": 36.114932424637935,
+            "massShare": 0.0945487063734019,
+            "assignedMass": 85535,
+            "assignedPointCount": 246,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1774557928,
+  "search_aliases": [
+    "Greensboro",
+    "Гринсборо",
+    "Ґрінсборо",
+    "גרינסבורו",
+    "Грийнсбъро",
+    "그린즈버러",
+    "グリーンズボロ",
+    "غرينزبورو",
+    "格林斯伯勒",
+    "Qrinsboro",
+    "Grinsboras",
+    "กรีนส์โบโร",
+    "Грынсбара",
+    "Գրինսբորո"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "included_cities": [
+    "Greensboro",
+    "Winston-Salem",
+    "High Point",
+    "Burlington",
+    "Mebane",
+    "Kernersville",
+    "Thomasville",
+    "Lexington"
+  ],
+  "deprecation": {
+    "since": "2026-09-06T09:50:54.919Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

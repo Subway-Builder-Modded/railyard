@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "id": "turin",
+  "name": "Turin",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of Turin metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/turin/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/turin/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/turin/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/TOR.json"
+  },
+  "city_code": "TOR",
+  "country": "IT",
+  "population": 910203,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 910203,
+  "points_count": 5885,
+  "population_count": 14127,
+  "initial_view_state": {
+    "latitude": 45.0703,
+    "longitude": 7.6869,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "TOR.pmtiles": 45.97,
+    "buildings_index.bin": 31.19,
+    "buildings_index.json": 44.69,
+    "config.json": 0,
+    "demand_data.json": 2.53,
+    "roads.geojson": 19.2,
+    "runways_taxiways.geojson": 0.16
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13645430156106936,
+      "p25": 0.1574593338411836,
+      "p50": 0.18441082850287835,
+      "p75": 0.21302375693399658,
+      "p90": 0.24179255410981804,
+      "mean": 0.19695087684058385
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.02976918599102393,
+      "p25": 0.12560462734013483,
+      "p50": 0.1711033555940535,
+      "p75": 0.2149119221013626,
+      "p90": 0.2829698770931504,
+      "mean": 0.1735321406048363
+    },
+    "commuteDistanceKm": {
+      "p10": 2232.4,
+      "p25": 3915,
+      "p50": 8167.5,
+      "p75": 17204.4,
+      "p90": 22188.4,
+      "mean": 11013.50409145608
+    },
+    "residentCellDensity": {
+      "p10": 74,
+      "p25": 80,
+      "p50": 214,
+      "p75": 524,
+      "p90": 1335,
+      "mean": 716.876280535855
+    },
+    "workerCellDensity": {
+      "p10": 61,
+      "p25": 80,
+      "p50": 151,
+      "p75": 384,
+      "p90": 1357,
+      "mean": 1298.148359486448
+    },
+    "detail": {
+      "radiusKm": 0.1776325183200475,
+      "expectedPointSpacingKm": 0.48913427241259444,
+      "normalizedRadius": 0.3631569659674368,
+      "activityPerPoint": 154.66491079014443,
+      "playableAreaKm2": 1924,
+      "playableAreaPerPointKm2": 0.32693288020390826,
+      "playableCatchmentRadiusKm": 0.3225925725856764,
+      "localityScore": 0.9609280047957695,
+      "deaggregationScore": 1,
+      "score": 0.980269353186036
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6224552037325702,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 7.644449343419509,
+            "latitude": 45.05684149516471,
+            "massShare": 1,
+            "assignedMass": 1820406,
+            "assignedPointCount": 5885,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "투린",
+    "Turín",
+    "Turyn",
+    "تورينو",
+    "Турын",
+    "Торино",
+    "Torí",
+    "Torino",
+    "טורינו",
+    "トリノ",
+    "토리노",
+    "Turinas",
+    "Turijn",
+    "Turim",
+    "Турин",
+    "Turīna",
+    "Թուրին",
+    "ტურინი",
+    "टोरीनो",
+    "ตูริน",
+    "Τορίνο",
+    "তুরিন"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,23 @@
+import{a as e}from"./chunk-BEqpzyXh.js";import{t}from"./jsx-runtime-qJqhvtml.js";var n=e(t());function r(e){let t={a:`a`,code:`code`,h3:`h3`,li:`li`,strong:`strong`,ul:`ul`,...e.components},{ChangelogSection:r}=t;return r||a(`ChangelogSection`,!0),(0,n.jsxs)(n.Fragment,{children:[(0,n.jsxs)(r,{type:`features`,children:[(0,n.jsx)(t.h3,{children:`Registry`}),(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`Added `,(0,n.jsx)(t.strong,{children:`Data Quality`}),` documents explaining how map data quality is assessed, `,(0,n.jsx)(t.a,{href:`/registry/docs/data-quality/scoring-rubric`,children:`scoring`}),`, the new `,(0,n.jsx)(t.a,{href:`/registry/docs/data-quality/quality-floor`,children:`quality floor`}),` for submissions, and a `,(0,n.jsx)(t.a,{href:`/registry/docs/data-quality/submission-questions`,children:`Q&A`}),` section for creators`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Added support for deprecated assets; these assets show a badge similar to existing `,(0,n.jsx)(t.code,{children:`Incompatible`}),` assets, and are hidden by default (`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/603`,children:`#603`}),`)`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Overhauled `,(0,n.jsx)(t.strong,{children:`Analytics`}),` with a full chart suite (`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/600`,children:`#600`}),`–`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/606`,children:`#606`}),`)`,`
+`,(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`New Overview sections (Cumulative Downloads, Seasonality, Downloads, Maps, Listings) plus `,(0,n.jsx)(t.strong,{children:`Top Authors / Maps / Mods / Projects / Countries`}),` charts`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Charts now come with line/bar switches, clickable legends, share pies, and time-period views, including the net new `,(0,n.jsx)(t.strong,{children:`Last 30 Days`})]}),`
+`,(0,n.jsxs)(t.li,{children:[`Asset pages chart download history per release version, and author pages now have a `,(0,n.jsx)(t.strong,{children:`Top Assets`}),` chart`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Analytics search filters the charts and rankings together, and supports standard query grammar (e.g. `,(0,n.jsx)(t.code,{children:`kronifer | slurry`}),`, `,(0,n.jsx)(t.code,{children:`Yukina- !CZ`}),`)`]}),`
+`]}),`
+`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Added `,(0,n.jsx)(t.strong,{children:`caretaker roles`}),` across the site; person pages are split into Author / Collaborator / Caretaker views, and downloads are credited to the caretaker for versions they manage`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Added registry content lifecycle guides — `,(0,n.jsx)(t.a,{href:`/registry/docs/deprecation`,children:`Deprecating Content`}),`, `,(0,n.jsx)(t.a,{href:`/registry/docs/caretakers`,children:`Caretakers`}),`, and `,(0,n.jsx)(t.a,{href:`/registry/docs/manifest-requirements`,children:`Manifest Requirements`}),` — covering the deprecation flow, caretaker roles, and per-version game compatibility including retroactive caps on game version (`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/610`,children:`#610`}),`)`]}),`
+`]})]}),`
+`,(0,n.jsxs)(r,{type:`improvements`,children:[(0,n.jsx)(t.h3,{children:`Registry`}),(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`Credits are now sourced from the registry authors index (`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/594`,children:`#594`}),`)`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Refreshed the publishing and updating guides to match current validation`,`
+`,(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`Docs now reference release `,(0,n.jsx)(t.code,{children:`manifest.json`}),` requirements per asset type and the required data-quality questions (`,(0,n.jsx)(t.a,{href:`https://github.com/Subway-Builder-Modded/monorepo/pull/610`,children:`#610`}),`)`]}),`
+`]}),`
+`]}),`
+`,(0,n.jsx)(t.li,{children:`Long chart histories fold the x-axis into weekly buckets automatically, so axis labels are pruned to fit small screens instead of overlapping`}),`
+`]})]})]})}function i(e={}){let{wrapper:t}=e.components||{};return t?(0,n.jsx)(t,{...e,children:(0,n.jsx)(r,{...e})}):r(e)}function a(e,t){throw Error(`Expected `+(t?`component`:`object`)+" `"+e+"` to be defined: you likely forgot to import, pass, or provide it.")}export{i as default};

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "id": "amsterdam",
+  "name": "Amsterdam",
+  "author": "ryandicicco",
+  "github_id": 215120742,
+  "description": "# Amsterdam · AMS\n\nThe canal city. Bikes outnumber people, transit actually works, but can you make it even better? Coverage runs from the historic center out across the Randstad, taking in Schiphol and the surrounding metro.\n\n<img width=\"3537\" height=\"2510\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/560c0e02-872d-4fd8-af4d-1806eaf465ff\" />\n\n## Coverage\n<table style=\\\"width: auto\\\"><tr><td><strong>Region</strong></td><td>Amsterdam metro, North Holland (NL)</td></tr><tr><td><strong>Bounding Box</strong></td><td>4.579, 52.200 → 5.252, 52.551</td></tr><tr><td><strong>Playable Area</strong></td><td>~1,775 km²</td></tr></table>\n\n## Population Summary\n<table style=\\\"width: auto\\\"><tr><td><strong>Metro Population</strong></td><td align=\\\"right\\\">2,500,000</td></tr><tr><td><strong>Total Modeled Demand</strong></td><td align=\\\"right\\\">821,203</td></tr></table>\n\n## Map Statistics\n<table style=\\\"width: auto\\\"><tr><td><strong>Buildings Indexed</strong></td><td align=\\\"right\\\">609,587</td></tr><tr><td><strong>Demand Points</strong></td><td align=\\\"right\\\">373</td></tr>\\n<tr><td><strong>Population Nodes</strong></td><td align=\\\"right\\\">11,092</td></tr><tr><td><strong>Median Commute Distance</strong></td><td align=\\\"right\\\">11.2 km</td></tr><tr><td><strong>Mean Commute Distance</strong></td><td align=\\\"right\\\">13.1 km</td></tr>\\n</table>\n\n## Additional Features\n- **Building Collision** — A buildings index of 609,587 structures is included, providing in-game collision geometry for all non-filtered buildings (multi-level depth data included).\n- **Road & Runway Overlays** — Road network plus runway/taxiway geometry are bundled, covering Schiphol Airport and surface routing across the metro.",
+  "tags": [
+    "west-europe",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amsterdam/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amsterdam/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amsterdam/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amsterdam/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/ryandicicco/Subway-Builder-Maps",
+  "update": {
+    "type": "custom",
+    "url": "https://ryandicicco.github.io/Subway-Builder-Maps/AMS.json"
+  },
+  "city_code": "AMS",
+  "country": "NL",
+  "population": 821203,
+  "level_of_detail": "medium-detail",
+  "source_quality": "medium-quality",
+  "data_source": "CBS/OSM",
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 821203,
+  "points_count": 373,
+  "population_count": 11092,
+  "initial_view_state": {
+    "latitude": 52.374,
+    "longitude": 4.8897,
+    "zoom": 11,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "AMS.pmtiles": 96.59,
+    "buildings_index.bin": 111.45,
+    "buildings_index.json": 158.74,
+    "config.json": 0,
+    "demand_data.json": 1.33,
+    "roads.geojson": 21.38,
+    "runways_taxiways.geojson": 1.19
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.10798200260885381,
+      "p25": 0.3610007497778545,
+      "p50": 0.6914064542970261,
+      "p75": 1.3332594770923838,
+      "p90": 2.178698177253115,
+      "mean": 0.9901078549656239
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.16299713049532905,
+      "p25": 0.3956955441472856,
+      "p50": 0.7335227249528185,
+      "p75": 1.4238577710200464,
+      "p90": 2.6839149674576714,
+      "mean": 1.0997717310922863
+    },
+    "commuteDistanceKm": {
+      "p10": 3073,
+      "p25": 5502,
+      "p50": 11183,
+      "p75": 18937,
+      "p90": 24959,
+      "mean": 13003.6221601154
+    },
+    "residentCellDensity": {
+      "p10": 122,
+      "p25": 392,
+      "p50": 1924,
+      "p75": 4208,
+      "p90": 8295,
+      "mean": 3532.84649122807
+    },
+    "workerCellDensity": {
+      "p10": 52,
+      "p25": 122,
+      "p50": 731,
+      "p75": 3715,
+      "p90": 12319,
+      "mean": 3959.950980392157
+    },
+    "detail": {
+      "radiusKm": 0.7121533166432078,
+      "expectedPointSpacingKm": 0.8170436473749842,
+      "normalizedRadius": 0.8716221207168425,
+      "activityPerPoint": 2201.6166219839142,
+      "playableAreaKm2": 608,
+      "playableAreaPerPointKm2": 1.6300268096514745,
+      "playableCatchmentRadiusKm": 0.7203149646208167,
+      "localityScore": 0.033922798808871064,
+      "deaggregationScore": 0.6422283779441175,
+      "score": 0.14760143649147153
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6443813668341999,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 4.855634639992576,
+            "latitude": 52.358770953512106,
+            "massShare": 1,
+            "assignedMass": 1642406,
+            "assignedPointCount": 373,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "Ámsterdam",
+    "Amsŭt'erŭdam",
+    "أمستردام",
+    "Амстэрдам",
+    "Амстердам",
+    "Amesterdã",
+    "Amseutereudam",
+    "Άμστερνταμ",
+    "Amsterodam",
+    "אמסטרדם",
+    "Amszterdam",
+    "Amusuterudamu",
+    "アムステルダム",
+    "암스테르담",
+    "Amsterdamas",
+    "Amsterdama",
+    "Amesterdão",
+    "Amstyerdam",
+    "อัมสเตอร์ดัม",
+    "阿姆斯特丹",
+    "ამსტერდამი",
+    "Amsterdami",
+    "আমস্টারডাম",
+    "Amsterdã",
+    "Ամստերդամ",
+    "ऐम्स्टर्डैम"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "trondheim-val",
+  "name": "Trondheim",
+  "author": "Valdotorium",
+  "github_id": 116170877,
+  "description": "Custom map of Trondheim, a major city in Northern Norway (But still small for metro standards). It is home to Norways largest University, the NTNU. Demand data was generated using modified versions of the generation scripts from the map patcher.\nNOTE: population counts on Railyard probably differ from the values in game. This map has a population of roughly 200.000 in game.",
+  "tags": [
+    "north-europe",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-val/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-val/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/Valdotorium/Railyard-Maps-2",
+  "update": {
+    "type": "custom",
+    "url": "https://valdotorium.github.io/Railyard-Maps-2/updates/TRD.json"
+  },
+  "city_code": "TRD",
+  "country": "NO",
+  "population": 194310,
+  "residents_total": 194310,
+  "points_count": 123,
+  "population_count": 1764,
+  "data_source": "OSM",
+  "source_quality": "low-quality",
+  "level_of_detail": "medium-detail",
+  "location": "north-europe",
+  "special_demand": [
+    "schools",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 63.4106,
+    "longitude": 10.3951,
+    "zoom": 13.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "TRD.pmtiles": 9.69,
+    "buildings_index.json": 16.23,
+    "config.json": 0,
+    "demand_data.json": 0.22,
+    "roads.geojson": 2.02,
+    "runways_taxiways.geojson": 0
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.18245538221701266,
+      "p25": 0.33469359273380755,
+      "p50": 0.4150537628127407,
+      "p75": 0.5638521360389008,
+      "p90": 0.7713559215525976,
+      "mean": 0.4851110517057584
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.09593203409375861,
+      "p25": 0.2700232086088745,
+      "p50": 0.43329233806320167,
+      "p75": 0.5665215612658974,
+      "p90": 0.8706271037856728,
+      "mean": 0.44245713913021634
+    },
+    "commuteDistanceKm": {
+      "p10": 1397,
+      "p25": 2289,
+      "p50": 3689,
+      "p75": 5756,
+      "p90": 7826,
+      "mean": 4163.475056689343
+    },
+    "residentCellDensity": {
+      "p10": 1162,
+      "p25": 1943,
+      "p50": 2982,
+      "p75": 4957,
+      "p90": 7152,
+      "mean": 3864.265060240964
+    },
+    "workerCellDensity": {
+      "p10": 208,
+      "p25": 584,
+      "p50": 1196,
+      "p75": 3159,
+      "p90": 6768,
+      "mean": 2878.3493975903616
+    },
+    "detail": {
+      "radiusKm": 0.42407501142022264,
+      "expectedPointSpacingKm": 0.8214601316968948,
+      "normalizedRadius": 0.5162453965285065,
+      "activityPerPoint": 2317.3217757375623,
+      "playableAreaKm2": 84,
+      "playableAreaPerPointKm2": 0.6829268292682927,
+      "playableCatchmentRadiusKm": 0.46624281366713555,
+      "localityScore": 0.5884966959186896,
+      "deaggregationScore": 1,
+      "score": 0.7671353830444073
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 10.41146706914917,
+            "latitude": 63.4126290028893,
+            "massShare": 1,
+            "assignedMass": 577218,
+            "assignedPointCount": 123,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1773532800,
+  "search_aliases": [
+    "Тронхейм",
+    "Трондхайм",
+    "トロンヘイム",
+    "Trondheimas",
+    "טרונדהיים",
+    "トロンハイム",
+    "Τρόντχαιμ",
+    "Τρόντχαϊμ",
+    "Трондхејм",
+    "Τροντχαιμ",
+    "ტრონჰეიმი",
+    "Tronheima",
+    "تروندهايم",
+    "ทรอนด์เฮม",
+    "트론헤임",
+    "Тронгейм",
+    "特隆赫姆"
+  ],
+  "data_quality": {
+    "tier": "absent",
+    "raw_score": 0,
+    "weighted_score": 0,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

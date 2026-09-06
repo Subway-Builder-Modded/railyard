@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "id": "bremen",
+  "name": "Bremen",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of Bremen, Germany, from the city center to Bremen Airport, spanning the surrounding Lower Saxony (Niedersachsen) satellite towns (Achim, Weyhe, Stuhr, Syke, and others). Residential population comes from the official 2022 census 100m population grid (Zensus 2022), with real German labor-market statistics (official employment counts and municipality-to-municipality commuter flows) anchoring Bremen and its largest satellite municipalities, and a gravity model filling in the smaller surrounding towns.",
+  "tags": [
+    "central-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bremen/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bremen/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-deutschland",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-deutschland/main/updates/hb-update.json"
+  },
+  "city_code": "HB",
+  "country": "DE",
+  "population": 402600,
+  "residents_total": 402600,
+  "points_count": 4180,
+  "population_count": 3950,
+  "initial_view_state": {
+    "latitude": 53.08,
+    "longitude": 8.81,
+    "zoom": 11,
+    "bearing": 0
+  },
+  "data_source": "Zensus 2022 (Destatis), Beschäftigtenstatistik BA + Pendlerrechnung der Länder (regionalstatistik.de/GENESIS-Online), OSM, Overture Maps",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.21,
+    "weighted_score": 0.41,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "HB.pmtiles": 28.23,
+    "buildings_index.bin.gz": 14.17,
+    "config.json": 0,
+    "demand_data.json.gz": 0.12,
+    "ocean_depth_index.json.gz": 0.4,
+    "ocean_depth_index_contours.json.gz": 0.24,
+    "roads.geojson.gz": 1.5,
+    "runways_taxiways.geojson.gz": 0.03
+  },
+  "included_cities": [
+    "Achim",
+    "Weyhe",
+    "Stuhr",
+    "Syke",
+    "Ganderkesee",
+    "Osterholz-Scharmbeck",
+    "Ritterhude",
+    "Lilienthal",
+    "Ottersberg",
+    "Oyten"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.1666474280844351,
+      "p50": 0.1670355080482488,
+      "p75": 0.2779877005835794,
+      "p90": 0.3243790329096242,
+      "mean": 0.19982001713047606
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0.16689973787861045,
+      "p75": 0.167481170905994,
+      "p90": 0.4349244045210115,
+      "mean": 0.20252709698169827
+    },
+    "commuteDistanceKm": {
+      "p10": 9603,
+      "p25": 14822,
+      "p50": 19838,
+      "p75": 26500,
+      "p90": 33582,
+      "mean": 20975.793164556962
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 600,
+      "p90": 1000,
+      "mean": 436.54266958424506
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 500,
+      "p90": 1100,
+      "mean": 584.4903988183161
+    },
+    "detail": {
+      "radiusKm": 0.16696760916319442,
+      "expectedPointSpacingKm": 0.5146188258169025,
+      "normalizedRadius": 0.32444908889244606,
+      "activityPerPoint": 96.3157894736842,
+      "playableAreaKm2": 1472,
+      "playableAreaPerPointKm2": 0.3521531100478469,
+      "playableCatchmentRadiusKm": 0.33480414629839644,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.756491244978621,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 8.775290936506458,
+            "latitude": 53.09133365132265,
+            "massShare": 1,
+            "assignedMass": 805200,
+            "assignedPointCount": 4180,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1788048000
+}

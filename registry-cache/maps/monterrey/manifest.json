@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "id": "monterrey",
+  "name": "Monterrey",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Combined result of INEGI's DENUE, CE, CPV, and ENOE data. Covers from Montemorelos in the southeast to Hidalgo in the northwest. Includes demand for MTY and NTR airports; ITESM, TecMilenio, U-ERRE, UMM, CEDIM, CEU, UDELN, UIN, UNICA, UDEM, UANL, ITNL, UPG, UTSC, UTGME, UTC, and UM universities; Cuarta Region Militar in Monterrey and Campo Militar 7-A in Apodaca military bases; and Macroplaza, Paseo Santa Lucia, Barrio Antiguo, Museo de Historia Mexicana, Museo MARCO, Cintermax, Fundidora Park, Cerro del Obispado, Grutas de Garcia, Arena Monterrey, and Mercado Juarez.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/monterrey/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/monterrey/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/MTY.json"
+  },
+  "city_code": "MTY",
+  "country": "MX",
+  "population": 3002098,
+  "residents_total": 3002098,
+  "points_count": 6558,
+  "population_count": 62388,
+  "initial_view_state": {
+    "latitude": 25.68604,
+    "longitude": -100.31688,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "INEGI's DENUE, CE, CPV, and ENOE",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "file_sizes": {
+    "MTY.pmtiles": 57.51,
+    "MTY_foundations.pmtiles": 51.75,
+    "buildings_index.bin.gz": 63.38,
+    "buildings_index.json.gz": 42.94,
+    "config.json": 0,
+    "demand_data.json": 10.21,
+    "ocean_depth_index.json.gz": 1.58,
+    "roads.geojson": 34.56,
+    "runways_taxiways.geojson": 0.32
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2267897631953288,
+      "p25": 0.2523256529134358,
+      "p50": 0.2819163540168818,
+      "p75": 0.31257065987743476,
+      "p90": 0.35429357307473797,
+      "mean": 0.30154948716239977
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.20678287523188726,
+      "p25": 0.24752429394399358,
+      "p50": 0.2846024419882272,
+      "p75": 0.33358354297309395,
+      "p90": 0.42232628205924727,
+      "mean": 0.312268981138339
+    },
+    "commuteDistanceKm": {
+      "p10": 2952,
+      "p25": 5220,
+      "p50": 9707,
+      "p75": 17659,
+      "p90": 28787,
+      "mean": 14091.408459960248
+    },
+    "residentCellDensity": {
+      "p10": 43,
+      "p25": 210,
+      "p50": 1204,
+      "p75": 3190,
+      "p90": 4933,
+      "mean": 1904.5800508259213
+    },
+    "workerCellDensity": {
+      "p10": 3,
+      "p25": 97,
+      "p50": 668,
+      "p75": 2153,
+      "p90": 4043,
+      "mean": 1652.9129476584021
+    },
+    "detail": {
+      "radiusKm": 0.2832562140353184,
+      "expectedPointSpacingKm": 0.5273837097504582,
+      "normalizedRadius": 0.5370970107691543,
+      "activityPerPoint": 457.7764562366575,
+      "playableAreaKm2": 4012,
+      "playableAreaPerPointKm2": 0.6117718816712412,
+      "playableCatchmentRadiusKm": 0.44128566487618454,
+      "localityScore": 0.5465717474354769,
+      "deaggregationScore": 1,
+      "score": 0.7393049082993274
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.775352680106699,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -100.278684131974,
+            "latitude": 25.713205172861453,
+            "massShare": 1,
+            "assignedMass": 6004196,
+            "assignedPointCount": 6558,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "Monterrei",
+    "モンテレイ",
+    "蒙特雷",
+    "Монтеррей",
+    "Monterrey City",
+    "มอนเตรเรย์",
+    "მონტერეი",
+    "مونتيري",
+    "Монтереј",
+    "Мантэрэй",
+    "Monterėjus",
+    "Monterrey i Nuevo León",
+    "몬테레이",
+    "Монтерей",
+    "מונטריי",
+    "Monterreja",
+    "Μοντερρέι",
+    "Մոնտերեյ",
+    "मोंटेरी",
+    "মন্টেরে"
+  ],
+  "data_quality": {
+    "tier": "high",
+    "raw_score": 0.52,
+    "weighted_score": 0.65,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "id": "greater-newyork",
+  "name": "Greater NYC",
+  "author": "chasemanning040911-afk",
+  "github_id": 252085126,
+  "description": "Custom map of the New York City metropolitan area for Railyard/Subway Builder. The map focuses on NYC and nearby Long Island, Westchester, and Connecticut suburbs, with realistic roads, coastline, water boundaries, buildings, parks, and transit-relevant geography. Demand data is designed to represent real-world home/work patterns, including dense NYC commuting, suburban car-heavy areas, major job centers, and regional travel patterns.\n\n<img width=\"1707\" height=\"1068\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/052c77b6-ce44-44d2-af20-40f3a46087da\" />\n\n<img width=\"1708\" height=\"1067\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/3f7fc627-5d33-4a18-848d-a1aab250e401\" />\n\n<img width=\"1708\" height=\"1067\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/5207e10a-3374-4140-b606-bcbe0bb71011\" />\n\n<img width=\"1702\" height=\"1068\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/4ef1eb39-7f3f-43e4-9c27-6c13b1469d96\" />\n\n<img width=\"1277\" height=\"597\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/6ad86889-1ac2-4538-a1c7-3884e1d35feb\" />",
+  "tags": [
+    "north-america",
+    "airports"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-newyork/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-newyork/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-newyork/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/lechicken-nyc/greater-new-york",
+  "update": {
+    "type": "github",
+    "repo": "lechicken-nyc/greater-new-york"
+  },
+  "city_code": "GNYC",
+  "country": "US",
+  "population": 3735824,
+  "residents_total": 3735824,
+  "points_count": 5151,
+  "population_count": 269793,
+  "initial_view_state": {
+    "latitude": 40.8503417703501,
+    "longitude": -73.57173512054293,
+    "zoom": 8.8,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "medium-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports"
+  ],
+  "file_sizes": {
+    "GNYC.pmtiles": 286.06,
+    "GNYC.svg": 0,
+    "buildings_index.json": 151.33,
+    "config.json": 0,
+    "demand_data.json": 51.27,
+    "ocean_depth_index.json": 8.38,
+    "roads.geojson": 48.59,
+    "runways_taxiways.geojson": 0.08
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2343851925275794,
+      "p25": 0.2655441353031343,
+      "p50": 0.31922646552410483,
+      "p75": 0.42643371534848357,
+      "p90": 0.5981532145661285,
+      "mean": 0.37233857006707416
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.17096798191882498,
+      "p25": 0.19830718282759863,
+      "p50": 0.26617709066444606,
+      "p75": 0.36162153174719497,
+      "p90": 0.5091988418683391,
+      "mean": 0.31186931576029076
+    },
+    "commuteDistanceKm": {
+      "p10": 3739,
+      "p25": 9279,
+      "p50": 18974,
+      "p75": 34024,
+      "p90": 49380,
+      "mean": 23404.03762514224
+    },
+    "residentCellDensity": {
+      "p10": 167,
+      "p25": 369,
+      "p50": 782,
+      "p75": 1715,
+      "p90": 4604,
+      "mean": 1823.57568359375
+    },
+    "workerCellDensity": {
+      "p10": 82,
+      "p25": 217,
+      "p50": 567,
+      "p75": 1388,
+      "p90": 2973,
+      "mean": 1827.037181996086
+    },
+    "detail": {
+      "radiusKm": 0.29149746457954023,
+      "expectedPointSpacingKm": 0.6308573329747741,
+      "normalizedRadius": 0.4620655881179973,
+      "activityPerPoint": 725.2618908949719,
+      "playableAreaKm2": 2316,
+      "playableAreaPerPointKm2": 0.44962143273150845,
+      "playableCatchmentRadiusKm": 0.37831064890980715,
+      "localityScore": 0.7058920240427774,
+      "deaggregationScore": 1,
+      "score": 0.8401738058537516
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.6774933750322156,
+        "continuousScore": 0.8018142239678221,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.5122797589378572,
+        "largestCenterShare": 0.7839483337544809,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -73.83900896415116,
+            "latitude": 40.78132561437102,
+            "massShare": 0.7839483337544809,
+            "assignedMass": 5857386,
+            "assignedPointCount": 3860,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -73.89777692949188,
+            "latitude": 40.643832444042566,
+            "massShare": 0.21605166624551905,
+            "assignedMass": 1614262,
+            "assignedPointCount": 1291,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1780439244,
+  "search_aliases": [
+    "Nueva York",
+    "Нью-Йорк",
+    "Нью-Ёрк",
+    "Ņujorka",
+    "New York",
+    "New York City",
+    "نيويورك",
+    "Ню Йорк",
+    "নিউ ইয়র্ক সিটি",
+    "Nova York",
+    "Νέα Υόρκη",
+    "York Berri",
+    "ניו יורק",
+    "Kota New York",
+    "ニューヨーク",
+    "뉴욕 시",
+    "뉴욕",
+    "Niujorkas",
+    "Њу Јорк",
+    "Nowy Jork",
+    "Nova Iorque",
+    "Њујорк",
+    "นครนิวยอร์ก",
+    "New York kenti",
+    "Thành phố New York",
+    "紐約市",
+    "紐約",
+    "New York Stad",
+    "ნიუ-იორკი",
+    "Bandar Raya New York",
+    "マンハッタン",
+    "न्यूयॉर्क",
+    "Նյու Յորք"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

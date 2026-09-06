@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "id": "naples",
+  "name": "Naples",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Naples metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/naples/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/naples/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/naples/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/NAP.json"
+  },
+  "city_code": "NAP",
+  "country": "IT",
+  "population": 1695981,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 1695981,
+  "points_count": 10998,
+  "population_count": 21250,
+  "initial_view_state": {
+    "latitude": 40.8518,
+    "longitude": 14.2681,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "NAP.pmtiles": 40.27,
+    "buildings_index.bin": 68.2,
+    "buildings_index.json": 101.63,
+    "config.json": 0,
+    "demand_data.json": 4.02,
+    "roads.geojson": 18.32,
+    "runways_taxiways.geojson": 0.23
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.1361366544424314,
+      "p25": 0.15780608881071567,
+      "p50": 0.18267276857106643,
+      "p75": 0.20780439997169547,
+      "p90": 0.23218193048710442,
+      "mean": 0.18595769385486194
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 1.4939343975372815e-13,
+      "p25": 0.08609829548024354,
+      "p50": 0.16936196586494112,
+      "p75": 0.20246639876868078,
+      "p90": 0.23631009710641387,
+      "mean": 0.1502681221266542
+    },
+    "commuteDistanceKm": {
+      "p10": 3108.6,
+      "p25": 5767.6,
+      "p50": 10737.8,
+      "p75": 18885.6,
+      "p90": 25622.6,
+      "mean": 13565.741976470594
+    },
+    "residentCellDensity": {
+      "p10": 93,
+      "p25": 327,
+      "p50": 819,
+      "p75": 1644,
+      "p90": 2815,
+      "mean": 1202.8736692689852
+    },
+    "workerCellDensity": {
+      "p10": 75,
+      "p25": 93,
+      "p50": 232,
+      "p75": 563,
+      "p90": 2686,
+      "mean": 1844.6561479869424
+    },
+    "detail": {
+      "radiusKm": 0.1758914983596059,
+      "expectedPointSpacingKm": 0.3668377322522376,
+      "normalizedRadius": 0.4794803884532329,
+      "activityPerPoint": 154.20812875068194,
+      "playableAreaKm2": 1632,
+      "playableAreaPerPointKm2": 0.14839061647572285,
+      "playableCatchmentRadiusKm": 0.21733430525604988,
+      "localityScore": 0.6667203451533948,
+      "deaggregationScore": 1,
+      "score": 0.8165294514917357
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8096945345308404,
+        "continuousScore": 0.8079629032142778,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.680240961685998,
+        "largestCenterShare": 0.7181200732791229,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 14.249322145068456,
+            "latitude": 40.87894379406911,
+            "massShare": 0.7181200732791229,
+            "assignedMass": 2435836,
+            "assignedPointCount": 7155,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 14.47128411242889,
+            "latitude": 40.76768132913821,
+            "massShare": 0.2818799267208772,
+            "assignedMass": 956126,
+            "assignedPointCount": 3843,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Neapel",
+    "Napoli",
+    "Nápoles",
+    "نابولي",
+    "Неапол",
+    "Nàpols",
+    "Neapol",
+    "נאפולי",
+    "Nápoly",
+    "ナポリ",
+    "ნეაპოლი",
+    "나폴리",
+    "Neapolis",
+    "Neapole",
+    "Napels",
+    "Неаполь",
+    "Neapelj",
+    "那不勒斯",
+    "Napulj",
+    "Նեապոլ",
+    "Напуљ",
+    "नापोलि",
+    "নেপলস",
+    "Νάπολη",
+    "Неапаль",
+    "เนเปิลส์"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

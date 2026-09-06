@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "id": "pianura-emiliana",
+  "name": "Pianura Emiliana",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Emilia plain metropolitan corridor, connecting Reggio Emilia, Modena, and Parma, featuring highly realistic, procedurally generated demand patterns based on urban density, commuting flows, and regional economic activity.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-emiliana/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-emiliana/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/pianura-emiliana/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/PRM.json"
+  },
+  "city_code": "PRM",
+  "country": "IT",
+  "population": 841395,
+  "residents_total": 841395,
+  "points_count": 5915,
+  "population_count": 9437,
+  "initial_view_state": {
+    "latitude": 44.7,
+    "longitude": 10.5,
+    "zoom": 10.5,
+    "bearing": 0
+  },
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "file_sizes": {
+    "PRM.pmtiles": 84.53,
+    "buildings_index.bin": 57.98,
+    "buildings_index.json": 86.29,
+    "config.json": 0,
+    "demand_data.json": 1.88,
+    "roads.geojson": 30.48,
+    "runways_taxiways.geojson": 0.41
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.14087242456015123,
+      "p25": 0.1643424976792684,
+      "p50": 0.19492532199825577,
+      "p75": 0.2290319066898275,
+      "p90": 0.28724738239435704,
+      "mean": 0.23031590249930098
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.05930974405936625,
+      "p25": 0.11281010681987477,
+      "p50": 0.17486544295350562,
+      "p75": 0.2732580607382154,
+      "p90": 0.40169456118653873,
+      "mean": 0.23483492794416885
+    },
+    "commuteDistanceKm": {
+      "p10": 2510.8,
+      "p25": 6267.1,
+      "p50": 11765.3,
+      "p75": 32422.4,
+      "p90": 44165.6,
+      "mean": 18423.40154710181
+    },
+    "residentCellDensity": {
+      "p10": 96,
+      "p25": 104,
+      "p50": 297,
+      "p75": 797,
+      "p90": 1512,
+      "mean": 583.4614850798057
+    },
+    "workerCellDensity": {
+      "p10": 80,
+      "p25": 102,
+      "p50": 131,
+      "p75": 652,
+      "p90": 3108,
+      "mean": 1218.8971014492754
+    },
+    "detail": {
+      "radiusKm": 0.18462313715804882,
+      "expectedPointSpacingKm": 0.5397159642465218,
+      "normalizedRadius": 0.3420746270045849,
+      "activityPerPoint": 142.24767540152155,
+      "playableAreaKm2": 3668,
+      "playableAreaPerPointKm2": 0.6201183431952663,
+      "playableCatchmentRadiusKm": 0.44428571802722405,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9893236432687441,
+        "continuousScore": 0.9581423207149061,
+        "detectedCenterCount": 4,
+        "effectiveCenterCount": 3.875859813957549,
+        "largestCenterShare": 0.314427825218833,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 10.914369643710144,
+            "latitude": 44.594497623500196,
+            "massShare": 0.314427825218833,
+            "assignedMass": 529116,
+            "assignedPointCount": 1696,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.28662974024631,
+            "latitude": 44.80855827383215,
+            "massShare": 0.25334949696634756,
+            "assignedMass": 426334,
+            "assignedPointCount": 1706,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.618798708205597,
+            "latitude": 44.69240491613015,
+            "massShare": 0.24393418073556417,
+            "assignedMass": 410490,
+            "assignedPointCount": 1267,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.918450081900495,
+            "latitude": 44.82974629452868,
+            "massShare": 0.1882884970792553,
+            "assignedMass": 316850,
+            "assignedPointCount": 1246,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Parma",
+    "بارما",
+    "Парма",
+    "Parme",
+    "パルマ",
+    "פארמה"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

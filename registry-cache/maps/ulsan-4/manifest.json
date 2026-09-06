@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "id": "ulsan-4",
+  "name": "Ulsan (40km×40km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# Ulsan (40km×40km)\r\n\r\n### USN4 · v0.1.0\r\n\r\nCustom map of Ulsan, Korea made with official Korean traffic volume data from official soures.\r\nWith 3,651 Pops and 565,157 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Ulsan </td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>1,600 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">565,157</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/ulsan-4/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/USN4.json"
+  },
+  "city_code": "USN4",
+  "country": "KR",
+  "population": 1460625,
+  "residents_total": 1460625,
+  "points_count": 612,
+  "population_count": 21551,
+  "initial_view_state": {
+    "latitude": 35.5384,
+    "longitude": 129.3114,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "USN4.pmtiles": 31.71,
+    "buildings_index.json": 68.51,
+    "config.json": 0,
+    "demand_data.json": 21.86,
+    "ocean_depth_index.json": 0.01,
+    "roads.geojson": 13.23,
+    "runways_taxiways.geojson": 0.09
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.40686016148887744,
+      "p25": 0.4071116556594282,
+      "p50": 0.4072487062337576,
+      "p75": 0.4073856663719571,
+      "p90": 0.5003778610509171,
+      "mean": 0.4531874172388681
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.40686016148887744,
+      "p25": 0.40708880510677525,
+      "p50": 0.4072487062337576,
+      "p75": 0.4074541125180028,
+      "p90": 0.5003778610509171,
+      "mean": 0.4562100764040889
+    },
+    "commuteDistanceKm": {
+      "p10": 2453,
+      "p25": 3766,
+      "p50": 6339,
+      "p75": 10489,
+      "p90": 15063,
+      "mean": 7857.888404250383
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 338,
+      "p50": 1569,
+      "p75": 5988,
+      "p90": 13227,
+      "mean": 5394.924812030075
+    },
+    "workerCellDensity": {
+      "p10": 708,
+      "p25": 1968,
+      "p50": 5800,
+      "p75": 16705,
+      "p90": 31047,
+      "mean": 12786.18909090909
+    },
+    "detail": {
+      "radiusKm": 0.4072487062337576,
+      "expectedPointSpacingKm": 0.6703330554498698,
+      "normalizedRadius": 0.6075318872056031,
+      "activityPerPoint": 3790.939242976367,
+      "playableAreaKm2": 600,
+      "playableAreaPerPointKm2": 0.9803921568627451,
+      "playableCatchmentRadiusKm": 0.558630929922844,
+      "localityScore": 0.41609960275898294,
+      "deaggregationScore": 1,
+      "score": 0.6450578290037127
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6599149964300238,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 129.31232380543526,
+            "latitude": 35.52451620891922,
+            "massShare": 1,
+            "assignedMass": 5145797,
+            "assignedPointCount": 612,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "울산광역시",
+    "Ulsan",
+    "蔚山広域市",
+    "Ульсан",
+    "蔚山",
+    "울산시",
+    "울산",
+    "Ulsan-si",
+    "ألسان",
+    "उलसान",
+    "উলসান"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "id": "calgary",
+  "name": "Calgary",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Calgary and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/calgary/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/calgary/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/calgary/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YYC-update.json"
+  },
+  "city_code": "YYC",
+  "country": "CA",
+  "population": 890139,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 890139,
+  "points_count": 3512,
+  "population_count": 7422,
+  "initial_view_state": {
+    "latitude": 51.0447,
+    "longitude": -114.0719,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YYC.pmtiles": 45.36,
+    "YYC_foundations.pmtiles": 27.61,
+    "buildings_index.bin": 81.44,
+    "buildings_index.json": 111.88,
+    "config.json": 0,
+    "demand_data.json": 1.79,
+    "ocean_depth_index.json": 11.08,
+    "roads.geojson": 16.24,
+    "runways_taxiways.geojson": 0.84
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.24380949777032654,
+      "p25": 0.2618263056747653,
+      "p50": 0.29211819448081383,
+      "p75": 0.3350057588446806,
+      "p90": 0.3872574305988378,
+      "mean": 0.3315157144792566
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.25259724259571137,
+      "p25": 0.27808312934006324,
+      "p50": 0.3261569343442347,
+      "p75": 0.4785979588221699,
+      "p90": 0.8670109981360006,
+      "mean": 0.47685478153889793
+    },
+    "commuteDistanceKm": {
+      "p10": 2563,
+      "p25": 6686,
+      "p50": 12593,
+      "p75": 19860,
+      "p90": 27987,
+      "mean": 14438.33414174077
+    },
+    "residentCellDensity": {
+      "p10": 118,
+      "p25": 372,
+      "p50": 847,
+      "p75": 1316,
+      "p90": 1744,
+      "mean": 922.1130705394191
+    },
+    "workerCellDensity": {
+      "p10": 110,
+      "p25": 179,
+      "p50": 369,
+      "p75": 706,
+      "p90": 1578,
+      "mean": 835.4567669172932
+    },
+    "detail": {
+      "radiusKm": 0.30866871363653814,
+      "expectedPointSpacingKm": 0.5845388346403799,
+      "normalizedRadius": 0.5280551014654781,
+      "activityPerPoint": 253.45643507972665,
+      "playableAreaKm2": 1704,
+      "playableAreaPerPointKm2": 0.48519362186788156,
+      "playableCatchmentRadiusKm": 0.3929910006016252,
+      "localityScore": 0.5645482264560402,
+      "deaggregationScore": 1,
+      "score": 0.75136424353042
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7502289457882256,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -114.05979539712341,
+            "latitude": 51.04936458985615,
+            "massShare": 1,
+            "assignedMass": 1780278,
+            "assignedPointCount": 3512,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "カルガリー",
+    "캘거리",
+    "Калгари",
+    "קלגרי",
+    "कैलगरी",
+    "Κάλγκαρι",
+    "كالغاري",
+    "Kalqari",
+    "Kalgaris",
+    "Kalgari",
+    "Калгары",
+    "Калгарі",
+    "კალგარი",
+    "แคลกะรี",
+    "Կալգարի",
+    "卡尔加里"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "id": "palermo",
+  "name": "Palermo",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of Palermo metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/palermo/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/palermo/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/palermo/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/PAL.json"
+  },
+  "city_code": "PAL",
+  "country": "IT",
+  "population": 566901,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 566901,
+  "points_count": 3264,
+  "population_count": 8946,
+  "initial_view_state": {
+    "latitude": 38.1188,
+    "longitude": 13.3629,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "PAL.pmtiles": 18.18,
+    "buildings_index.bin": 25.66,
+    "buildings_index.json": 38.19,
+    "config.json": 0,
+    "demand_data.json": 1.57,
+    "roads.geojson": 10.8,
+    "runways_taxiways.geojson": 0.17
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13427793241896394,
+      "p25": 0.15470872460218585,
+      "p50": 0.1789451547569133,
+      "p75": 0.20527067549146497,
+      "p90": 0.22878415952916112,
+      "mean": 0.18942361971923752
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.0016196514942114597,
+      "p25": 0.11321142497672065,
+      "p50": 0.16351106063010934,
+      "p75": 0.20157599905180412,
+      "p90": 0.22866388899629336,
+      "mean": 0.16422002149592899
+    },
+    "commuteDistanceKm": {
+      "p10": 2389.6,
+      "p25": 4410,
+      "p50": 9648.4,
+      "p75": 18979.2,
+      "p90": 27206.9,
+      "mean": 13010.824860272765
+    },
+    "residentCellDensity": {
+      "p10": 73,
+      "p25": 127,
+      "p50": 426,
+      "p75": 1421,
+      "p90": 2824,
+      "mean": 1118.8517786561265
+    },
+    "workerCellDensity": {
+      "p10": 65,
+      "p25": 75,
+      "p50": 206,
+      "p75": 829,
+      "p90": 2589,
+      "mean": 1557.2142857142858
+    },
+    "detail": {
+      "radiusKm": 0.17105412023369082,
+      "expectedPointSpacingKm": 0.42154012671556257,
+      "normalizedRadius": 0.4057837187801362,
+      "activityPerPoint": 173.6829044117647,
+      "playableAreaKm2": 1196,
+      "playableAreaPerPointKm2": 0.36642156862745096,
+      "playableCatchmentRadiusKm": 0.3415195569877221,
+      "localityScore": 0.8434164507820098,
+      "deaggregationScore": 1,
+      "score": 0.9183770743991869
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7779106861810945,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 13.351515351874154,
+            "latitude": 38.09713378572752,
+            "massShare": 1,
+            "assignedMass": 1133802,
+            "assignedPointCount": 3264,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "بلرم",
+    "باليرمو",
+    "Палерма",
+    "Палермо",
+    "Palerm",
+    "Palerme",
+    "פלרמו",
+    "パレルモ",
+    "巴勒莫市",
+    "Palermas",
+    "पलेर्मो",
+    "Palermu",
+    "팔레르모",
+    "بَلَرْم",
+    "بلرمة",
+    "بالرمو"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "nantes",
+  "name": "Nantes",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of the greater Nantes metropolitan area (France), from Nantes Atlantique airport to Saint-Herblain and Vertou. 236k+ OSM buildings (binary format), 447k+ commuters with demand built from real INSEE census data. Nantes Atlantique airport with runways and taxiways. The Loire river fully modelled with depth data. Protomaps basemap with water, parks and forests.",
+  "tags": [
+    "west-europe",
+    "airports",
+    "entertainment",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nantes/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nantes/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/nantes/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-france",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-france/main/updates/nte-update.json"
+  },
+  "city_code": "NTE",
+  "country": "FR",
+  "population": 447121,
+  "residents_total": 447121,
+  "points_count": 3214,
+  "population_count": 7263,
+  "initial_view_state": {
+    "latitude": 47.2184,
+    "longitude": -1.5536,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "INSEE Filosofi 2021 (donnees carroyees, revenus et population) - INSEE Recensement de la population 2021, mobilites professionnelles - OpenStreetMap contributors (ODbL) - Overture Maps Foundation (buildings)",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "NTE.pmtiles": 24.69,
+    "buildings_index.bin.gz": 12.65,
+    "config.json": 0,
+    "demand_data.json.gz": 0.22,
+    "ocean_depth_index.json.gz": 1.55,
+    "ocean_depth_index_contours.json.gz": 1.35,
+    "roads.geojson.gz": 2.33,
+    "runways_taxiways.geojson.gz": 0.02
+  },
+  "included_cities": [
+    "Saint-Herblain",
+    "Rezé",
+    "Saint-Sébastien-sur-Loire",
+    "Orvault",
+    "Vertou",
+    "Carquefou",
+    "Bouguenais",
+    "Saint-Herblain",
+    "Couëron",
+    "Sainte-Luce-sur-Loire"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.19900810134200267,
+      "p25": 0.1991184678809831,
+      "p50": 0.19912342708459974,
+      "p75": 0.20005329475775127,
+      "p90": 0.3988843524539932,
+      "mean": 0.2439732607355115
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.1990096307028383,
+      "p25": 0.1991192674299597,
+      "p50": 0.19949261942814717,
+      "p75": 0.3166015153414135,
+      "p90": 0.5375637853182076,
+      "mean": 0.30867803005974054
+    },
+    "commuteDistanceKm": {
+      "p10": 4097,
+      "p25": 5732,
+      "p50": 9085,
+      "p75": 16625,
+      "p90": 24117,
+      "mean": 11899.636513837257
+    },
+    "residentCellDensity": {
+      "p10": 60,
+      "p25": 120,
+      "p50": 255,
+      "p75": 706,
+      "p90": 1743,
+      "mean": 606.1351724137932
+    },
+    "workerCellDensity": {
+      "p10": 36,
+      "p25": 72,
+      "p50": 180,
+      "p75": 496,
+      "p90": 1560,
+      "mean": 621.4769230769231
+    },
+    "detail": {
+      "radiusKm": 0.1993079377712199,
+      "expectedPointSpacingKm": 0.4865969609077462,
+      "normalizedRadius": 0.409595525215388,
+      "activityPerPoint": 139.11667703795894,
+      "playableAreaKm2": 912,
+      "playableAreaPerPointKm2": 0.28375855631611696,
+      "playableCatchmentRadiusKm": 0.3005381070091777,
+      "localityScore": 0.8335167962962277,
+      "deaggregationScore": 1,
+      "score": 0.9129714104484475
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.5248449626374417,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -1.5584679004205755,
+            "latitude": 47.22079507981176,
+            "massShare": 1,
+            "assignedMass": 894242,
+            "assignedPointCount": 3214,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1787356800,
+  "data_quality": {
+    "tier": "medium",
+    "raw_score": 0.29,
+    "weighted_score": 0.52,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

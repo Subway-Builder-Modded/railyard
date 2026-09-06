@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "id": "metz-nancy",
+  "name": "Metz - Nancy",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of the Sillon Lorrain, France, covering Metz and Nancy, with the Le Met'/Mettis and Stan networks, an airport and a university. Built from real INSEE Filosofi 2021 population grid and MOBPRO 2021 commute survey data.",
+  "tags": [
+    "west-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/metz-nancy/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/metz-nancy/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/metz-nancy/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-france",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-france/main/updates/mnc-update.json"
+  },
+  "city_code": "MNC",
+  "country": "FR",
+  "population": 339768,
+  "residents_total": 339768,
+  "points_count": 4522,
+  "population_count": 7213,
+  "initial_view_state": {
+    "latitude": 48.9,
+    "longitude": 6.17,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "data_source": "INSEE Filosofi/MOBPRO 2021",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "medium",
+    "raw_score": 0.29,
+    "weighted_score": 0.52,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "MNC.pmtiles": 16.61,
+    "buildings_index.bin.gz": 9.69,
+    "config.json": 0,
+    "demand_data.json.gz": 0.24,
+    "ocean_depth_index.json.gz": 0.44,
+    "ocean_depth_index_contours.json.gz": 0.29,
+    "roads.geojson.gz": 1.68,
+    "runways_taxiways.geojson.gz": 0.02
+  },
+  "included_cities": [
+    "Sillon Lorrain"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.1989671318926724,
+      "p25": 0.19907672825535752,
+      "p50": 0.1992107188011219,
+      "p75": 0.1993042939482675,
+      "p90": 0.19982319814049845,
+      "mean": 0.2202355067101505
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.19900063285352917,
+      "p25": 0.1991670248350992,
+      "p50": 0.19933800404126234,
+      "p75": 0.4293347678264824,
+      "p90": 0.619620142075123,
+      "mean": 0.314118629326215
+    },
+    "commuteDistanceKm": {
+      "p10": 12397,
+      "p25": 15949,
+      "p50": 23439,
+      "p75": 42503,
+      "p90": 58766,
+      "mean": 29435.910300845695
+    },
+    "residentCellDensity": {
+      "p10": 10,
+      "p25": 40,
+      "p50": 129,
+      "p75": 406,
+      "p90": 1053,
+      "mean": 427.2035623409669
+    },
+    "workerCellDensity": {
+      "p10": 15,
+      "p25": 60,
+      "p50": 168,
+      "p75": 362,
+      "p90": 805,
+      "mean": 443.311345646438
+    },
+    "detail": {
+      "radiusKm": 0.19927435125836143,
+      "expectedPointSpacingKm": 0.4401358802692619,
+      "normalizedRadius": 0.4527564331643477,
+      "activityPerPoint": 75.13666519239274,
+      "playableAreaKm2": 1360,
+      "playableAreaPerPointKm2": 0.3007518796992481,
+      "playableCatchmentRadiusKm": 0.3094063615968954,
+      "localityScore": 0.7274413815692183,
+      "deaggregationScore": 1,
+      "score": 0.8529017420366888
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9946615698234518,
+        "continuousScore": 0.9371933045780618,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.989379834658045,
+        "largestCenterShare": 0.5365322808504627,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 6.168470500372198,
+            "latitude": 48.7076687108892,
+            "massShare": 0.5365322808504627,
+            "assignedMass": 364593,
+            "assignedPointCount": 2305,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 6.164800239728457,
+            "latitude": 49.08960206170266,
+            "massShare": 0.4634677191495373,
+            "assignedMass": 314943,
+            "assignedPointCount": 2217,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1787356800
+}

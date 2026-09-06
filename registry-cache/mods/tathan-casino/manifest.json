@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "id": "tathan-casino",
+  "name": "TATHAN Casino",
+  "author": "TathanDev",
+  "github_id": 67022946,
+  "description": "# TATHAN Casino 🎰\nYou want some easy money ?! Or you just want to gamble public money ? Well enter the TATHAN Casino !\n\nThis mod add casino where you can gamble your money on casino game like the roulette or a slot machine.\n\n## Games available\n- Slot Machine 🎰\n- Roulette 🛞\n- Coin Flip 🪙",
+  "tags": [
+    "gameplay",
+    "misc",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/tathan-casino/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/tathan-casino/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/tathan-casino/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/TathanDev/TathanCasino",
+  "update": {
+    "type": "github",
+    "repo": "TathanDev/TathanCasino"
+  },
+  "last_updated": 1776069651
+}

@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "id": "amiens",
+  "name": "Amiens",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of the Amiens metropolitan area, France, with its Ametis BHNS network, Université de Picardie Jules Verne and CHU Amiens-Picardie. Built from real INSEE Filosofi 2021 population grid and MOBPRO 2021 commute survey data.",
+  "tags": [
+    "west-europe",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amiens/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/amiens/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-france",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-france/main/updates/ami-update.json"
+  },
+  "city_code": "AMI",
+  "country": "FR",
+  "population": 155171,
+  "residents_total": 155171,
+  "points_count": 3222,
+  "population_count": 4047,
+  "initial_view_state": {
+    "latitude": 49.8942,
+    "longitude": 2.2957,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "INSEE Filosofi/MOBPRO 2021",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "medium",
+    "raw_score": 0.29,
+    "weighted_score": 0.52,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "location": "west-europe",
+  "special_demand": [
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "AMI.pmtiles": 13.44,
+    "buildings_index.bin.gz": 7.1,
+    "config.json": 0,
+    "demand_data.json.gz": 0.15,
+    "ocean_depth_index.json.gz": 0.41,
+    "ocean_depth_index_contours.json.gz": 0.31,
+    "roads.geojson.gz": 1.08,
+    "runways_taxiways.geojson.gz": 0.01
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.1989415648736985,
+      "p25": 0.19901453661135704,
+      "p50": 0.19936738118210662,
+      "p75": 0.19960260495815074,
+      "p90": 0.20011907188671732,
+      "mean": 0.22011767740881413
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.19894609387251094,
+      "p25": 0.1990192079438165,
+      "p50": 0.19958069390333905,
+      "p75": 0.42940686299224506,
+      "p90": 0.5412477984900916,
+      "mean": 0.29491201364350206
+    },
+    "commuteDistanceKm": {
+      "p10": 11927,
+      "p25": 15585,
+      "p50": 20966,
+      "p75": 27883,
+      "p90": 35638,
+      "mean": 22036.11638250556
+    },
+    "residentCellDensity": {
+      "p10": 5,
+      "p25": 16,
+      "p50": 60,
+      "p75": 145,
+      "p90": 396,
+      "mean": 200.46354166666666
+    },
+    "workerCellDensity": {
+      "p10": 6,
+      "p25": 35,
+      "p50": 75,
+      "p75": 179,
+      "p90": 422,
+      "mean": 239.08500772797527
+    },
+    "detail": {
+      "radiusKm": 0.19947400902878634,
+      "expectedPointSpacingKm": 0.517538460743597,
+      "normalizedRadius": 0.3854283771339099,
+      "activityPerPoint": 48.15983860955928,
+      "playableAreaKm2": 1916,
+      "playableAreaPerPointKm2": 0.5946617008069522,
+      "playableCatchmentRadiusKm": 0.435070911808317,
+      "localityScore": 0.8979077304721429,
+      "deaggregationScore": 1,
+      "score": 0.9475799335529129
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.15801438012619362,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 2.2963858938951254,
+            "latitude": 49.89349254658982,
+            "massShare": 1,
+            "assignedMass": 310342,
+            "assignedPointCount": 3222,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1787356800
+}

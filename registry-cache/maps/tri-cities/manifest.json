@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "id": "tri-cities",
+  "name": "Tri-Cities",
+  "author": "ryandicicco",
+  "github_id": 215120742,
+  "description": "# Tri-Cities, WA  · PSC\n\nThe atomic cities of southeastern Washington State; Kennewick, Pasco, and Richland, where the Columbia and Snake rivers meet.\n\n## Coverage\n\n<table style=\"width: auto\">\n<tr><td><strong>Region</strong></td><td>Tri-Cities metro, Washington (US)</td></tr>\n<tr><td><strong>Bounding Box</strong></td><td>-119.328, 46.125 → -118.906, 46.328</td></tr>\n<tr><td><strong>Playable Area</strong></td><td>~725 km²</td></tr>\n</table>\n\n## Population Summary\n\n<table style=\"width: auto\">\n<tr><td><strong>Metro Population</strong></td><td align=\"right\">340,000</td></tr>\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">346,040</td></tr>\n</table>\n\n## Map Statistics\n\n<table style=\"width: auto\">\n<tr><td><strong>Buildings Indexed</strong></td><td align=\"right\">43,822</td></tr>\n<tr><td><strong>Demand Points</strong></td><td align=\"right\">334</td></tr>\n<tr><td><strong>Population Nodes</strong></td><td align=\"right\">6,659</td></tr>\n<tr><td><strong>Median Commute Distance</strong></td><td align=\"right\">11.8 km</td></tr>\n<tr><td><strong>Mean Commute Distance</strong></td><td align=\"right\">12.1 km</td></tr>\n</table>\n\n## Special Demand\n\n<!-- Figures below are real-world source stats used to seed each generator.\n     Per-item modeled-demand splits are not tagged in the map export, so they\n     are omitted rather than estimated. -->",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/tri-cities/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/tri-cities/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/tri-cities/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/tri-cities/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/ryandicicco/Subway-Builder-Maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/ryandicicco/Subway-Builder-Maps/main/releases/PSC.json"
+  },
+  "city_code": "PSC",
+  "country": "US",
+  "population": 353565,
+  "residents_total": 353565,
+  "points_count": 327,
+  "population_count": 6403,
+  "initial_view_state": {
+    "latitude": 46.26,
+    "longitude": -119.25,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "file_sizes": {
+    "PSC.pmtiles": 10.27,
+    "buildings_index.bin": 17.32,
+    "buildings_index.json": 23.66,
+    "config.json": 0,
+    "demand_data.json": 0.95,
+    "roads.geojson": 3.31,
+    "runways_taxiways.geojson": 0.27
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3524233647539115,
+      "p25": 0.43670791118238467,
+      "p50": 0.5772154191327586,
+      "p75": 0.7418564283453801,
+      "p90": 1.0825108594254138,
+      "mean": 0.6449256194516614
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2705349118739815,
+      "p25": 0.32722708850241294,
+      "p50": 0.43500743853395635,
+      "p75": 0.6911379875459072,
+      "p90": 1.0507468410175729,
+      "mean": 0.585753195138049
+    },
+    "commuteDistanceKm": {
+      "p10": 3309,
+      "p25": 6924,
+      "p50": 11763,
+      "p75": 16435,
+      "p90": 20770,
+      "mean": 12097.235046072154
+    },
+    "residentCellDensity": {
+      "p10": 40,
+      "p25": 225,
+      "p50": 830,
+      "p75": 2270,
+      "p90": 3925,
+      "mean": 1607.876712328767
+    },
+    "workerCellDensity": {
+      "p10": 45,
+      "p25": 150,
+      "p50": 520,
+      "p75": 1540,
+      "p90": 3375,
+      "mean": 1496.5086206896551
+    },
+    "detail": {
+      "radiusKm": 0.5010918089125439,
+      "expectedPointSpacingKm": 0.8584888223523796,
+      "normalizedRadius": 0.5836905453695742,
+      "activityPerPoint": 1081.2385321100917,
+      "playableAreaKm2": 588,
+      "playableAreaPerPointKm2": 1.798165137614679,
+      "playableCatchmentRadiusKm": 0.7565538581580221,
+      "localityScore": 0.4584874651851984,
+      "deaggregationScore": 0.5461385283832491,
+      "score": 0.5003975115030154
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9859586253504304,
+        "continuousScore": 0.49899301153692893,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.9180530478165787,
+        "largestCenterShare": 0.3891080847934609,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -119.10871135732708,
+            "latitude": 46.227253052162624,
+            "massShare": 0.3891080847934609,
+            "assignedMass": 275150,
+            "assignedPointCount": 137,
+            "prominenceRatio": 0.9999999999995097
+          },
+          {
+            "longitude": -119.21366520945203,
+            "latitude": 46.220540193255346,
+            "massShare": 0.3538953233493134,
+            "assignedMass": 250250,
+            "assignedPointCount": 124,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -119.27692936202688,
+            "latitude": 46.28383618559717,
+            "massShare": 0.2569965918572257,
+            "assignedMass": 181730,
+            "assignedPointCount": 66,
+            "prominenceRatio": 0.9999999949324302
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1785283200,
+  "search_aliases": [
+    "トリシティズ",
+    "三城"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

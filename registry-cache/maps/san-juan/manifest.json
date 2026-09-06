@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "id": "san-juan",
+  "name": "San Juan",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Covers the San Juan metro area + a little more.  Uses ACS+US Census data for residences, and US Census data-informed jobs distributed according to OSM.",
+  "tags": [
+    "caribbean",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/san-juan/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/san-juan/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/SJU.json"
+  },
+  "city_code": "SJU",
+  "country": "PR",
+  "population": 773862,
+  "residents_total": 773862,
+  "points_count": 2686,
+  "population_count": 9703,
+  "initial_view_state": {
+    "latitude": 18.41649,
+    "longitude": -66.07269,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "US Census + ACS + OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "caribbean",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "file_sizes": {
+    "SJU.pmtiles": 34.19,
+    "SJU_foundations.pmtiles": 29.19,
+    "buildings_index.bin.gz": 27.17,
+    "buildings_index.json.gz": 20.3,
+    "config.json": 0,
+    "demand_data.json": 1.74,
+    "ocean_depth_index.json.gz": 1.3,
+    "roads.geojson": 14.47,
+    "runways_taxiways.geojson": 0.14
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.27142290099926897,
+      "p25": 0.3135579440654787,
+      "p50": 0.3636306251644302,
+      "p75": 0.4362083588572299,
+      "p90": 0.5722150177608564,
+      "mean": 0.4052017909188865
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2815561063924151,
+      "p25": 0.3235515636003606,
+      "p50": 0.3898362914512872,
+      "p75": 0.45037048476922753,
+      "p90": 0.6282954413003763,
+      "mean": 0.4245311815581962
+    },
+    "commuteDistanceKm": {
+      "p10": 2009,
+      "p25": 3813,
+      "p50": 7648,
+      "p75": 14226,
+      "p90": 20958,
+      "mean": 9945.51169741317
+    },
+    "residentCellDensity": {
+      "p10": 44,
+      "p25": 99,
+      "p50": 413,
+      "p75": 1125,
+      "p90": 2153,
+      "mean": 830.0729613733905
+    },
+    "workerCellDensity": {
+      "p10": 31,
+      "p25": 76,
+      "p50": 253,
+      "p75": 635,
+      "p90": 1333,
+      "mean": 621.711182622687
+    },
+    "detail": {
+      "radiusKm": 0.37650553033416995,
+      "expectedPointSpacingKm": 0.684092193758038,
+      "normalizedRadius": 0.5503724991595784,
+      "activityPerPoint": 288.1094564408042,
+      "playableAreaKm2": 1780,
+      "playableAreaPerPointKm2": 0.6626954579300074,
+      "playableCatchmentRadiusKm": 0.4592847872379573,
+      "localityScore": 0.5207193585632232,
+      "deaggregationScore": 1,
+      "score": 0.7216088681295589
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9058980843055613,
+        "continuousScore": 0.7951801624214566,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.5248193287622516,
+        "largestCenterShare": 0.5343342869917376,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -66.11931738881219,
+            "latitude": 18.403724155923264,
+            "massShare": 0.5343342869917376,
+            "assignedMass": 827002,
+            "assignedPointCount": 1236,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -65.95874142524009,
+            "latitude": 18.388298536153016,
+            "massShare": 0.2654866113079593,
+            "assignedMass": 410900,
+            "assignedPointCount": 632,
+            "prominenceRatio": 0.9999999999999963
+          },
+          {
+            "longitude": -66.04116542170195,
+            "latitude": 18.232899849424985,
+            "massShare": 0.20017910170030315,
+            "assignedMass": 309822,
+            "assignedPointCount": 818,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784160000,
+  "search_aliases": [
+    "산후안",
+    "サンフアン",
+    "Сан Хуан",
+    "San Chuanas",
+    "Сан-Хуан",
+    "סן חואן",
+    "ซานฮวน",
+    "სან-ხუანი",
+    "سان خوان",
+    "Σαν Χουάν",
+    "Սան Խուան",
+    "San Juan de Puerto Rico",
+    "Sanhuana",
+    "San Xuan",
+    "圣胡安",
+    "샌환"
+  ],
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.27,
+    "weighted_score": 0.4,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

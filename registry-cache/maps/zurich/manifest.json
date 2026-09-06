@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "id": "zurich",
+  "name": "Zurich",
+  "author": "Kronifer",
+  "github_id": 44979306,
+  "description": "A map generated from highly detailed Switzerland census data containing the Zurich metro region, including enrolment data for most large universities. Includes the cities of Zurich, Zug, Winterthur, Lucerne, among other smaller cities and towns.",
+  "tags": [
+    "central-europe",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/zurich/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/zurich/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/zurich/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/kronifer/sb-zurich-map",
+  "update": {
+    "type": "github",
+    "repo": "kronifer/sb-zurich-map"
+  },
+  "city_code": "ZRH",
+  "country": "CH",
+  "population": 2147370,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "Switzerland Federal Statistical Office Datasets",
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 2147370,
+  "points_count": 39672,
+  "population_count": 98878,
+  "initial_view_state": {
+    "latitude": 47.3768866,
+    "longitude": 8.541694,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "ZRH.pmtiles": 123.05,
+    "ZRH_foundations.pmtiles": 49.9,
+    "buildings_index.bin.gz": 44.88,
+    "config.json": 0,
+    "demand_data.json": 15.45,
+    "ocean_depth_index.json.gz": 14.53,
+    "roads.geojson": 43.31,
+    "runways_taxiways.geojson": 1.32
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.09475912696345444,
+      "p25": 0.11526719743442869,
+      "p50": 0.13888770577668508,
+      "p75": 0.17506889497065917,
+      "p90": 0.21743571700949532,
+      "mean": 0.14873855376858663
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.0910589982471679,
+      "p25": 0.1112044250641001,
+      "p50": 0.13053939168586828,
+      "p75": 0.16376107692069064,
+      "p90": 0.20931872359524836,
+      "mean": 0.14306686851420294
+    },
+    "commuteDistanceKm": {
+      "p10": 4657,
+      "p25": 11110,
+      "p50": 26671,
+      "p75": 51895,
+      "p90": 75398,
+      "mean": 34216.826806771984
+    },
+    "residentCellDensity": {
+      "p10": 5,
+      "p25": 11,
+      "p50": 44,
+      "p75": 342,
+      "p90": 1145,
+      "mean": 382.5373054213634
+    },
+    "workerCellDensity": {
+      "p10": 4,
+      "p25": 12,
+      "p50": 33,
+      "p75": 173,
+      "p90": 659,
+      "mean": 331.14593672456573
+    },
+    "detail": {
+      "radiusKm": 0.13464886417914682,
+      "expectedPointSpacingKm": 0.40648479068406884,
+      "normalizedRadius": 0.3312519121626856,
+      "activityPerPoint": 54.128100423472475,
+      "playableAreaKm2": 5824,
+      "playableAreaPerPointKm2": 0.1468037910869127,
+      "playableCatchmentRadiusKm": 0.2161691421832084,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.9333294149806863,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 8.528485881797184,
+            "latitude": 47.34489787079441,
+            "massShare": 1,
+            "assignedMass": 4294740,
+            "assignedPointCount": 39672,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1783474617,
+  "search_aliases": [
+    "Zürich",
+    "Zúrich",
+    "زيورخ",
+    "Цюрих",
+    "Zuric",
+    "Curych",
+    "ציריך",
+    "ज़्यूरिख़",
+    "Zurigo",
+    "チューリッヒ",
+    "취리히",
+    "Ciurichas",
+    "Cīrihe",
+    "Zurych",
+    "Zurique",
+    "Цирих",
+    "Zürih",
+    "Цюрых",
+    "Ζυρίχη",
+    "Zyrihu",
+    "Zuerich",
+    "Sürix",
+    "জুরিখ",
+    "Ցյուրիխ",
+    "ციურიხი",
+    "ซูริก",
+    "Syurix",
+    "苏黎世"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

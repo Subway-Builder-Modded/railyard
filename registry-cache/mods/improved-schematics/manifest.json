@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "improved-schematics",
+  "name": "Improved Schematics",
+  "author": "martig7",
+  "github_id": 143552868,
+  "description": "Renders your transit system as a real-looking subway map: route lines drawn over simplified land and water context, with proper station markers, interchange capsules, and an octilinear (\"straightened\") layout.",
+  "tags": [
+    "cosmetic",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/improved-schematics/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/improved-schematics/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/improved-schematics/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/martig7/Improved-Schematics",
+  "update": {
+    "type": "github",
+    "repo": "martig7/Improved-Schematics"
+  },
+  "last_updated": 1784864297
+}

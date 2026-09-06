@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "id": "muenchen",
+  "name": "München",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of München, Germany, from the city center to Munich Airport, spanning the full S-Bahn network into the surrounding Oberbayern region (Dachau, Starnberg, Freising, Erding, and other satellite towns). Demand is anchored to real German labor-market statistics: official employment-at-workplace counts (Beschäftigtenstatistik) and municipality-to-municipality commuter flows (Pendlerrechnung der Länder) cover München plus its 10 largest satellite municipalities — roughly 76% of the map's total modeled jobs — with a gravity model filling in the remaining smaller towns. Residential population comes from the official 2022 census 100m population grid (Zensus 2022).",
+  "tags": [
+    "central-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/muenchen/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/muenchen/gallery/screenshot2.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-deutschland",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-deutschland/main/updates/muc-update.json"
+  },
+  "city_code": "MUC",
+  "country": "DE",
+  "population": 1388950,
+  "residents_total": 1388950,
+  "points_count": 11790,
+  "population_count": 13314,
+  "initial_view_state": {
+    "latitude": 48.137,
+    "longitude": 11.575,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "data_source": "Zensus 2022 (Destatis), Beschäftigtenstatistik BA + Pendlerrechnung der Länder (regionalstatistik.de/GENESIS-Online), OSM, Overture Maps",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "low",
+    "raw_score": 0.21,
+    "weighted_score": 0.41,
+    "rubric_version": 1,
+    "provenance": "reviewed"
+  },
+  "location": "central-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "MUC.pmtiles": 66.86,
+    "buildings_index.bin.gz": 31.41,
+    "config.json": 0,
+    "demand_data.json.gz": 0.41,
+    "munich_v1.0.0.zip": 105.29,
+    "ocean_depth_index.json.gz": 1.64,
+    "ocean_depth_index_contours.json.gz": 1.04,
+    "roads.geojson.gz": 5.64,
+    "runways_taxiways.geojson.gz": 0.23
+  },
+  "included_cities": [
+    "Dachau",
+    "Starnberg",
+    "Freising",
+    "Erding",
+    "Germering",
+    "Fürstenfeldbruck",
+    "Unterschleißheim",
+    "Unterhaching",
+    "Vaterstetten",
+    "Olching"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0.18536919474319005,
+      "p75": 0.18592893851591372,
+      "p90": 0.33452266866873387,
+      "mean": 0.1838362214989505
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0,
+      "p75": 0.1857214501753163,
+      "p90": 0.6072271232476352,
+      "mean": 0.15893972662107886
+    },
+    "commuteDistanceKm": {
+      "p10": 12963,
+      "p25": 15647,
+      "p50": 22612,
+      "p75": 36652,
+      "p90": 49760,
+      "mean": 27542.597190926845
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 200,
+      "p75": 550,
+      "p90": 1350,
+      "mean": 527.4885145482389
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 300,
+      "p75": 700,
+      "p90": 2000,
+      "mean": 873.0113636363636
+    },
+    "detail": {
+      "radiusKm": 0,
+      "expectedPointSpacingKm": 0.49740633481780133,
+      "normalizedRadius": 0,
+      "activityPerPoint": 117.80746395250212,
+      "playableAreaKm2": 5392,
+      "playableAreaPerPointKm2": 0.4573367260390161,
+      "playableCatchmentRadiusKm": 0.38154265975529744,
+      "localityScore": 0,
+      "deaggregationScore": 1,
+      "score": 0
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8933130493267164,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 11.553480153664637,
+            "latitude": 48.164739347109325,
+            "massShare": 1,
+            "assignedMass": 2777900,
+            "assignedPointCount": 11790,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1788048000
+}

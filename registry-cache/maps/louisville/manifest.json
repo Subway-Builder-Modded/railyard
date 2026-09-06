@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "id": "louisville",
+  "name": "Louisville",
+  "author": "soccerjonj",
+  "github_id": 222296520,
+  "description": "Custom map of the Louisville, KY area and surrounding towns. Generated using 2023 LODES Census Data and added demand for the following:\n\nUniversities: University of Louisville, Bellarmine University, Spalding University, Indiana University-Southeast, Sullivan University, Jefferson Community and Technical College, The Southern Baptist Theological Seminary, Ivy Tech Community College-South Central\n\nEntertainment: Louisville Zoo, Lynn Family Stadium, Louisville Slugger Field, Churchill Downs, L&N Federal Credit Union Stadium, KFC Yum! Center, Kentucky Derby Museum, Muhammad Ali Center, Louisville Slugger Museum & Factory, Lousville Exposition Center",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/louisville/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/louisville/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/louisville/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/louisville/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/soccerjonj/Louisville",
+  "update": {
+    "type": "github",
+    "repo": "soccerjonj/Louisville"
+  },
+  "city_code": "SDF",
+  "country": "US",
+  "population": 530833,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 530833,
+  "points_count": 3488,
+  "population_count": 48045,
+  "initial_view_state": {
+    "latitude": 38.245708,
+    "longitude": -85.754995,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3550645517251462,
+      "p25": 0.45461652800820485,
+      "p50": 0.603522497869567,
+      "p75": 0.8967136132423185,
+      "p90": 1.4966695531022596,
+      "mean": 0.7511628312284319
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.19695876361582526,
+      "p25": 0.30649482403183953,
+      "p50": 0.4657177719257339,
+      "p75": 0.6674151281464001,
+      "p90": 0.9419213154270261,
+      "mean": 0.5328274609918325
+    },
+    "commuteDistanceKm": {
+      "p10": 6307,
+      "p25": 13858,
+      "p50": 26048,
+      "p75": 43666,
+      "p90": 60938,
+      "mean": 30657.827869705485
+    },
+    "residentCellDensity": {
+      "p10": 5,
+      "p25": 14,
+      "p50": 52,
+      "p75": 237,
+      "p90": 571,
+      "mean": 194.93793609988984
+    },
+    "workerCellDensity": {
+      "p10": 2,
+      "p25": 6,
+      "p50": 38,
+      "p75": 193,
+      "p90": 538,
+      "mean": 257.3642095053346
+    },
+    "detail": {
+      "radiusKm": 0.5301614405205911,
+      "expectedPointSpacingKm": 0.9160583191242233,
+      "normalizedRadius": 0.5787420183328937,
+      "activityPerPoint": 152.1883600917431,
+      "playableAreaKm2": 8971,
+      "playableAreaPerPointKm2": 2.571961009174312,
+      "playableCatchmentRadiusKm": 0.9048097126464894,
+      "localityScore": 0.4675022733622105,
+      "deaggregationScore": 0.1958214604076272,
+      "score": 0.3025673113766155
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.4341008683058727,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -85.68062916160274,
+            "latitude": 38.213470071221074,
+            "massShare": 1,
+            "assignedMass": 1061666,
+            "assignedPointCount": 3311,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1771881060,
+  "search_aliases": [
+    "루이빌",
+    "ルイビル",
+    "Луивил",
+    "Луисвил",
+    "Луисвилл",
+    "Луїсвілл",
+    "لويفيل",
+    "ลุยส์วิลล์",
+    "Lūivila",
+    "Luisvilis",
+    "ლუისვილი",
+    "לואיוויל",
+    "Լուիսվիլ",
+    "Луісвіл",
+    "Λούισβιλ",
+    "Луйзвилл",
+    "路易維爾",
+    "Luisvill",
+    "লুভল",
+    "루이즈빌"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:43.377Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "id": "busan-4",
+  "name": "Busan (40km×40km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# Busan (40km×40km)\r\n\r\n### PUS4 · v0.1.0\r\n\r\nCustom map of Busan, Korea made with official Korean traffic volume data from official soures.\r\nWith 7,330 Pops and 1,197,668 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Busan, Yangsan, Gimhae </td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>1,600 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">1,197,668</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/busan-4/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/PUS4.json"
+  },
+  "city_code": "PUS4",
+  "country": "KR",
+  "population": 3762661,
+  "residents_total": 3762661,
+  "points_count": 1153,
+  "population_count": 44668,
+  "initial_view_state": {
+    "latitude": 35.1796,
+    "longitude": 129.0756,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "PUS4.pmtiles": 61.5,
+    "buildings_index.json": 128.2,
+    "config.json": 0,
+    "demand_data.json": 38.57,
+    "ocean_depth_index.json": 0.01,
+    "roads.geojson": 21.66,
+    "runways_taxiways.geojson": 0.73
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.37836680064762274,
+      "p25": 0.40888625042091037,
+      "p50": 0.40909002517127435,
+      "p75": 0.4093388056040943,
+      "p90": 0.5003778610501269,
+      "mean": 0.41088286818296005
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.34884243651242874,
+      "p25": 0.4088182801026494,
+      "p50": 0.40906739362466205,
+      "p75": 0.4093388056040943,
+      "p90": 0.5003778610501269,
+      "mean": 0.40970310105834323
+    },
+    "commuteDistanceKm": {
+      "p10": 2097,
+      "p25": 2883,
+      "p50": 4422,
+      "p75": 7383,
+      "p90": 11551,
+      "mean": 5922.155569982986
+    },
+    "residentCellDensity": {
+      "p10": 134,
+      "p25": 900,
+      "p50": 4151,
+      "p75": 11923,
+      "p90": 26234,
+      "mean": 8629.541860465117
+    },
+    "workerCellDensity": {
+      "p10": 816,
+      "p25": 3399,
+      "p50": 11760,
+      "p75": 32158,
+      "p90": 61413,
+      "mean": 21973.52
+    },
+    "detail": {
+      "radiusKm": 0.409078709241462,
+      "expectedPointSpacingKm": 0.6247289091175873,
+      "normalizedRadius": 0.6548099556002213,
+      "activityPerPoint": 5363.182791764495,
+      "playableAreaKm2": 724,
+      "playableAreaPerPointKm2": 0.6279271465741544,
+      "playableCatchmentRadiusKm": 0.44707428751576794,
+      "localityScore": 0.336752400450828,
+      "deaggregationScore": 1,
+      "score": 0.5803037139729746
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.5364227846712913,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 129.04565312268855,
+            "latitude": 35.16021435937635,
+            "massShare": 1,
+            "assignedMass": 13925352,
+            "assignedPointCount": 1153,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "부산광역시",
+    "Busan",
+    "釜山広域市",
+    "釜山广域市",
+    "Busán",
+    "Пусан",
+    "Pusan",
+    "Phủ San",
+    "Pusana",
+    "ปูซาน",
+    "부산",
+    "Busan-si",
+    "부산시",
+    "釜山",
+    "釜山市",
+    "Μπούσαν",
+    "פוסאן",
+    "Бусан",
+    "بوسان",
+    "बुसान",
+    "বুসান"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

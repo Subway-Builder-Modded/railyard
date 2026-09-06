@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "id": "greater-kuala-lumpur",
+  "name": "Greater Kuala Lumpur",
+  "author": "nzh0172",
+  "github_id": 69677589,
+  "description": "Greater Klang Valley/Greater Kuala Lumpur/KL\n\nMap generated with OSM using Kronifer's map maker and originally created by @reth. Map updates and distribution by @naz",
+  "tags": [
+    "southeast-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-kuala-lumpur/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-kuala-lumpur/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-kuala-lumpur/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-kuala-lumpur/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/nzh0172/sb-malaysia-map-pack/releases/tag/v1.0.0",
+  "update": {
+    "type": "github",
+    "repo": "nzh0172/sb-malaysia-map-pack"
+  },
+  "city_code": "KUL",
+  "country": "MY",
+  "population": 6249021,
+  "residents_total": 6249021,
+  "points_count": 2337,
+  "population_count": 41536,
+  "data_source": "OSM",
+  "source_quality": "low-quality",
+  "level_of_detail": "medium-detail",
+  "location": "southeast-asia",
+  "special_demand": [],
+  "initial_view_state": {
+    "latitude": 3.145894,
+    "longitude": 101.697843,
+    "zoom": 13.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "KUL.pmtiles": 56.38,
+    "KUL.svg": 0.12,
+    "__MACOSX/._KUL.pmtiles": 0,
+    "__MACOSX/._KUL.svg": 0,
+    "__MACOSX/._config.json": 0,
+    "__MACOSX/._demand_data.json": 0,
+    "__MACOSX/._ocean_depth_index.json": 0,
+    "__MACOSX/._roads.geojson": 0,
+    "__MACOSX/._runways_taxiways.geojson": 0,
+    "buildings_index.bin": 113.79,
+    "buildings_index.json": 165.08,
+    "config.json": 0,
+    "demand_data.json": 11.19,
+    "ocean_depth_index.json": 5.92,
+    "roads.geojson": 44.45,
+    "runways_taxiways.geojson": 1.46
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.17619323792139027,
+      "p25": 0.2958016057780188,
+      "p50": 0.5060291156404876,
+      "p75": 0.792006320221721,
+      "p90": 1.1791287339773813,
+      "mean": 0.6590229550140325
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.17376271137102361,
+      "p25": 0.3223861577894139,
+      "p50": 0.5549074413517816,
+      "p75": 0.9167933439626259,
+      "p90": 1.3087668053697599,
+      "mean": 0.7083406409282533
+    },
+    "commuteDistanceKm": {
+      "p10": 4778,
+      "p25": 9842,
+      "p50": 19513,
+      "p75": 34575,
+      "p90": 50823,
+      "mean": 24454.527879429894
+    },
+    "residentCellDensity": {
+      "p10": 105,
+      "p25": 538,
+      "p50": 2210,
+      "p75": 5822,
+      "p90": 12587,
+      "mean": 4911.312106918239
+    },
+    "workerCellDensity": {
+      "p10": 173,
+      "p25": 641,
+      "p50": 2192,
+      "p75": 5808,
+      "p90": 12788,
+      "mean": 5285.5482841181165
+    },
+    "detail": {
+      "radiusKm": 0.5299050120630752,
+      "expectedPointSpacingKm": 0.7383382329056947,
+      "normalizedRadius": 0.717699542630563,
+      "activityPerPoint": 2753.403846931087,
+      "playableAreaKm2": 3108,
+      "playableAreaPerPointKm2": 1.3299101412066752,
+      "playableCatchmentRadiusKm": 0.6506331882729053,
+      "localityScore": 0.2396537286860585,
+      "deaggregationScore": 0.8414011248724196,
+      "score": 0.4490489025666573
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.7245379684306255,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 101.63319695157827,
+            "latitude": 3.0929707386614824,
+            "massShare": 1,
+            "assignedMass": 12874927,
+            "assignedPointCount": 2337,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1785778842,
+  "search_aliases": [
+    "Kuala Lumpur",
+    "Куала Лумпур",
+    "קואלה לומפור",
+    "कुआ लालम्पुर",
+    "クアラルンプール",
+    "쿠알라룸푸르",
+    "Куала-Лумпур",
+    "吉隆坡",
+    "कुआलालम्पुर",
+    "Κουάλα Λουμπούρ",
+    "კუალა-ლუმპური",
+    "Kualalumpūra",
+    "Kvala Lumpūras",
+    "กัวลาลัมเปอร์",
+    "Կուալա Լումպուր",
+    "কুয়ালালামপুর",
+    "كوالالمبور",
+    "KL",
+    "Kuala-Lumpur"
+  ],
+  "data_quality": {
+    "tier": "absent",
+    "raw_score": 0,
+    "weighted_score": 0,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

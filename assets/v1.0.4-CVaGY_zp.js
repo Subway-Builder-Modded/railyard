@@ -1,0 +1,8 @@
+import{a as e}from"./chunk-BEqpzyXh.js";import{t}from"./jsx-runtime-qJqhvtml.js";var n=e(t());function r(e){let t={code:`code`,li:`li`,ul:`ul`,...e.components},{ChangelogSection:r}=t;return r||a(`ChangelogSection`,!0),(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(r,{type:`features`,children:(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsxs)(t.li,{children:[`Users may now provide a list of `,(0,n.jsx)(t.code,{children:`.osm.pbf`}),` files that will be merged by Depot before performing extraction`]}),`
+`,(0,n.jsxs)(t.li,{children:[`Users may now control whether military bases are colored like airports or not via a new boolean parameter: `,(0,n.jsx)(t.code,{children:`color_military_like_aerodrome`})]}),`
+`,(0,n.jsxs)(t.li,{children:[`Users may now set a maximum tile size in KB for buildings via a new parameter `,(0,n.jsx)(t.code,{children:`max_building_tile_size`}),` (to ensure that, after buildings are merged into the tiles, it does not exceed Subway Builder's 500 KB limit)`]}),`
+`]})}),`
+`,(0,n.jsx)(r,{type:`improvements`,children:(0,n.jsxs)(t.ul,{children:[`
+`,(0,n.jsx)(t.li,{children:`Added language selection for road names`}),`
+`]})})]})}function i(e={}){let{wrapper:t}=e.components||{};return t?(0,n.jsx)(t,{...e,children:(0,n.jsx)(r,{...e})}):r(e)}function a(e,t){throw Error(`Expected `+(t?`component`:`object`)+" `"+e+"` to be defined: you likely forgot to import, pass, or provide it.")}export{i as default};

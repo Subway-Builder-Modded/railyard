@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "id": "garda-lake",
+  "name": "Garda Lake",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Lake Garda metropolitan region, covering Brescia, Bergamo and Verona, including the full shoreline of Lake Garda up to Riva del Garda and the coastal settlements around Lake Iseo, with fully realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/garda-lake/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/garda-lake/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/garda-lake/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/GRD.json"
+  },
+  "city_code": "GRD",
+  "country": "IT",
+  "population": 959863,
+  "residents_total": 959863,
+  "points_count": 7994,
+  "population_count": 12896,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 45.5389,
+    "longitude": 10.2203,
+    "zoom": 10,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "GRD.pmtiles": 130.88,
+    "buildings_index.bin": 63.09,
+    "buildings_index.json": 93.48,
+    "config.json": 0,
+    "demand_data.json": 2.55,
+    "roads.geojson": 51.89,
+    "runways_taxiways.geojson": 0.61
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13919002960303198,
+      "p25": 0.1627380684478462,
+      "p50": 0.19218616545751907,
+      "p75": 0.22498784092963095,
+      "p90": 0.27727395165331775,
+      "mean": 0.21163957546056003
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.02989494545625569,
+      "p25": 0.11519237509102605,
+      "p50": 0.16884900157378663,
+      "p75": 0.2265517315943321,
+      "p90": 0.2875870699906174,
+      "mean": 0.18314148059653154
+    },
+    "commuteDistanceKm": {
+      "p10": 2057,
+      "p25": 3777.2,
+      "p50": 6838.2,
+      "p75": 15256.6,
+      "p90": 68361.1,
+      "mean": 19773.796285669992
+    },
+    "residentCellDensity": {
+      "p10": 83,
+      "p25": 145,
+      "p50": 304,
+      "p75": 680,
+      "p90": 1214,
+      "mean": 525.5665753424657
+    },
+    "workerCellDensity": {
+      "p10": 69,
+      "p25": 85,
+      "p50": 187,
+      "p75": 640,
+      "p90": 2200,
+      "mean": 922.7259615384615
+    },
+    "detail": {
+      "radiusKm": 0.18014006260073478,
+      "expectedPointSpacingKm": 0.5083737137919859,
+      "normalizedRadius": 0.35434574548920067,
+      "activityPerPoint": 120.07292969727295,
+      "playableAreaKm2": 2732,
+      "playableAreaPerPointKm2": 0.34175631723792843,
+      "playableCatchmentRadiusKm": 0.32982482387260736,
+      "localityScore": 0.9869343930298683,
+      "deaggregationScore": 1,
+      "score": 0.9934457172034455
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9559824199866201,
+        "continuousScore": 0.9405515978838139,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.7572638368839266,
+        "largestCenterShare": 0.4361554721871767,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 10.91666681340237,
+            "latitude": 45.481391512844056,
+            "massShare": 0.4361554721871767,
+            "assignedMass": 837299,
+            "assignedPointCount": 3108,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.242903032516775,
+            "latitude": 45.54977260350033,
+            "massShare": 0.3640394514633859,
+            "assignedMass": 698856,
+            "assignedPointCount": 3141,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 9.70979289165075,
+            "latitude": 45.67547699515927,
+            "massShare": 0.19980507634943737,
+            "assignedMass": 383571,
+            "assignedPointCount": 1745,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Brescia",
+    "بريشيا",
+    "ブレシア",
+    "Bréscia",
+    "Брешиа",
+    "Бреша",
+    "布雷西亚"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

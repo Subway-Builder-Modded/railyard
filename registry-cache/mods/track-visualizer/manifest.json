@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "track-visualizer",
+  "name": "track height visualizer",
+  "author": "seanyushoumori",
+  "github_id": 124742441,
+  "description": "Track Visualizer is a quality-of-life mod for Subway Builder that labels the height of every node on your network directly on the map — for both blueprints and already-constructed track. Rather than memorizing the elevation you assigned to a given segment, or opening each station individually to check its height, you can read every node's height at a glance.",
+  "tags": [
+    "qol",
+    "tracks",
+    "trains",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/track-visualizer/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/seanyushoumori/track-visualizer",
+  "update": {
+    "type": "github",
+    "repo": "seanyushoumori/track-visualizer"
+  },
+  "last_updated": 1783301975
+}

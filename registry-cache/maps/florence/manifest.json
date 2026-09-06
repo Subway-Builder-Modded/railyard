@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "id": "florence",
+  "name": "Florence",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Florence metropolitan area including Prato, Pistoia, Empoli with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/florence/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/florence/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/florence/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/FIR.json"
+  },
+  "city_code": "FIR",
+  "country": "IT",
+  "population": 626808,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 626808,
+  "points_count": 3697,
+  "population_count": 8434,
+  "initial_view_state": {
+    "latitude": 43.7696,
+    "longitude": 11.2558,
+    "zoom": 13.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "FIR.pmtiles": 52.19,
+    "buildings_index.bin": 33.24,
+    "buildings_index.json": 49.46,
+    "config.json": 0,
+    "demand_data.json": 1.53,
+    "roads.geojson": 20.58,
+    "runways_taxiways.geojson": 0.09
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.13723167966378857,
+      "p25": 0.16072629471260072,
+      "p50": 0.1874733486881922,
+      "p75": 0.21945436466318702,
+      "p90": 0.2626185755417863,
+      "mean": 0.21106893546941885
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.042056310237907055,
+      "p25": 0.06822737966176397,
+      "p50": 0.14112214569899006,
+      "p75": 0.1908612877123111,
+      "p90": 0.3147616750148091,
+      "mean": 0.16808408439617217
+    },
+    "commuteDistanceKm": {
+      "p10": 2196.2,
+      "p25": 3622.4,
+      "p50": 6740.2,
+      "p75": 13625.6,
+      "p90": 20110.8,
+      "mean": 9507.968935262043
+    },
+    "residentCellDensity": {
+      "p10": 137,
+      "p25": 175,
+      "p50": 429,
+      "p75": 1113,
+      "p90": 1983,
+      "mean": 831.0345285524569
+    },
+    "workerCellDensity": {
+      "p10": 65,
+      "p25": 86,
+      "p50": 157,
+      "p75": 596,
+      "p90": 3421,
+      "mean": 1487.4928571428572
+    },
+    "detail": {
+      "radiusKm": 0.16265497603286727,
+      "expectedPointSpacingKm": 0.4760990161662614,
+      "normalizedRadius": 0.3416410673196299,
+      "activityPerPoint": 169.54503651609414,
+      "playableAreaKm2": 1408,
+      "playableAreaPerPointKm2": 0.38084933730051396,
+      "playableCatchmentRadiusKm": 0.3481782721671453,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8608683563496218,
+        "continuousScore": 0.7349482458966144,
+        "detectedCenterCount": 4,
+        "effectiveCenterCount": 2.822078668868827,
+        "largestCenterShare": 0.49528005386019325,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 11.231704920660809,
+            "latitude": 43.78178988352468,
+            "massShare": 0.49528005386019325,
+            "assignedMass": 620891,
+            "assignedPointCount": 1476,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 11.092501186450443,
+            "latitude": 43.866500622198686,
+            "massShare": 0.29441232402904877,
+            "assignedMass": 369080,
+            "assignedPointCount": 1225,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.91845591567222,
+            "latitude": 43.91710239937085,
+            "massShare": 0.11640406631695831,
+            "assignedMass": 145926,
+            "assignedPointCount": 529,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 10.936506225456652,
+            "latitude": 43.72834095380359,
+            "massShare": 0.09390355579379969,
+            "assignedMass": 117719,
+            "assignedPointCount": 467,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "피렌체",
+    "Florencja",
+    "Florens",
+    "Firenze",
+    "Florenz",
+    "Florència",
+    "Florencia",
+    "Флоренция",
+    "Флоренція",
+    "Φλωρεντία",
+    "ფლორენცია",
+    "フィレンツェ",
+    "Florencie",
+    "Ֆլորենցիա",
+    "Firenca",
+    "Фларэнцыя",
+    "Florensiya",
+    "Floransa",
+    "फ़्लोरेन्स",
+    "פירנצה",
+    "فلورنسا",
+    "Florența",
+    "Фиренца",
+    "Firence",
+    "Florencija",
+    "Florentzia",
+    "ฟลอเรนซ์",
+    "Florença",
+    "佛罗伦萨",
+    "ফ্লোরেন্স",
+    "플로렌스"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

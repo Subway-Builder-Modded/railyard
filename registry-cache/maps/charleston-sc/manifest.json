@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "id": "charleston-sc",
+  "name": "Charleston, SC",
+  "author": "PSWBSF",
+  "github_id": 193011631,
+  "description": "Map of Charleston, South Carolina. Made using the Map Patcher by Kronifer and US Demand Generator by slurry.\n\nNote: This map has not been updated to 1.4+ and is not currently being maintained. If someone would like to update and/or maintain this map, please dm @pswbsf on discord.\n\nAdditional demand data as follows:",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "ferries",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/charleston-sc/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/charleston-sc/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/charleston-sc/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/charleston-sc/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/PSWBSF/charleston-sc",
+  "update": {
+    "type": "github",
+    "repo": "PSWBSF/charleston-sc"
+  },
+  "city_code": "CHS",
+  "country": "US",
+  "population": 323867,
+  "residents_total": 323867,
+  "points_count": 1185,
+  "population_count": 19301,
+  "initial_view_state": {
+    "latitude": 32.7885,
+    "longitude": -79.9381,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "ferries",
+    "universities"
+  ],
+  "file_sizes": {
+    "CHS.pmtiles": 21.33,
+    "__MACOSX/._config.json": 0,
+    "buildings_index.json": 27.83,
+    "config.json": 0,
+    "demand_data.json": 3.13,
+    "ocean_depth_index.json": 6.02,
+    "roads.geojson": 10.38,
+    "runways_taxiways.geojson": 0.22
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3614703066539175,
+      "p25": 0.4721415830641995,
+      "p50": 0.6240951011783877,
+      "p75": 0.8245375293727741,
+      "p90": 1.0777420961879913,
+      "mean": 0.6897950943372476
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.27160979704988225,
+      "p25": 0.37647101915586384,
+      "p50": 0.5570162571238861,
+      "p75": 0.7954360787477017,
+      "p90": 0.9702263610281392,
+      "mean": 0.6114867074477702
+    },
+    "commuteDistanceKm": {
+      "p10": 5565,
+      "p25": 11672,
+      "p50": 21011,
+      "p75": 31970,
+      "p90": 41913,
+      "mean": 22641.50930003627
+    },
+    "residentCellDensity": {
+      "p10": 9,
+      "p25": 45,
+      "p50": 221,
+      "p75": 534,
+      "p90": 944,
+      "mean": 395.41269841269843
+    },
+    "workerCellDensity": {
+      "p10": 9,
+      "p25": 41,
+      "p50": 135,
+      "p75": 360,
+      "p90": 821,
+      "mean": 434.994623655914
+    },
+    "detail": {
+      "radiusKm": 0.5896025079218529,
+      "expectedPointSpacingKm": 0.8714893406611902,
+      "normalizedRadius": 0.6765458628266495,
+      "activityPerPoint": 273.3054852320675,
+      "playableAreaKm2": 2340,
+      "playableAreaPerPointKm2": 1.9746835443037976,
+      "playableCatchmentRadiusKm": 0.7928185758648357,
+      "localityScore": 0.30217694511398663,
+      "deaggregationScore": 0.45448163665297087,
+      "score": 0.37058585047759124
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.7748640829194442,
+        "continuousScore": 0.8081287026489746,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.6324719340250107,
+        "largestCenterShare": 0.7372424482889581,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -79.9779783581458,
+            "latitude": 32.85574153371893,
+            "massShare": 0.7372424482889581,
+            "assignedMass": 477537,
+            "assignedPointCount": 790,
+            "prominenceRatio": 0.9999999999999869
+          },
+          {
+            "longitude": -80.12959247379395,
+            "latitude": 32.99105980547903,
+            "massShare": 0.26275755171104187,
+            "assignedMass": 170197,
+            "assignedPointCount": 323,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1775677563,
+  "search_aliases": [
+    "Charleston",
+    "찰스턴",
+    "Чарлстон",
+    "צארלסטון",
+    "Charleston i Sør-Carolina",
+    "Чарлстън",
+    "チャールストン",
+    "تشارلستون",
+    "查尔斯顿",
+    "Τσάρλεστον"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "included_cities": [
+    "North Charleston",
+    "Summerville"
+  ]
+}

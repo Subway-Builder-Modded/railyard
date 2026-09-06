@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "id": "trondheim-no",
+  "name": "Trondheim",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 250m x 250m population and job data from Statistisk sentralbyrå.  Covers the greater Trondheim area.  Special demand:\n\nAirports: TRD\n\nUniversities: Norwegian University of Science and Technology (NTNU - Gløshaugen, Dragvoll, and Øya campuses), Queen Maud University College (DMMH), BI Norwegian Business School, NORD University\n\nEntertainment: Nidarosdomen, Kristiansten Festning, Gamle bybro, Rockheim, Ringve Music Museum, Sverresborg Trøndelag Folk Museum, Stiftsgården, Archbishop's Palace, NTNU Ringve Botanical Garden, Pirbadet, Bymarka, Korsvika, Solsiden Senter, Munkholmen, Our Lady Church, Trondheim Kunstmuseum, Vitensenteret",
+  "tags": [
+    "north-europe",
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-no/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-no/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-no/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/trondheim-no/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/GTRD.json"
+  },
+  "city_code": "GTRD",
+  "country": "NO",
+  "population": 294397,
+  "residents_total": 294397,
+  "points_count": 9218,
+  "population_count": 16645,
+  "initial_view_state": {
+    "latitude": 63.4305,
+    "longitude": 10.39507,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "Statistisk sentralbyrå",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-europe",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "parks",
+    "universities"
+  ],
+  "file_sizes": {
+    ".railyard_map/special_demand_points.json": 0.04,
+    ".railyard_map/special_demand_types.json": 0.03,
+    "GTRD.pmtiles": 115.51,
+    "GTRD_foundations.pmtiles": 15.94,
+    "buildings_index.bin": 33.85,
+    "buildings_index.json": 42.22,
+    "config.json": 0,
+    "demand_data.json": 3.13,
+    "ocean_depth_index.json.gz": 27.51,
+    "roads.geojson": 14.18,
+    "runways_taxiways.geojson": 0.37
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.24899348321324427,
+      "p25": 0.2496943227102381,
+      "p50": 0.2773260128132633,
+      "p75": 0.33396387623919765,
+      "p90": 0.39031635117201174,
+      "mean": 0.3046214797785166
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.24898765065823192,
+      "p25": 0.24933319355239655,
+      "p50": 0.2840415172283598,
+      "p75": 0.36223293744779245,
+      "p90": 0.47909091734296744,
+      "mean": 0.32573882588608527
+    },
+    "commuteDistanceKm": {
+      "p10": 2526,
+      "p25": 5718,
+      "p50": 14279,
+      "p75": 45336,
+      "p90": 71208,
+      "mean": 28143.385280865125
+    },
+    "residentCellDensity": {
+      "p10": 2,
+      "p25": 3,
+      "p50": 6,
+      "p75": 15,
+      "p90": 53,
+      "mean": 50.61530524505589
+    },
+    "workerCellDensity": {
+      "p10": 1,
+      "p25": 1,
+      "p50": 3,
+      "p75": 17,
+      "p90": 126,
+      "mean": 109.6833084947839
+    },
+    "detail": {
+      "radiusKm": 0.28066368031216804,
+      "expectedPointSpacingKm": 0.7976560367486708,
+      "normalizedRadius": 0.35186053559649905,
+      "activityPerPoint": 31.937188110219136,
+      "playableAreaKm2": 7016,
+      "playableAreaPerPointKm2": 0.7611195487090475,
+      "playableCatchmentRadiusKm": 0.4922112116986315,
+      "localityScore": 0.9943864982302802,
+      "deaggregationScore": 1,
+      "score": 0.9971892990953525
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.8292872336390686,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 10.53950987957551,
+            "latitude": 63.46247853933417,
+            "massShare": 1,
+            "assignedMass": 588794,
+            "assignedPointCount": 9218,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1783814400,
+  "search_aliases": [
+    "Тронхейм",
+    "Трондхайм",
+    "トロンヘイム",
+    "Trondheimas",
+    "טרונדהיים",
+    "トロンハイム",
+    "Τρόντχαιμ",
+    "Τρόντχαϊμ",
+    "Трондхејм",
+    "Τροντχαιμ",
+    "ტრონჰეიმი",
+    "Tronheima",
+    "تروندهايم",
+    "ทรอนด์เฮม",
+    "트론헤임",
+    "Тронгейм",
+    "特隆赫姆"
+  ],
+  "data_quality": {
+    "tier": "high",
+    "raw_score": 0.52,
+    "weighted_score": 0.65,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "id": "colorado-ski-country",
+  "name": "Colorado Ski Country",
+  "author": "soccerjonj",
+  "github_id": 222296520,
+  "description": "Custom map of Eagle/Vail and many of its surrounding areas (Colorado Ski Country) such as Steamboat Springs, Aspen, Breckenridge, Keystone, etc. Generated using 2023 LODES Census Data and added demand for the following:\n\nUniversities: Colorado Mountain College Campuses: Steamboat Springs, Vail Valley, Dillon, Breckenridge, Leadville, Aspen, Carbondale, Glenwood Springs, Spring Valley at Glenwood Springs\n\nEntertainment/Tourism: Breckenridge Ski Resort, Vail Ski Resort, Keystone Resort, Copper Mountain, Steamboat Ski Resort, Beavercreek Resort, Aspen Ski Resort, Sunlight Mountain Resort, Arapahoe Basin, Loveland Ski Area, Granby Ranch",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/colorado-ski-country/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/colorado-ski-country/gallery/screenshot2.webp"
+  ],
+  "source": "https://github.com/soccerjonj/Colorado-Ski-Country",
+  "update": {
+    "type": "github",
+    "repo": "soccerjonj/Colorado-Ski-Country"
+  },
+  "city_code": "EGE",
+  "country": "US",
+  "population": 167071,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 167071,
+  "points_count": 2140,
+  "population_count": 8868,
+  "initial_view_state": {
+    "latitude": 39.612553,
+    "longitude": -106.666517,
+    "zoom": 11,
+    "bearing": 0
+  },
+  "file_sizes": {},
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3004224485887791,
+      "p25": 0.4793072228132593,
+      "p50": 0.7088173267279639,
+      "p75": 1.229902803056093,
+      "p90": 1.7911018733001676,
+      "mean": 0.8882193595606884
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.18990373567612018,
+      "p25": 0.2185856891340284,
+      "p50": 0.32434341860962296,
+      "p75": 0.7458842224658728,
+      "p90": 1.2414574756394663,
+      "mean": 0.5563208455795556
+    },
+    "commuteDistanceKm": {
+      "p10": 4935,
+      "p25": 16737,
+      "p50": 46555,
+      "p75": 99450,
+      "p90": 159082,
+      "mean": 65192.96853856563
+    },
+    "residentCellDensity": {
+      "p10": 1,
+      "p25": 2,
+      "p50": 9,
+      "p75": 68,
+      "p90": 589,
+      "mean": 183.38529088913282
+    },
+    "workerCellDensity": {
+      "p10": 1,
+      "p25": 4,
+      "p50": 18,
+      "p75": 119,
+      "p90": 390,
+      "mean": 295.7008849557522
+    },
+    "detail": {
+      "radiusKm": 0.4794791287644144,
+      "expectedPointSpacingKm": 0.9801773633130904,
+      "normalizedRadius": 0.48917588460085476,
+      "activityPerPoint": 78.07056074766355,
+      "playableAreaKm2": 5915,
+      "playableAreaPerPointKm2": 2.764018691588785,
+      "playableCatchmentRadiusKm": 0.937984261664073,
+      "localityScore": 0.6455240219425114,
+      "deaggregationScore": 0.12533065247277736,
+      "score": 0.2844361911868924
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9807931829495893,
+        "continuousScore": 0.8170276160287673,
+        "detectedCenterCount": 6,
+        "effectiveCenterCount": 5.474282306302718,
+        "largestCenterShare": 0.24903184873496897,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -107.08184514624949,
+            "latitude": 39.34259460536599,
+            "massShare": 0.24903184873496897,
+            "assignedMass": 83212,
+            "assignedPointCount": 236,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -105.95953184750358,
+            "latitude": 39.714385022801146,
+            "massShare": 0.19437544517001754,
+            "assignedMass": 64949,
+            "assignedPointCount": 125,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -106.10861994321115,
+            "latitude": 39.45559117078567,
+            "massShare": 0.1914515385674354,
+            "assignedMass": 63972,
+            "assignedPointCount": 165,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -106.68824008055307,
+            "latitude": 39.63738730194714,
+            "massShare": 0.15322826822129515,
+            "assignedMass": 51200,
+            "assignedPointCount": 185,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -106.38062728014107,
+            "latitude": 39.67936581590262,
+            "massShare": 0.1179468609154192,
+            "assignedMass": 39411,
+            "assignedPointCount": 148,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -106.84183189545793,
+            "latitude": 40.45628766247818,
+            "massShare": 0.09396603839086376,
+            "assignedMass": 31398,
+            "assignedPointCount": 210,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1772040155,
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  },
+  "deprecation": {
+    "since": "2026-09-06T09:50:45.646Z",
+    "by_github_id": 19807509,
+    "reason": "No longer maintained by the author; incompatible with current game versions since June 2026."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "game-speedup",
+  "name": "Game SpeedUp",
+  "author": "Valdotorium",
+  "github_id": 116170877,
+  "description": "Speed up your Subwaybuilder gameplay (and waiting-for-money experience) by pushing the game's speed to its limits.",
+  "tags": [
+    "gameplay",
+    "misc",
+    "qol"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/game-speedup/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/game-speedup/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/game-speedup/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/game-speedup/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/Valdotorium/speed-mod",
+  "update": {
+    "type": "github",
+    "repo": "Valdotorium/speed-mod"
+  },
+  "last_updated": 1784720635
+}

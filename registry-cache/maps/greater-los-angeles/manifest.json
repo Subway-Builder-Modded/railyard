@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "id": "greater-los-angeles",
+  "name": "Greater Los Angeles",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2023 LODES data. Coverage spans the heart of LA County + Orange County.\nIncludes demand for LAX, SNA, BUR, ONT, LBG, SBD, and FUL airports; CSULB, CSUN, UCLA, USC, Occidental, LMU, ELAC, LACC, LAHC, LAMC, LAPC, LAVC, LASC, LATTC, WLAC, UCI, CUI, Westcliff, SAC, IVC, Chapman, CSUF, Fullerton, OCC, and Vanguard universities; Dodger Stadium, Crypto.com Arena, Disneyland, California Adventure, Knott's Berry Farm, Huntington Beach, Laguna Beach, Newport Beach, Dana Point, Crystal Cove State Park (split between Historic District, Moro Beach, Reef Point, and Pelican Point), Irvine Regional Park, Mission San Juan Capistrano, and the Orange County Museum of Art.",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-los-angeles/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-los-angeles/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-los-angeles/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/greater-los-angeles/gallery/screenshot4.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/LAX.json"
+  },
+  "city_code": "LAX",
+  "country": "US",
+  "population": 5519727,
+  "residents_total": 5519727,
+  "points_count": 6976,
+  "population_count": 171398,
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "initial_view_state": {
+    "latitude": 34.05651,
+    "longitude": -118.24712,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "LAX.pmtiles": 179.81,
+    "LAX_foundations.pmtiles": 132.57,
+    "buildings_index.bin.gz": 86.01,
+    "buildings_index.json.gz": 63.18,
+    "config.json": 0,
+    "demand_data.json": 28.39,
+    "ocean_depth_index.json.gz": 9.35,
+    "roads.geojson": 92.36,
+    "runways_taxiways.geojson": 2.01
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.3624587184976694,
+      "p25": 0.4660464964058693,
+      "p50": 0.6136820708338125,
+      "p75": 0.7722963038745733,
+      "p90": 0.9651580361465768,
+      "mean": 0.6477151322643336
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.21001077124720577,
+      "p25": 0.2941336357053943,
+      "p50": 0.4026002598261896,
+      "p75": 0.57574230048632,
+      "p90": 0.7556533023184454,
+      "mean": 0.46220617810708226
+    },
+    "commuteDistanceKm": {
+      "p10": 10206,
+      "p25": 19647,
+      "p50": 34618,
+      "p75": 54170,
+      "p90": 73880,
+      "mean": 38897.59167551547
+    },
+    "residentCellDensity": {
+      "p10": 165,
+      "p25": 452,
+      "p50": 990,
+      "p75": 1814,
+      "p90": 2806,
+      "mean": 1317.9331423113658
+    },
+    "workerCellDensity": {
+      "p10": 180,
+      "p25": 322,
+      "p50": 617,
+      "p75": 1214,
+      "p90": 2456,
+      "mean": 1344.318469785575
+    },
+    "detail": {
+      "radiusKm": 0.4970599170807952,
+      "expectedPointSpacingKm": 0.7771278867043557,
+      "normalizedRadius": 0.6396114791205436,
+      "activityPerPoint": 791.2452694954128,
+      "playableAreaKm2": 6060,
+      "playableAreaPerPointKm2": 0.8686926605504587,
+      "playableCatchmentRadiusKm": 0.5258454734125899,
+      "localityScore": 0.3616174887212122,
+      "deaggregationScore": 1,
+      "score": 0.601346396614474
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9712242763757178,
+        "continuousScore": 0.9428996376029121,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.836741425492928,
+        "largestCenterShare": 0.41222799605850075,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -118.18409792697008,
+            "latitude": 34.011325920665705,
+            "massShare": 0.41222799605850075,
+            "assignedMass": 4550772,
+            "assignedPointCount": 2840,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -117.8517718491516,
+            "latitude": 33.783931355948745,
+            "massShare": 0.36405459907709203,
+            "assignedMass": 4018964,
+            "assignedPointCount": 2685,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -118.43908062366846,
+            "latitude": 34.08694729157595,
+            "massShare": 0.22371740486440725,
+            "assignedMass": 2469718,
+            "assignedPointCount": 1451,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "Los Ángeles",
+    "Los Angeles",
+    "로스앤젤레스",
+    "El Pueblo de Nuestra Señora de los Ángeles de Porciúncula",
+    "L.A.",
+    "لوس أنجلوس",
+    "Лос Анджелис",
+    "לוס אנגלס",
+    "ロサンゼルス",
+    "ლოს-ანჯელესი",
+    "Los Andželas",
+    "Лос Анџелес",
+    "Лос Анӂелес",
+    "Лос-Анджелес",
+    "Los Anxhelos",
+    "Лос Анђелес",
+    "ลอสแอนเจลิส",
+    "Λος Άντζελες",
+    "Los Anxheles",
+    "لوس آنجلس",
+    "Лос-Анджэлес",
+    "Losandželosa",
+    "Los Anjeles",
+    "Лос Анжелес",
+    "লস অ্যাঞ্জেলেস",
+    "Լոս Անջելես",
+    "लॉस एंजेलिस",
+    "Los-Anceles",
+    "洛杉矶",
+    "엘에이",
+    "로스엔젤레스"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

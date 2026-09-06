@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "network-status",
+  "name": "Network Status",
+  "author": "Valdotorium",
+  "github_id": 116170877,
+  "description": "This mod adds a panel to the game, showing average delays per line, service disruptions and some more insights. Great for finding bottlenecks and disruptions on networks. (though it is definitely more fun the larger the network is...) It aims to make delays and disruptions included in the vanilla game visible. (And even if it turns out to be not useful, I still think it is fun to look at)\n_Inspired by the disruptions panel in the TfLGo app._\n\n**Statistics shown:**\n\n-Amount of routes with minor/severe disruptions as coloured bars\n-Amount of trains delayed with minor/severe delays\n-Average delay per route\n-Current and average historic punctuality rates (sometimes slightly inaccurate)\n\nTo calculate all of these stats, all trains (with reasonable delays < 10000 seconds) in the current game are periodically analysed every few seconds according to simulation speed.\n\nA train classifies as \"Minor Delay\" as soon as it is delayed by 90 seconds, and as \"Major Delay\" by 300 seconds.\n\nKnown issues: -Does not look that good with long line names. -As just displaying line names (e.g. \"1\") in the stats, lines with different bullet shapes might look the same.",
+  "tags": [
+    "cosmetic",
+    "misc",
+    "qol",
+    "ui"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/network-status/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/network-status/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/network-status/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/mods/network-status/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/Valdotorium/network-status",
+  "update": {
+    "type": "github",
+    "repo": "Valdotorium/network-status"
+  },
+  "last_updated": 1784762796
+}

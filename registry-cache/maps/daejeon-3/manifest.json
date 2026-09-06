@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "id": "daejeon-3",
+  "name": "Daejeon (30km×30km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# DAEJEON (30km×30km)\r\n\r\n### DAJ3 · v0.1.0\r\n\r\nCustom map of Daejeon, Korea made with official Korean traffic volume data from official soures.\r\nWith 5,825 Pops and 854,540 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Daejeon, Sejong, Gyeryong, Okcheon</td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>900 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">854,540</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/daejeon-3/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/DAJ3.json"
+  },
+  "city_code": "DAJ3",
+  "country": "KR",
+  "population": 2201895,
+  "residents_total": 2201895,
+  "points_count": 863,
+  "population_count": 32378,
+  "initial_view_state": {
+    "latitude": 36.3504,
+    "longitude": 127.3845,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "DAJ3.pmtiles": 36.92,
+    "buildings_index.json": 54.45,
+    "config.json": 0,
+    "demand_data.json": 27.75,
+    "ocean_depth_index.json": 0.01,
+    "roads.geojson": 13.56,
+    "runways_taxiways.geojson": 0.18
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4024217025160135,
+      "p25": 0.4029349370325438,
+      "p50": 0.40305141352454266,
+      "p75": 0.40316782786094857,
+      "p90": 0.4032841800238089,
+      "mean": 0.4003859173534981
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.4023542188085035,
+      "p25": 0.402841711098988,
+      "p50": 0.40302812319928855,
+      "p75": 0.40316782786094857,
+      "p90": 0.40330744299397636,
+      "mean": 0.4029634856005203
+    },
+    "commuteDistanceKm": {
+      "p10": 2097,
+      "p25": 2891,
+      "p50": 4691,
+      "p75": 7531,
+      "p90": 11022,
+      "mean": 5790.811662239793
+    },
+    "residentCellDensity": {
+      "p10": 49,
+      "p25": 199,
+      "p50": 1763,
+      "p75": 8271,
+      "p90": 18888,
+      "mean": 6246.137535816619
+    },
+    "workerCellDensity": {
+      "p10": 396,
+      "p25": 1212,
+      "p50": 5680,
+      "p75": 23488,
+      "p90": 44043,
+      "mean": 15836.22
+    },
+    "detail": {
+      "radiusKm": 0.4030397681936818,
+      "expectedPointSpacingKm": 0.6368374934373043,
+      "normalizedRadius": 0.632876946390658,
+      "activityPerPoint": 4132.67709922008,
+      "playableAreaKm2": 772,
+      "playableAreaPerPointKm2": 0.8945538818076477,
+      "playableCatchmentRadiusKm": 0.5336153523873357,
+      "localityScore": 0.3728248499132186,
+      "deaggregationScore": 1,
+      "score": 0.6105938502091375
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.42486573192146954,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 127.38671553810052,
+            "latitude": 36.34781180627651,
+            "massShare": 1,
+            "assignedMass": 7978703,
+            "assignedPointCount": 863,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "Тэджон",
+    "Daejeon",
+    "대전광역시",
+    "Taejŏn",
+    "大田広域市",
+    "Taejon",
+    "대전",
+    "Daejeon-si",
+    "대전시",
+    "دايجيون",
+    "दाएजोन",
+    "ডেজিওন"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

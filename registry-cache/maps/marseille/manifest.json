@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "id": "marseille",
+  "name": "Marseille - Provence",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Regional map covering Marseille, Toulon, Aix-en-Provence and Istres, France. 1.15M+ simulated commuters from real INSEE Filosofi/MOBPRO 2021 data. Marseille-Provence and Toulon-Hyères airports, the Calanques, Toulon naval base, universities and hospitals across the whole region.",
+  "tags": [
+    "west-europe",
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/marseille/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/marseille/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/marseille/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps-france",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps-france/main/updates/mrs-update.json"
+  },
+  "city_code": "MRS",
+  "country": "FR",
+  "population": 1146909,
+  "residents_total": 1146909,
+  "points_count": 15374,
+  "population_count": 21990,
+  "initial_view_state": {
+    "latitude": 43.35,
+    "longitude": 5.45,
+    "zoom": 9,
+    "bearing": 0
+  },
+  "data_source": "INSEE Filosofi/MOBPRO 2021",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "west-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "universities"
+  ],
+  "file_sizes": {
+    "MRS.pmtiles": 68.5,
+    "buildings_index.bin.gz": 38.44,
+    "config.json": 0,
+    "demand_data.json.gz": 0.79,
+    "ocean_depth_index.json.gz": 4.03,
+    "ocean_depth_index_contours.json.gz": 2.36,
+    "roads.geojson.gz": 6.43,
+    "runways_taxiways.geojson.gz": 0.21
+  },
+  "included_cities": [
+    "Toulon",
+    "Aix-en-Provence",
+    "Istres"
+  ],
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.19852275144643972,
+      "p25": 0.19866546835179236,
+      "p50": 0.19895921557421042,
+      "p75": 0.19930580058468397,
+      "p90": 0.20153909816588594,
+      "mean": 0.23807918805429462
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.19855469485247826,
+      "p25": 0.19870428199352255,
+      "p50": 0.1990675654632165,
+      "p75": 0.2004689706445437,
+      "p90": 0.5249106472916291,
+      "mean": 0.3149083569543555
+    },
+    "commuteDistanceKm": {
+      "p10": 14289,
+      "p25": 18944,
+      "p50": 29580,
+      "p75": 46985,
+      "p90": 67256,
+      "mean": 35814.91368804002
+    },
+    "residentCellDensity": {
+      "p10": 15,
+      "p25": 60,
+      "p50": 143,
+      "p75": 478,
+      "p90": 1120,
+      "mean": 440.87912942090946
+    },
+    "workerCellDensity": {
+      "p10": 15,
+      "p25": 60,
+      "p50": 148,
+      "p75": 481,
+      "p90": 1113,
+      "mean": 469.0566037735849
+    },
+    "detail": {
+      "radiusKm": 0.19901338314502703,
+      "expectedPointSpacingKm": 0.4403394033756393,
+      "normalizedRadius": 0.4519545187630078,
+      "activityPerPoint": 74.60055938597633,
+      "playableAreaKm2": 4264,
+      "playableAreaPerPointKm2": 0.27735137244698843,
+      "playableCatchmentRadiusKm": 0.2971257036954545,
+      "localityScore": 0.7293183802420053,
+      "deaggregationScore": 1,
+      "score": 0.8540013935831752
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9499351222656963,
+        "continuousScore": 0.9261144553416627,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.7269510574433387,
+        "largestCenterShare": 0.48224924558094845,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 5.369664177855185,
+            "latitude": 43.320387842978356,
+            "massShare": 0.48224924558094845,
+            "assignedMass": 1106192,
+            "assignedPointCount": 5629,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 5.341992243330505,
+            "latitude": 43.50625343841288,
+            "massShare": 0.2663807677854128,
+            "assignedMass": 611029,
+            "assignedPointCount": 4747,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 5.952693718888584,
+            "latitude": 43.16481886496116,
+            "massShare": 0.25136998663363874,
+            "assignedMass": 576597,
+            "assignedPointCount": 4998,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1787356800,
+  "data_quality": {
+    "tier": "medium",
+    "raw_score": 0.29,
+    "weighted_score": 0.52,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

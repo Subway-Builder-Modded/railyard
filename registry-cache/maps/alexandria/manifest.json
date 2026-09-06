@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "id": "alexandria",
+  "name": "Alexandria",
+  "author": "pierreggt",
+  "github_id": 301703453,
+  "description": "Map of Alexandria, Egypt's second city, from Alexandria International Airport to Abu Qir, along the full Mediterranean coastal corridor. 382,000+ OSM buildings, Alexandria University, Bibliotheca Alexandrina, simulated traffic.",
+  "tags": [
+    "north-africa",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/alexandria/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/alexandria/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/alexandria/gallery/screenshot3.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/pierreggt/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/pierreggt/subwaybuilder-maps/main/updates/hbe-update.json"
+  },
+  "city_code": "HBE",
+  "country": "EG",
+  "population": 2169100,
+  "residents_total": 2169100,
+  "points_count": 7796,
+  "population_count": 21174,
+  "initial_view_state": {
+    "latitude": 31.2,
+    "longitude": 29.92,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "CAPMAS census (2017), by qism + OSM",
+  "source_quality": "low-quality",
+  "level_of_detail": "low-detail",
+  "data_quality": {
+    "tier": "absent",
+    "raw_score": 0.03,
+    "weighted_score": 0.15,
+    "rubric_version": 1,
+    "provenance": "reviewed"
+  },
+  "location": "north-africa",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "file_sizes": {
+    "HBE.pmtiles": 20.32,
+    "buildings_index.bin.gz": 17.7,
+    "config.json": 0,
+    "demand_data.json.gz": 0.52,
+    "ocean_depth_index.json.gz": 1.15,
+    "ocean_depth_index_contours.json.gz": 0.59,
+    "roads.geojson.gz": 2.79,
+    "runways_taxiways.geojson.gz": 0.07
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0.23751644150660295,
+      "p50": 0.23777446020286214,
+      "p75": 0.23800038580496827,
+      "p90": 0.23835065819073276,
+      "mean": 0.19494674596931763
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0,
+      "p25": 0,
+      "p50": 0,
+      "p75": 0.23791886927157951,
+      "p90": 0.2779877005839745,
+      "mean": 0.1267598183701537
+    },
+    "commuteDistanceKm": {
+      "p10": 1659,
+      "p25": 3513,
+      "p50": 5691,
+      "p75": 9724,
+      "p90": 19342,
+      "mean": 8745.394068196845
+    },
+    "residentCellDensity": {
+      "p10": 100,
+      "p25": 200,
+      "p50": 500,
+      "p75": 1500,
+      "p90": 4500,
+      "mean": 1610.1361573373676
+    },
+    "workerCellDensity": {
+      "p10": 100,
+      "p25": 100,
+      "p50": 400,
+      "p75": 1300,
+      "p90": 4600,
+      "mean": 2212.3430962343095
+    },
+    "detail": {
+      "radiusKm": 0,
+      "expectedPointSpacingKm": 0.43186328908784927,
+      "normalizedRadius": 0,
+      "activityPerPoint": 278.23242688558236,
+      "playableAreaKm2": 1804,
+      "playableAreaPerPointKm2": 0.2314007183170857,
+      "playableCatchmentRadiusKm": 0.27139848251299964,
+      "localityScore": 0,
+      "deaggregationScore": 1,
+      "score": 0
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.6530246353236677,
+        "continuousScore": 0.9066481046213843,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.4848081505043593,
+        "largestCenterShare": 0.7945230740860265,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 29.905357149239876,
+            "latitude": 31.145266808634094,
+            "massShare": 0.7945230740860265,
+            "assignedMass": 3446800,
+            "assignedPointCount": 6616,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 30.059705940094233,
+            "latitude": 31.26529980928876,
+            "massShare": 0.20547692591397354,
+            "assignedMass": 891400,
+            "assignedPointCount": 1180,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1786320000
+}

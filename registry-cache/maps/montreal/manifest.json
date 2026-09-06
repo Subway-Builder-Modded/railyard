@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "id": "montreal",
+  "name": "Montreal",
+  "author": "subway-builder-modded-admin",
+  "github_id": 268817724,
+  "description": "Custom map of Montreal and its surrounding metro area. (Credit to @expedtadam for making original maps)",
+  "tags": [
+    "north-america",
+    "airports",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/montreal/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/montreal/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/montreal/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/devenperez/subway-builder-canadian-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/devenperez/subway-builder-canadian-maps/refs/heads/main/railyard/YUL-update.json"
+  },
+  "city_code": "YUL",
+  "country": "CA",
+  "population": 2523330,
+  "level_of_detail": "high-detail",
+  "source_quality": "medium-quality",
+  "data_source": "STATCAN",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "universities"
+  ],
+  "residents_total": 2523330,
+  "points_count": 8214,
+  "population_count": 21051,
+  "initial_view_state": {
+    "latitude": 45.5019,
+    "longitude": -73.5674,
+    "zoom": 13,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "YUL.pmtiles": 97.82,
+    "YUL_foundations.pmtiles": 51.97,
+    "buildings_index.bin": 149.99,
+    "buildings_index.json": 198.2,
+    "config.json": 0,
+    "demand_data.json": 4.88,
+    "ocean_depth_index.json": 33.54,
+    "roads.geojson": 45.83,
+    "runways_taxiways.geojson": 0.78
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.2538442937900789,
+      "p25": 0.2739925947397461,
+      "p50": 0.30156431788963933,
+      "p75": 0.3364550977532071,
+      "p90": 0.3881667693390192,
+      "mean": 0.33617579867893627
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2538442937900789,
+      "p25": 0.2770745730179962,
+      "p50": 0.3114439052207791,
+      "p75": 0.36900786717186057,
+      "p90": 0.6262641412145183,
+      "mean": 0.4027989838756733
+    },
+    "commuteDistanceKm": {
+      "p10": 2076,
+      "p25": 5106,
+      "p50": 11886,
+      "p75": 22922,
+      "p90": 37618,
+      "mean": 16357.109068452804
+    },
+    "residentCellDensity": {
+      "p10": 92,
+      "p25": 225,
+      "p50": 631,
+      "p75": 1376,
+      "p90": 2448,
+      "mean": 1039.6912613355316
+    },
+    "workerCellDensity": {
+      "p10": 109,
+      "p25": 194,
+      "p50": 466,
+      "p75": 1053,
+      "p90": 2350,
+      "mean": 1088.4633304572908
+    },
+    "detail": {
+      "radiusKm": 0.306464302715324,
+      "expectedPointSpacingKm": 0.5822845279480676,
+      "normalizedRadius": 0.5263136628329865,
+      "activityPerPoint": 307.19868517165816,
+      "playableAreaKm2": 4316,
+      "playableAreaPerPointKm2": 0.5254443632822011,
+      "playableCatchmentRadiusKm": 0.4089671569603992,
+      "localityScore": 0.5680457586820354,
+      "deaggregationScore": 1,
+      "score": 0.7536881043787512
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9138083807914457,
+        "continuousScore": 0.8669599715819255,
+        "detectedCenterCount": 3,
+        "effectiveCenterCount": 2.5588902175456254,
+        "largestCenterShare": 0.49098037117618387,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -73.5677604427859,
+            "latitude": 45.4946943291074,
+            "massShare": 0.49098037117618387,
+            "assignedMass": 2477811,
+            "assignedPointCount": 2759,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -73.81959854068128,
+            "latitude": 45.56063397362039,
+            "massShare": 0.35496427340062536,
+            "assignedMass": 1791384,
+            "assignedPointCount": 3800,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -73.52144553529745,
+            "latitude": 45.661393171782656,
+            "massShare": 0.1540553554231908,
+            "assignedMass": 777465,
+            "assignedPointCount": 1655,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784678400,
+  "search_aliases": [
+    "Montréal",
+    "Монреал",
+    "Mont-real",
+    "Μόντρεαλ",
+    "מונטריאול",
+    "モントリオール",
+    "მონრეალი",
+    "몬트리올",
+    "Monrealis",
+    "Monreāla",
+    "Монреаль",
+    "Montreali",
+    "Монтреал",
+    "Montreal City",
+    "Μοντρεαλ",
+    "Monreal",
+    "مونتريال",
+    "Манрэаль",
+    "Մոնրեալ"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  },
+  "caretakers": [
+    {
+      "github_id": 63876261,
+      "since": "2026-02-21T00:00:00Z"
+    }
+  ],
+  "collaborators": [
+    63876261
+  ]
+}

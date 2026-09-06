@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "id": "daegu-4",
+  "name": "Daegu (40km×40km)",
+  "author": "kimth9",
+  "github_id": 242454095,
+  "description": "# Daegu (40km×40km)\r\n\r\n### TAE4 · v0.1.0\r\n\r\nCustom map of Daegu, Korea made with official Korean traffic volume data from official soures.\r\nWith 6,439 Pops and 1,020,014 population\r\n\r\n## Coverage\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Region</strong></td><td>Daegu, Gyeongsan </td></tr>\r\n<tr><td><strong>Playable Area</strong></td><td>1,600 km²</td></tr>\r\n</table>\r\n\r\n## Population Summary\r\n\r\n<table style=\"width: auto\">\r\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">1,020,014</td></tr>\r\n</table>\r\n\r\n## Additional Features\r\n\r\n- **Neighborhood Labels** — The map includes municipal and neighborhood labels derived from administrative boundary data.\r\n\t- 시도 (Si, Do - Metropolitan / Provincial level)\r\n\t- 시군구 (Si, Gun, Gu - City / County / District level)\r\n\t- 읍면동 (Eup, Myeon, Dong - Neighborhood level)\r\n\r\n## Data Sources\r\n\r\n- Korean Transportation Database (Korea Transport Institute, KOTI) (ktdb.go.kr)\r\n- V-world (Ministry of Land, Infrastructure and Transport, MOLIT) (vworld.kr)\r\n- Statistical Geographic Information System (SGIS) plus (Ministry of Data and Statistics, MODS) (sgis.mods.go.kr)\r\n- Address-based Industry Support Service (Ministry of the Interior and Safety, MOIS) (business.juso.go.kr)\r\n\r\n## Credits\r\n\r\nMap authored by Budha",
+  "tags": [
+    "east-asia"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/daegu-4/gallery/screenshot1.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/kimth9/sb_korean_map_pack",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/kimth9/sb_korean_map_pack/refs/heads/main/map_json/TAE4.json"
+  },
+  "city_code": "TAE4",
+  "country": "KR",
+  "population": 2539651,
+  "residents_total": 2539651,
+  "points_count": 1238,
+  "population_count": 39266,
+  "initial_view_state": {
+    "latitude": 35.8714,
+    "longitude": 128.6014,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "KOTI, MOLIT, MODS, MOIS",
+  "source_quality": "high-quality",
+  "level_of_detail": "low-detail",
+  "location": "east-asia",
+  "special_demand": [],
+  "file_sizes": {
+    "TAE4.pmtiles": 48.03,
+    "buildings_index.json": 80.43,
+    "config.json": 0,
+    "demand_data.json": 33.67,
+    "ocean_depth_index.json": 0.01,
+    "roads.geojson": 22.87,
+    "runways_taxiways.geojson": 1.07
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4051604079077881,
+      "p25": 0.4054830343390893,
+      "p50": 0.405621152757896,
+      "p75": 0.40580517052556847,
+      "p90": 0.4063475988996148,
+      "mean": 0.44491510551431934
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.40492966053053714,
+      "p25": 0.4054600058475118,
+      "p50": 0.4055981392732264,
+      "p75": 0.4057591811019972,
+      "p90": 0.40634759890218125,
+      "mean": 0.4350299316694964
+    },
+    "commuteDistanceKm": {
+      "p10": 2097,
+      "p25": 2966,
+      "p50": 4895,
+      "p75": 8420,
+      "p90": 12856,
+      "mean": 6585.300183364743
+    },
+    "residentCellDensity": {
+      "p10": 65,
+      "p25": 234,
+      "p50": 1672,
+      "p75": 7109,
+      "p90": 13539,
+      "mean": 4999.743434343434
+    },
+    "workerCellDensity": {
+      "p10": 667,
+      "p25": 1698,
+      "p50": 7496,
+      "p75": 23095,
+      "p90": 42533,
+      "mean": 15335.955078125
+    },
+    "detail": {
+      "radiusKm": 0.40560964585234377,
+      "expectedPointSpacingKm": 0.6430942968465126,
+      "normalizedRadius": 0.6307156630704045,
+      "activityPerPoint": 3701.360919531253,
+      "playableAreaKm2": 1128,
+      "playableAreaPerPointKm2": 0.9111470113085622,
+      "playableCatchmentRadiusKm": 0.5385416432053602,
+      "localityScore": 0.3764468690016105,
+      "deaggregationScore": 1,
+      "score": 0.6135526619627777
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0,
+        "continuousScore": 0.6584724926945082,
+        "detectedCenterCount": 1,
+        "effectiveCenterCount": 1,
+        "largestCenterShare": 1,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 128.59245449602108,
+            "latitude": 35.84739542030206,
+            "massShare": 1,
+            "assignedMass": 10807454,
+            "assignedPointCount": 1238,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1776902400,
+  "search_aliases": [
+    "대구광역시",
+    "Daegu",
+    "大邱広域市",
+    "Taegu",
+    "Тэгу",
+    "大邱廣域市",
+    "Đại Khâu",
+    "Tägu",
+    "Тегу",
+    "Ντέγκου",
+    "טגו",
+    "ديغو",
+    "Tegu",
+    "แทกู",
+    "대구시",
+    "대구",
+    "Daegu-si",
+    "दाएगु",
+    "ডেগু"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

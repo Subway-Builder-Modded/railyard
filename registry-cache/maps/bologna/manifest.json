@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "id": "bologna",
+  "name": "Bologna",
+  "author": "Maximilian284",
+  "github_id": 61289731,
+  "description": "Custom map of the Bologna metropolitan area with highly realistic, procedurally generated demand data.",
+  "tags": [
+    "south-europe",
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bologna/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bologna/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/bologna/gallery/screenshot3.webp"
+  ],
+  "source": "https://github.com/Maximilian284/subwaybuilder-it-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://maximilian284.github.io/subwaybuilder-it-maps/BOL.json"
+  },
+  "city_code": "BOL",
+  "country": "IT",
+  "population": 454179,
+  "data_source": "OSM",
+  "source_quality": "medium-quality",
+  "level_of_detail": "high-detail",
+  "location": "south-europe",
+  "special_demand": [
+    "airports",
+    "hospitals",
+    "schools",
+    "universities"
+  ],
+  "residents_total": 454179,
+  "points_count": 2714,
+  "population_count": 5584,
+  "initial_view_state": {
+    "latitude": 44.4949,
+    "longitude": 11.3426,
+    "zoom": 13.5,
+    "bearing": 0
+  },
+  "file_sizes": {
+    "BOL.pmtiles": 41.55,
+    "buildings_index.bin": 26.76,
+    "buildings_index.json": 39.75,
+    "config.json": 0,
+    "demand_data.json": 1.04,
+    "roads.geojson": 13.02,
+    "runways_taxiways.geojson": 0.26
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.14188035231897755,
+      "p25": 0.16199809639000642,
+      "p50": 0.19001448057767478,
+      "p75": 0.21936955916660417,
+      "p90": 0.2544269713050455,
+      "mean": 0.2121520435545652
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 7.900885651219831e-13,
+      "p25": 0.05206649431669599,
+      "p50": 0.1616978479224863,
+      "p75": 0.23057656067710255,
+      "p90": 0.2664454758989464,
+      "mean": 0.17807622506466228
+    },
+    "commuteDistanceKm": {
+      "p10": 2082.9,
+      "p25": 3872.3,
+      "p50": 7458.4,
+      "p75": 14997.8,
+      "p90": 21197.3,
+      "mean": 10185.213520773645
+    },
+    "residentCellDensity": {
+      "p10": 98,
+      "p25": 175,
+      "p50": 362,
+      "p75": 1034,
+      "p90": 2106,
+      "mean": 820.4647377938517
+    },
+    "workerCellDensity": {
+      "p10": 70,
+      "p25": 97,
+      "p50": 149,
+      "p75": 486,
+      "p90": 2490,
+      "mean": 1137.0576441102758
+    },
+    "detail": {
+      "radiusKm": 0.17528528912466979,
+      "expectedPointSpacingKm": 0.5078601052596767,
+      "normalizedRadius": 0.3451448288796847,
+      "activityPerPoint": 167.3467207074429,
+      "playableAreaKm2": 1572,
+      "playableAreaPerPointKm2": 0.5792188651436994,
+      "playableCatchmentRadiusKm": 0.42938454913910834,
+      "localityScore": 1,
+      "deaggregationScore": 1,
+      "score": 1
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.8114350276295852,
+        "continuousScore": 0.7004328217399366,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.6827014479581202,
+        "largestCenterShare": 0.7171203424200591,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": 11.44711114235657,
+            "latitude": 44.477879468768265,
+            "massShare": 0.7171203424200591,
+            "assignedMass": 651402,
+            "assignedPointCount": 1776,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": 11.269612227870809,
+            "latitude": 44.55287739289036,
+            "massShare": 0.28287965757994094,
+            "assignedMass": 256956,
+            "assignedPointCount": 938,
+            "prominenceRatio": 0.9997951973032897
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784332800,
+  "search_aliases": [
+    "Bolonia",
+    "بولونيا",
+    "Балёнья",
+    "Болоня",
+    "Bolonya",
+    "Bologne",
+    "בולוניה",
+    "ボローニャ",
+    "볼로냐",
+    "Bolonha",
+    "Болонья",
+    "Bolonija",
+    "Boloņa",
+    "Болоња",
+    "Boloňa"
+  ],
+  "data_quality": {
+    "tier": "unknown",
+    "rubric_version": 1
+  }
+}

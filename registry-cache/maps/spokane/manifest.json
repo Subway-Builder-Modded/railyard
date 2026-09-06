@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "id": "spokane",
+  "name": "Spokane",
+  "author": "ryandicicco",
+  "github_id": 215120742,
+  "description": "# Spokane, WA · GEG\n\nThe Lilac City; largest metro in the Inland Northwest. Coverage centers on Spokane and its immediate suburbs along the Spokane River corridor.\n\n## Coverage\n\n<table style=\"width: auto\">\n<tr><td><strong>Region</strong></td><td>Spokane metro, Washington (US)</td></tr>\n<tr><td><strong>Bounding Box</strong></td><td>-117.608, 47.570 → -117.109, 47.797</td></tr>\n<tr><td><strong>Playable Area</strong></td><td>~950 km²</td></tr>\n</table>\n\n## Population Summary\n\n<table style=\"width: auto\">\n<tr><td><strong>Metro Population</strong></td><td align=\"right\">560,000</td></tr>\n<tr><td><strong>Total Modeled Demand</strong></td><td align=\"right\">157,109</td></tr>\n</table>\n\n## Map Statistics\n\n<table style=\"width: auto\">\n<tr><td><strong>Buildings Indexed</strong></td><td align=\"right\">130,763</td></tr>\n<tr><td><strong>Demand Points</strong></td><td align=\"right\">519</td></tr>\n<tr><td><strong>Population Nodes</strong></td><td align=\"right\">16,695</td></tr>\n<tr><td><strong>Median Commute Distance</strong></td><td align=\"right\">12.5 km</td></tr>\n<tr><td><strong>Mean Commute Distance</strong></td><td align=\"right\">13.6 km</td></tr>\n</table>\n\n## Additional Features\n\n- **Building Collision** — A buildings index of 130,763 structures is included, providing in-game collision geometry for all non-filtered buildings.\n- **Road & Runway Overlays** — Road network plus runway/taxiway geometry are bundled, covering Spokane International Airport (GEG) and surface routing across the metro.",
+  "tags": [
+    "north-america",
+    "airports"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/spokane/gallery/screenshot1.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/spokane/gallery/screenshot2.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/spokane/gallery/screenshot3.webp",
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/spokane/gallery/screenshot4.webp"
+  ],
+  "is_test": false,
+  "source": "https://github.com/ryandicicco/Subway-Builder-Maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/ryandicicco/Subway-Builder-Maps/main/releases/GEG.json"
+  },
+  "city_code": "GEG",
+  "country": "US",
+  "population": 157109,
+  "residents_total": 157109,
+  "points_count": 519,
+  "population_count": 16695,
+  "initial_view_state": {
+    "latitude": 47.6588,
+    "longitude": -117.426,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "data_source": "LODES",
+  "source_quality": "high-quality",
+  "level_of_detail": "high-detail",
+  "location": "north-america",
+  "special_demand": [
+    "airports"
+  ],
+  "file_sizes": {
+    "GEG.pmtiles": 15.6,
+    "buildings_index.bin": 22.4,
+    "buildings_index.json": 35.17,
+    "config.json": 0,
+    "demand_data.json": 2.48,
+    "roads.geojson": 5.04,
+    "runways_taxiways.geojson": 0.6
+  },
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.4081703397351963,
+      "p25": 0.504470965821602,
+      "p50": 0.6850032024696332,
+      "p75": 0.9097551427121962,
+      "p90": 1.0660490587557347,
+      "mean": 0.7322979601266355
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.21439215334563372,
+      "p25": 0.2825694989725006,
+      "p50": 0.43487231756588235,
+      "p75": 0.6488024526193862,
+      "p90": 0.9187359858745316,
+      "mean": 0.579520082176611
+    },
+    "commuteDistanceKm": {
+      "p10": 3651,
+      "p25": 6993,
+      "p50": 12413,
+      "p75": 19004,
+      "p90": 24906,
+      "mean": 13517.454687032046
+    },
+    "residentCellDensity": {
+      "p10": 14,
+      "p25": 42,
+      "p50": 218,
+      "p75": 590,
+      "p90": 1029,
+      "mean": 394.2166246851385
+    },
+    "workerCellDensity": {
+      "p10": 9,
+      "p25": 46,
+      "p50": 151,
+      "p75": 362,
+      "p90": 827,
+      "mean": 401.9607329842932
+    },
+    "detail": {
+      "radiusKm": 0.5457920210098538,
+      "expectedPointSpacingKm": 0.8768044976889832,
+      "normalizedRadius": 0.622478582681102,
+      "activityPerPoint": 302.7148362235067,
+      "playableAreaKm2": 884,
+      "playableAreaPerPointKm2": 1.7032755298651252,
+      "playableCatchmentRadiusKm": 0.7363215602242025,
+      "localityScore": 0.3903658311335493,
+      "deaggregationScore": 0.5992032093696258,
+      "score": 0.48364083661686813
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.7346054030438811,
+        "continuousScore": 0.6495831385062482,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.580534644932861,
+        "largestCenterShare": 0.7575823154625133,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -117.42240150817454,
+            "latitude": 47.674380832322264,
+            "massShare": 0.7575823154625133,
+            "assignedMass": 238046,
+            "assignedPointCount": 345,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -117.23159662110619,
+            "latitude": 47.66700646497573,
+            "massShare": 0.24241768453748672,
+            "assignedMass": 76172,
+            "assignedPointCount": 174,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784073600,
+  "search_aliases": [
+    "スポーケン",
+    "スポケーン",
+    "Спокан",
+    "Σποκέιν",
+    "سبوكين",
+    "ספוקיין",
+    "Спакан",
+    "스포캔",
+    "Спокен",
+    "斯波坎",
+    "Սպոքեն"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}

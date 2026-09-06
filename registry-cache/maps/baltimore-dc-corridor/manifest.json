@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "id": "baltimore-dc-corridor",
+  "name": "Baltimore-DC Corridor",
+  "author": "rslurry",
+  "github_id": 112521174,
+  "description": "Uses 2023 LODES data.  Coverage spans from Mount Vernon in the south, Germantown in the west, Timonium in the north, and Martin State Airport/Annapolis in the east.\nIncludes demand for DCA, BWI, and MTN airports; 5 JHU campuses, MSU, UMB, UMBC, UMD College Park, Loyola, Towson, American U, George Washington U, Georgetown, Howard, Catholic U, and Bowie State universities; the National Aquarium and Zoo, Camden Yards, M&T Bank Stadium, Library of Congress, Capital, Supreme Court, White House, and the National Mall (split up between the Lincoln, Washington, Jefferson, MLK, FDR, Vietnam War, Korean War, and WW2 memorials + the Smithsonian Air & Space, Natural History, and American History museums).",
+  "tags": [
+    "north-america",
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "gallery": [
+    "https://raw.githubusercontent.com/Subway-Builder-Modded/registry/28cd81291bf69dcf42572c063e02ff0746fec7b7/maps/baltimore-dc-corridor/gallery/screenshot1.webp"
+  ],
+  "source": "https://github.com/rslurry/subwaybuilder-maps",
+  "update": {
+    "type": "custom",
+    "url": "https://raw.githubusercontent.com/rslurry/subwaybuilder-maps/refs/heads/main/DCA.json"
+  },
+  "city_code": "DCA",
+  "country": "US",
+  "population": 2440998,
+  "level_of_detail": "high-detail",
+  "source_quality": "high-quality",
+  "data_source": "LODES",
+  "location": "north-america",
+  "special_demand": [
+    "airports",
+    "entertainment",
+    "universities"
+  ],
+  "residents_total": 2440998,
+  "points_count": 6641,
+  "population_count": 106957,
+  "initial_view_state": {
+    "latitude": 39.01082,
+    "longitude": -76.91014,
+    "zoom": 12,
+    "bearing": 0
+  },
+  "file_sizes": {
+    ".railyard_map/special_demand_points.json": 0.08,
+    ".railyard_map/special_demand_types.json": 0.03,
+    "DCA.pmtiles": 143.63,
+    "DCA_foundations.pmtiles": 68.29,
+    "buildings_index.bin.gz": 50.78,
+    "buildings_index.json.gz": 35.68,
+    "config.json": 0,
+    "demand_data.json": 18.07,
+    "ocean_depth_index.json.gz": 16.36,
+    "roads.geojson": 71.3,
+    "runways_taxiways.geojson": 1.97
+  },
+  "is_test": false,
+  "grid_statistics": {
+    "residentWeightedNearestNeighborKm": {
+      "p10": 0.27664933105864864,
+      "p25": 0.3602528360495891,
+      "p50": 0.4972630161078064,
+      "p75": 0.6856917176289044,
+      "p90": 0.9573494112085269,
+      "mean": 0.5681512885662107
+    },
+    "workerWeightedNearestNeighborKm": {
+      "p10": 0.2254605917235855,
+      "p25": 0.2897197250167859,
+      "p50": 0.40290038430005043,
+      "p75": 0.5636294371534829,
+      "p90": 0.7654146957155515,
+      "mean": 0.46397287558563627
+    },
+    "commuteDistanceKm": {
+      "p10": 5662,
+      "p25": 12407,
+      "p50": 24927,
+      "p75": 41758,
+      "p90": 61687,
+      "mean": 29573.71338014342
+    },
+    "residentCellDensity": {
+      "p10": 39,
+      "p25": 115,
+      "p50": 316,
+      "p75": 686,
+      "p90": 1236,
+      "mean": 566.5105641978175
+    },
+    "workerCellDensity": {
+      "p10": 23,
+      "p25": 64,
+      "p50": 161,
+      "p75": 419,
+      "p90": 1154,
+      "mean": 581.3833293527586
+    },
+    "detail": {
+      "radiusKm": 0.4476018993347072,
+      "expectedPointSpacingKm": 0.8090550629377651,
+      "normalizedRadius": 0.5532403415280748,
+      "activityPerPoint": 367.56482457461226,
+      "playableAreaKm2": 7344,
+      "playableAreaPerPointKm2": 1.1058575515735583,
+      "playableCatchmentRadiusKm": 0.5933004225321812,
+      "localityScore": 0.5152165399731466,
+      "deaggregationScore": 1,
+      "score": 0.7177858594129217
+    },
+    "polycentrism": {
+      "activity": {
+        "score": 0.9233489274548723,
+        "continuousScore": 0.9112832082296164,
+        "detectedCenterCount": 2,
+        "effectiveCenterCount": 1.8576120444222846,
+        "largestCenterShare": 0.6384296504954121,
+        "bandwidthKm": 1.3,
+        "reliabilityScore": 1,
+        "supportLevel": "high",
+        "usedFallback": false,
+        "topCenters": [
+          {
+            "longitude": -77.11824087484145,
+            "latitude": 38.954850799714066,
+            "massShare": 0.6384296504954121,
+            "assignedMass": 3116811,
+            "assignedPointCount": 4134,
+            "prominenceRatio": 1
+          },
+          {
+            "longitude": -76.6603747875588,
+            "latitude": 39.258344164513325,
+            "massShare": 0.3615703495045879,
+            "assignedMass": 1765185,
+            "assignedPointCount": 2507,
+            "prominenceRatio": 1
+          }
+        ]
+      }
+    }
+  },
+  "last_updated": 1784419200,
+  "search_aliases": [
+    "Washington D.C.",
+    "Washington",
+    "Ουάσιγκτον",
+    "Вашингтон",
+    "Washington DC",
+    "Waszyngton",
+    "워싱턴 D.C.",
+    "Vašingtonas",
+    "华盛顿特区",
+    "워싱턴 DC",
+    "District of Columbia"
+  ],
+  "data_quality": {
+    "tier": "very-high",
+    "raw_score": 0.81,
+    "weighted_score": 0.87,
+    "rubric_version": 1,
+    "provenance": "backfill"
+  }
+}
